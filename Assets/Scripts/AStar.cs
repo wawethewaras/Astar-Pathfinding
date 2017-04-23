@@ -3,8 +3,7 @@ using System.Collections;
 public class AStar
 {
     public static PriorityQueue closedList, openList;
-    private static float HeuristicEstimateCost(Node curNode,
-Node goalNode)
+    private static float HeuristicEstimateCost(Node curNode,Node goalNode)
     {
         Vector3 vecCost = curNode.position - goalNode.position;
         return vecCost.magnitude;
@@ -13,6 +12,10 @@ Node goalNode)
     {
         openList = new PriorityQueue();
         openList.Push(start);
+
+        //For showing calculated path
+        PriorityQueue.openList.Add(start.position);
+
         start.nodeTotalCost = 0.0f;
         start.estimatedCost = HeuristicEstimateCost(start, goal);
         closedList = new PriorityQueue();
@@ -33,23 +36,27 @@ Node goalNode)
                 Node neighbourNode = (Node)neighbours[i];
                 if (!closedList.Contains(neighbourNode))
                 {
-                    float cost = HeuristicEstimateCost(node,
-                    neighbourNode);
+                    float cost = HeuristicEstimateCost(node, neighbourNode);
                     float totalCost = node.nodeTotalCost + cost;
-                    float neighbourNodeEstCost = HeuristicEstimateCost(
-                    neighbourNode, goal);
+                    float neighbourNodeEstCost = HeuristicEstimateCost(neighbourNode, goal);
                     neighbourNode.nodeTotalCost = totalCost;
                     neighbourNode.parent = node;
-                    neighbourNode.estimatedCost = totalCost +
-                    neighbourNodeEstCost;
+                    neighbourNode.estimatedCost = totalCost + neighbourNodeEstCost;
                     if (!openList.Contains(neighbourNode))
                     {
                         openList.Push(neighbourNode);
+                        //For showing calculated path
+                        PriorityQueue.openList.Add(neighbourNode.position);
+
                     }
                 }
             }
             //Push the current node to the closed list
             closedList.Push(node);
+
+            //For showing calculated path
+            PriorityQueue.closedList.Add(node.position);
+
             //and remove it from openList
             openList.Remove(node);
         }
@@ -58,6 +65,7 @@ Node goalNode)
             Debug.LogError("Goal Not Found");
             return null;
         }
+
         return CalculatePath(node);
     }
     private static ArrayList CalculatePath(Node node)
@@ -71,4 +79,13 @@ Node goalNode)
         list.Reverse();
         return list;
     }
+
+    //public static ArrayList OpenList(Node node) {
+    //    ArrayList list = new ArrayList();
+    //    while (node != null)
+    //    {
+    //        list.Add(node);
+    //    }
+    //    return list;
+    //}
 }

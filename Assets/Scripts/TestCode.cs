@@ -10,6 +10,8 @@ public class TestCode : MonoBehaviour
     private float elapsedTime = 0.0f;
     //Interval time between pathfinding
     public float intervalTime = 1.0f;
+
+    public ArrayList openList;
     void Start()
     {
         objStartCube = GameObject.FindGameObjectWithTag("Start");
@@ -29,6 +31,8 @@ public class TestCode : MonoBehaviour
 
     public void FindPath()
     {
+        PriorityQueue.closedList.Clear();
+        PriorityQueue.openList.Clear();
         startPos = objStartCube.transform;
         endPos = objEndCube.transform;
         startNode = new Node(GridManager.instance.GetGridCellCenter(
@@ -36,6 +40,7 @@ public class TestCode : MonoBehaviour
         goalNode = new Node(GridManager.instance.GetGridCellCenter(
         GridManager.instance.GetGridIndex(endPos.position)));
         pathArray = AStar.FindPath(startNode, goalNode);
+        
     }
     void OnDrawGizmos()
     {
@@ -55,6 +60,19 @@ public class TestCode : MonoBehaviour
                 }
             }
         }
+        Gizmos.color = Color.yellow;
+        for (int i = 0; i < PriorityQueue.openList.Count;i++)
+        {
+            Gizmos.DrawCube(PriorityQueue.openList[i], Vector3.one);
+
+        }
+        Gizmos.color = Color.red;
+        for (int i = 0; i < PriorityQueue.closedList.Count; i++)
+        {
+            Gizmos.DrawCube(PriorityQueue.closedList[i], Vector3.one*0.3f);
+
+        }
+
     }
 
 
