@@ -7,12 +7,12 @@ public class PriorityQueue
     public static List<Vector3> openList = new List<Vector3>();
     public static List<Vector3> closedList = new List<Vector3>();
 
-    public ArrayList nodes = new ArrayList();
+    public List<Node> nodes = new List<Node>();
     public int Length
     {
         get { return this.nodes.Count; }
     }
-    public bool Contains(object node)
+    public bool Contains(Node node)
     {
         return this.nodes.Contains(node);
     }

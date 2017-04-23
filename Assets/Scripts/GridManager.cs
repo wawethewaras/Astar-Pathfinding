@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+
 public class GridManager : MonoBehaviour
 {
     private static GridManager s_Instance = null;
@@ -107,7 +110,7 @@ public class GridManager : MonoBehaviour
         int col = index % numOfColumns;
         return col;
     }
-    public void GetNeighbours(Node node, ArrayList neighbors)
+    public void GetNeighbours(Node node, List<Node> neighbors)
     {
         Vector3 neighborPos = node.position;
         int neighborIndex = GetGridIndex(neighborPos);
@@ -129,29 +132,29 @@ public class GridManager : MonoBehaviour
         leftNodeRow = row;
         leftNodeColumn = column - 1;
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////BottomRight
-        //leftNodeRow = row - 1;
-        //leftNodeColumn = column + 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////BottomLeft
-        //leftNodeRow = row - 1;
-        //leftNodeColumn = column - 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////TopRight
-        //leftNodeRow = row + 1;
-        //leftNodeColumn = column + 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////TopLeft
-        //leftNodeRow = row + 1;
-        //leftNodeColumn = column - 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+
+        //BottomRight
+        leftNodeRow = row - 1;
+        leftNodeColumn = column + 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //BottomLeft
+        leftNodeRow = row - 1;
+        leftNodeColumn = column - 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //TopRight
+        leftNodeRow = row + 1;
+        leftNodeColumn = column + 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //TopLeft
+        leftNodeRow = row + 1;
+        leftNodeColumn = column - 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
     }
-    void AssignNeighbour(int row, int column, ArrayList neighbors)
+    void AssignNeighbour(int row, int column, List<Node> neighbors)
     {
-        if (row != -1 && column != -1 &&
-        row < numOfRows && column < numOfColumns)
-        {
+        if (row != -1 && column != -1 && row < numOfRows && column < numOfColumns) {
             Node nodeToAdd = nodes[row, column];
+
             if (!nodeToAdd.bObstacle)
             {
                 neighbors.Add(nodeToAdd);

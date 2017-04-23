@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 public class AStar
 {
     public static PriorityQueue closedList, openList;
@@ -8,7 +9,7 @@ public class AStar
         Vector3 vecCost = curNode.position - goalNode.position;
         return vecCost.magnitude;
     }
-    public static ArrayList FindPath(Node start, Node goal)
+    public static List<Node> FindPath(Node start, Node goal)
     {
         openList = new PriorityQueue();
         openList.Push(start);
@@ -29,7 +30,7 @@ public class AStar
                 return CalculatePath(node);
             }
             //Create an ArrayList to store the neighboring nodes
-            ArrayList neighbours = new ArrayList();
+            List<Node> neighbours = new List<Node>();
             GridManager.instance.GetNeighbours(node, neighbours);
             for (int i = 0; i < neighbours.Count; i++)
             {
@@ -68,9 +69,9 @@ public class AStar
 
         return CalculatePath(node);
     }
-    private static ArrayList CalculatePath(Node node)
+    private static List<Node> CalculatePath(Node node)
     {
-        ArrayList list = new ArrayList();
+        List<Node> list = new List<Node>();
         while (node != null)
         {
             list.Add(node);
@@ -80,12 +81,4 @@ public class AStar
         return list;
     }
 
-    //public static ArrayList OpenList(Node node) {
-    //    ArrayList list = new ArrayList();
-    //    while (node != null)
-    //    {
-    //        list.Add(node);
-    //    }
-    //    return list;
-    //}
 }
