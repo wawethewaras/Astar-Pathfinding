@@ -35,7 +35,7 @@ public class PriorityQueue
     {
         this.nodes.Remove(node);
         //Ensure the list is sorted
-        this.nodes.Sort();
+        //this.nodes.Sort();
     }
 
 }

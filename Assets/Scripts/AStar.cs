@@ -34,7 +34,7 @@ public class AStar
             GridManager.instance.GetNeighbours(node, neighbours);
             for (int i = 0; i < neighbours.Count; i++)
             {
-                Node neighbourNode = (Node)neighbours[i];
+                Node neighbourNode = neighbours[i];
                 if (!closedList.Contains(neighbourNode))
                 {
                     float cost = HeuristicEstimateCost(node, neighbourNode);
@@ -64,6 +64,7 @@ public class AStar
         if (node.position != goal.position)
         {
             Debug.LogError("Goal Not Found");
+            Debug.Break();
             return null;
         }
 

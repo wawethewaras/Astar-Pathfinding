@@ -133,22 +133,22 @@ public class GridManager : MonoBehaviour
         leftNodeColumn = column - 1;
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
 
-        //BottomRight
-        leftNodeRow = row - 1;
-        leftNodeColumn = column + 1;
-        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        //BottomLeft
-        leftNodeRow = row - 1;
-        leftNodeColumn = column - 1;
-        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        //TopRight
-        leftNodeRow = row + 1;
-        leftNodeColumn = column + 1;
-        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        //TopLeft
-        leftNodeRow = row + 1;
-        leftNodeColumn = column - 1;
-        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        ////BottomRight
+        //leftNodeRow = row - 1;
+        //leftNodeColumn = column + 1;
+        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        ////BottomLeft
+        //leftNodeRow = row - 1;
+        //leftNodeColumn = column - 1;
+        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        ////TopRight
+        //leftNodeRow = row + 1;
+        //leftNodeColumn = column + 1;
+        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        ////TopLeft
+        //leftNodeRow = row + 1;
+        //leftNodeColumn = column - 1;
+        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
     }
     void AssignNeighbour(int row, int column, List<Node> neighbors)
     {
