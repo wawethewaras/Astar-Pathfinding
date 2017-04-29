@@ -22,6 +22,7 @@ public class GridManager : MonoBehaviour
             return s_Instance;
         }
     }
+
     public int numOfRows;
     public int numOfColumns;
     public float gridCellSize;
@@ -43,6 +44,7 @@ public class GridManager : MonoBehaviour
     public void CalculateObstacles()
     {
         obstacleList = GameObject.FindGameObjectsWithTag("Obstacle");
+        //Creating the grid
         nodes = new Node[numOfColumns, numOfRows];
         int index = 0;
         for (int i = 0; i < numOfColumns; i++)
@@ -133,28 +135,27 @@ public class GridManager : MonoBehaviour
         leftNodeColumn = column - 1;
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
 
-        ////BottomRight
-        //leftNodeRow = row - 1;
-        //leftNodeColumn = column + 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////BottomLeft
-        //leftNodeRow = row - 1;
-        //leftNodeColumn = column - 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////TopRight
-        //leftNodeRow = row + 1;
-        //leftNodeColumn = column + 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
-        ////TopLeft
-        //leftNodeRow = row + 1;
-        //leftNodeColumn = column - 1;
-        //AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //BottomRight
+        leftNodeRow = row - 1;
+        leftNodeColumn = column + 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //BottomLeft
+        leftNodeRow = row - 1;
+        leftNodeColumn = column - 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //TopRight
+        leftNodeRow = row + 1;
+        leftNodeColumn = column + 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+        //TopLeft
+        leftNodeRow = row + 1;
+        leftNodeColumn = column - 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
     }
     void AssignNeighbour(int row, int column, List<Node> neighbors)
     {
         if (row != -1 && column != -1 && row < numOfRows && column < numOfColumns) {
             Node nodeToAdd = nodes[row, column];
-
             if (!nodeToAdd.bObstacle)
             {
                 neighbors.Add(nodeToAdd);

@@ -19,6 +19,7 @@ public class TestCode : MonoBehaviour
     IEnumerator currentPath;
 
     Vector3 endPostion;
+    float distanceBetweenPoints;
 
     public float movespeed;
 
@@ -32,6 +33,9 @@ public class TestCode : MonoBehaviour
     }
     void Update()
     {
+
+        //Count path more often if target is near
+
         elapsedTime += Time.deltaTime;
         if (elapsedTime >= intervalTime)
         {
@@ -46,15 +50,15 @@ public class TestCode : MonoBehaviour
         PriorityQueue.openList.Clear();
         startPos = objStartCube.transform;
         endPos = objEndCube.transform;
-        startNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos.position)));
-        goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
+        //startNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos.position)));
+        //goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
         if (endPos.position != endPostion) {
             endPostion = endPos.position;
-            pathArray = AStar.FindPath(startNode, goalNode);
+            pathArray = AStar.FindPath(startPos.position, endPos.position);
             //Debug.Log(pathArray[0].position);
 
 
-            Debug.Log("New path calculated");
+            //Debug.Log("New path calculated");
             if (currentPath != null)
             {
                 StopCoroutine(currentPath);
@@ -101,14 +105,20 @@ public class TestCode : MonoBehaviour
     public IEnumerator movepath(List<Node> pathArray) {
         int recurity = 0;
         int i = 0;
-        for (int j = 0; i < pathArray.Count; j++) {
+        if (pathArray.Count <= 1)
+        {
+            yield return null;
+        }
+        for (int j = 0; j < pathArray.Count; j++) {
             if (i == 0 && pathArray.Count > 1)
             {
                 i = 1;
             }
+
             else {
                 i = j;
             }
+
             while (objStartCube.transform.position != pathArray[i].position) {                
                 objStartCube.transform.position =  Vector3.MoveTowards(objStartCube.transform.position, pathArray[i].position, Time.deltaTime* movespeed);
                 if (objStartCube.transform.position == pathArray[i].position) {

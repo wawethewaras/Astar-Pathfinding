@@ -4,22 +4,40 @@ using System.Collections.Generic;
 public class AStar
 {
     public static PriorityQueue closedList, openList;
-    private static float HeuristicEstimateCost(Node curNode,Node goalNode)
+
+    //private static float HeuristicEstimateCost(Node curNode,Node goalNode)
+    //{
+    //    Vector3 vecCost = curNode.position - goalNode.position;
+    //    return vecCost.magnitude;
+    //}
+
+    private static int HeuristicEstimateCost(Node curNode, Node goalNode)
     {
         Vector3 vecCost = curNode.position - goalNode.position;
-        return vecCost.magnitude;
+        return Mathf.RoundToInt(vecCost.magnitude);
     }
-    public static List<Node> FindPath(Node start, Node goal)
+
+    public static List<Node> FindPath(Vector3 startPos, Vector3 endPos)
     {
+        Node start = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos)));
+        Node goal = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos)));
+
+
         openList = new PriorityQueue();
+        closedList = new PriorityQueue();
+
         openList.Push(start);
 
-        //For showing calculated path
-        PriorityQueue.openList.Add(start.position);
+        //start.nodeTotalCost = 0.0f;
 
-        start.nodeTotalCost = 0.0f;
-        start.estimatedCost = HeuristicEstimateCost(start, goal);
-        closedList = new PriorityQueue();
+        start.gCost = 0;
+        //start.estimatedCost = HeuristicEstimateCost(start, goal);
+        start.hCost = HeuristicEstimateCost(start, goal);
+        ////For showing calculated path
+        //PriorityQueue.openList.Add(start.position);
+
+
+
         Node node = null;
         while (openList.Length != 0)
         {
@@ -37,17 +55,17 @@ public class AStar
                 Node neighbourNode = neighbours[i];
                 if (!closedList.Contains(neighbourNode))
                 {
-                    float cost = HeuristicEstimateCost(node, neighbourNode);
-                    float totalCost = node.nodeTotalCost + cost;
-                    float neighbourNodeEstCost = HeuristicEstimateCost(neighbourNode, goal);
-                    neighbourNode.nodeTotalCost = totalCost;
+                    int hcost = HeuristicEstimateCost(node, neighbourNode);
+                    int fcost = node.fCost + hcost;
+                    int neighbourHcost = HeuristicEstimateCost(neighbourNode, goal);
+                    neighbourNode.gCost = fcost;
                     neighbourNode.parent = node;
-                    neighbourNode.estimatedCost = totalCost + neighbourNodeEstCost;
+                    neighbourNode.hCost = neighbourHcost;
                     if (!openList.Contains(neighbourNode))
                     {
                         openList.Push(neighbourNode);
-                        //For showing calculated path
-                        PriorityQueue.openList.Add(neighbourNode.position);
+                        ////For showing calculated path
+                        //PriorityQueue.openList.Add(neighbourNode.position);
 
                     }
                 }
@@ -55,8 +73,8 @@ public class AStar
             //Push the current node to the closed list
             closedList.Push(node);
 
-            //For showing calculated path
-            PriorityQueue.closedList.Add(node.position);
+            ////For showing calculated path
+            //PriorityQueue.closedList.Add(node.position);
 
             //and remove it from openList
             openList.Remove(node);
