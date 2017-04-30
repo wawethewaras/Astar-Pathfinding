@@ -9,6 +9,8 @@ public class Node : IComparable
     
     
     public Vector3 position;
+    public int gridX;
+    public int gridY;
 
     public bool bObstacle;
     public int gCost;
@@ -24,24 +26,12 @@ public class Node : IComparable
 
     public Node()
     {
-        //estimatedCost = 0.0f;
-        //nodeTotalCost = 1.0f;
         bObstacle = false;
         parent = null;
     }
     public Node(Vector3 pos)
     {
-        //estimatedCost = 0.0f;
-        //nodeTotalCost = 1.0f;
         bObstacle = false;
-        parent = null;
-        position = pos;
-    }
-    public Node(Vector3 pos, bool obstacle)
-    {
-        //estimatedCost = 0.0f;
-        //nodeTotalCost = 1.0f;
-        bObstacle = obstacle;
         parent = null;
         position = pos;
     }

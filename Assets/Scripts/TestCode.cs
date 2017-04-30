@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 
 public class TestCode : MonoBehaviour
 {
@@ -22,6 +22,11 @@ public class TestCode : MonoBehaviour
     float distanceBetweenPoints;
 
     public float movespeed;
+    public bool autoCountPath;
+
+    public bool showCalculatedObstacles;
+
+    public float nextWaypointDistance;
 
     void Start()
     {
@@ -29,19 +34,28 @@ public class TestCode : MonoBehaviour
         objEndCube = GameObject.FindGameObjectWithTag("End");
         pathArray = new List<Node>();
         
-        FindPath();        
+        FindPath();
     }
     void Update()
     {
 
         //Count path more often if target is near
-
-        elapsedTime += Time.deltaTime;
-        if (elapsedTime >= intervalTime)
+        if (autoCountPath)
         {
-            elapsedTime = 0.0f;
-            FindPath();
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= intervalTime)
+            {
+                elapsedTime = 0.0f;
+                FindPath();
+            }
         }
+        else {
+            if (Input.GetButtonDown("Jump"))
+            {
+                FindPath();
+            }
+        }
+
     }
 
     public void FindPath()
@@ -54,7 +68,11 @@ public class TestCode : MonoBehaviour
         //goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
         if (endPos.position != endPostion) {
             endPostion = endPos.position;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             pathArray = AStar.FindPath(startPos.position, endPos.position);
+            sw.Stop();
+            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
             //Debug.Log(pathArray[0].position);
 
 
@@ -69,43 +87,12 @@ public class TestCode : MonoBehaviour
 
 
     }
-    void OnDrawGizmos()
-    {
-        if (pathArray == null)
-            return;
-        if (pathArray.Count > 0)
-        {
-            int index = 1;
-            foreach (Node node in pathArray)
-            {
-                if (index < pathArray.Count)
-                {
-                    Node nextNode = (Node)pathArray[index];
-                    Debug.DrawLine(node.position, nextNode.position,
-                    Color.green);
-                    index++;
-                }
-            }
-        }
-        //Gizmos.color = Color.yellow;
-        //for (int i = 0; i < PriorityQueue.openList.Count;i++)
-        //{
-        //    Gizmos.DrawCube(PriorityQueue.openList[i], Vector3.one);
 
-        //}
-        //Gizmos.color = Color.red;
-        //for (int i = 0; i < PriorityQueue.closedList.Count; i++)
-        //{
-        //    Gizmos.DrawCube(PriorityQueue.closedList[i], Vector3.one*0.3f);
-
-        //}
-
-    }
 
     public IEnumerator movepath(List<Node> pathArray) {
-        int recurity = 0;
+        int security = 0;
         int i = 0;
-        if (pathArray.Count <= 1)
+        if (pathArray == null || pathArray.Count <= 1)
         {
             yield return null;
         }
@@ -118,23 +105,61 @@ public class TestCode : MonoBehaviour
             else {
                 i = j;
             }
-
-            while (objStartCube.transform.position != pathArray[i].position) {                
+            //if (pathArray.Count > 1)
+            //{
+            //    print(AStar.GetDistance(pathArray[i] ,pathArray[i+1]));
+            //}
+            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/objStartCube.transform.position != pathArray[i].position) {                
                 objStartCube.transform.position =  Vector3.MoveTowards(objStartCube.transform.position, pathArray[i].position, Time.deltaTime* movespeed);
                 if (objStartCube.transform.position == pathArray[i].position) {
                     //Debug.Log("Goal reaced");
                 }
                 yield return null;
-                //if (recurity > 2000) {                    
+                //if (security > 2000) {                    
                 //    Debug.Break();
                 //    break;
                 //}
-                recurity++;
+                security++;
             }
         }
 
         yield return null;
     }
 
+    void OnDrawGizmos()
+    {
+        if (pathArray == null)
+            return;
+        if (pathArray.Count > 0)
+        {
+            int index = 1;
+            foreach (Node node in pathArray)
+            {
+                if (index < pathArray.Count)
+                {
+                    Node nextNode = (Node)pathArray[index];
+                    UnityEngine.Debug.DrawLine(node.position, nextNode.position,
+                    Color.green);
+                    index++;
+                }
+            }
+        }
+        if (showCalculatedObstacles)
+        {
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < PriorityQueue.openList.Count; i++)
+            {
+                Gizmos.DrawCube(PriorityQueue.openList[i], Vector3.one);
 
+            }
+            Gizmos.color = Color.red;
+            for (int i = 0; i < PriorityQueue.closedList.Count; i++)
+            {
+                Gizmos.DrawCube(PriorityQueue.closedList[i], Vector3.one * 0.3f);
+
+            }
+        }
+
+
+    }
 }

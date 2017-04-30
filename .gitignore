@@ -33,3 +33,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+*.data
+
+Assets/Profiler/PathCalculationUsingSort\.data\.meta

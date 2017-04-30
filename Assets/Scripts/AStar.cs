@@ -1,27 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+
+
 public class AStar
 {
     public static PriorityQueue closedList, openList;
 
-    //private static float HeuristicEstimateCost(Node curNode,Node goalNode)
-    //{
-    //    Vector3 vecCost = curNode.position - goalNode.position;
-    //    return vecCost.magnitude;
-    //}
-
-    private static int HeuristicEstimateCost(Node curNode, Node goalNode)
-    {
-        Vector3 vecCost = curNode.position - goalNode.position;
-        return Mathf.RoundToInt(vecCost.magnitude);
-    }
 
     public static List<Node> FindPath(Vector3 startPos, Vector3 endPos)
     {
         Node start = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos)));
         Node goal = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos)));
-
 
         openList = new PriorityQueue();
         closedList = new PriorityQueue();
@@ -34,7 +24,7 @@ public class AStar
         //start.estimatedCost = HeuristicEstimateCost(start, goal);
         start.hCost = HeuristicEstimateCost(start, goal);
         ////For showing calculated path
-        //PriorityQueue.openList.Add(start.position);
+        PriorityQueue.openList.Add(start.position);
 
 
 
@@ -45,6 +35,7 @@ public class AStar
             //Check if the current node is the goal node
             if (node.position == goal.position)
             {
+                Debug.Log("Path found! Lenght: " + node.fCost);
                 return CalculatePath(node);
             }
             //Create an ArrayList to store the neighboring nodes
@@ -55,17 +46,17 @@ public class AStar
                 Node neighbourNode = neighbours[i];
                 if (!closedList.Contains(neighbourNode))
                 {
-                    int hcost = HeuristicEstimateCost(node, neighbourNode);
-                    int fcost = node.fCost + hcost;
+                    int hcost = GetDistance(node, neighbourNode);
+                    int gcost = node.fCost + hcost;
                     int neighbourHcost = HeuristicEstimateCost(neighbourNode, goal);
-                    neighbourNode.gCost = fcost;
+                    neighbourNode.gCost = gcost;
                     neighbourNode.parent = node;
                     neighbourNode.hCost = neighbourHcost;
                     if (!openList.Contains(neighbourNode))
                     {
                         openList.Push(neighbourNode);
                         ////For showing calculated path
-                        //PriorityQueue.openList.Add(neighbourNode.position);
+                        PriorityQueue.openList.Add(neighbourNode.position);
 
                     }
                 }
@@ -74,7 +65,7 @@ public class AStar
             closedList.Push(node);
 
             ////For showing calculated path
-            //PriorityQueue.closedList.Add(node.position);
+            PriorityQueue.closedList.Add(node.position);
 
             //and remove it from openList
             openList.Remove(node);
@@ -100,4 +91,21 @@ public class AStar
         return list;
     }
 
+    private static int HeuristicEstimateCost(Node curNode, Node goalNode)
+    {
+        Vector3 vecCost = (curNode.position - goalNode.position);
+        return Mathf.RoundToInt(vecCost.magnitude * 10);
+    }
+
+    public static int GetDistance(Node curNode, Node goalNode)
+    {
+        Vector3 vecCost = (curNode.position - goalNode.position);
+        //int dstX = Mathf.Abs(curNode.gridX - goalNode.gridX);
+        //int dstY = Mathf.Abs(curNode.gridY - goalNode.gridY);
+        //float multiplier = 1;
+        //if (Mathf.Abs(dstX) + Mathf.Abs(dstY) == 2) {
+        //    multiplier = 1.4f;
+        //}
+        return Mathf.RoundToInt(vecCost.magnitude * 10);
+    }
 }

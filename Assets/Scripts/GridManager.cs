@@ -53,6 +53,9 @@ public class GridManager : MonoBehaviour
             {
                 Vector3 cellPos = GetGridCellCenter(index);
                 Node node = new Node(cellPos);
+                node.gridX = i;
+                node.gridY = j;
+                //Debug.Log(cellPos + " " + node.gridX + " " + node.gridY);
                 nodes[i, j] = node;
                 index++;
             }
@@ -121,10 +124,12 @@ public class GridManager : MonoBehaviour
         //Bottom
         int leftNodeRow = row - 1;
         int leftNodeColumn = column;
+
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
         //Top
         leftNodeRow = row + 1;
         leftNodeColumn = column;
+
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
         //Right
         leftNodeRow = row;
@@ -151,6 +156,8 @@ public class GridManager : MonoBehaviour
         leftNodeRow = row + 1;
         leftNodeColumn = column - 1;
         AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+
+
     }
     void AssignNeighbour(int row, int column, List<Node> neighbors)
     {
