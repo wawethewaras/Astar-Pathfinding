@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-public class TestCode : MonoBehaviour
+public class CountPath : MonoBehaviour
 {
     public Transform startPos, endPos;
     public Node startNode { get; set; }
     public Node goalNode { get; set; }
     public List<Node> pathArray;
-    //public GameObject objStartCube, objEndCube;
+
     private float elapsedTime = 0.0f;
     //Interval time between pathfinding
     public float intervalTime = 1.0f;
@@ -18,8 +18,7 @@ public class TestCode : MonoBehaviour
 
     IEnumerator currentPath;
 
-    Vector3 endPostion;
-    float distanceBetweenPoints;
+    Vector3 endPosition;
 
     public float movespeed;
     public bool autoCountPath;
@@ -31,8 +30,6 @@ public class TestCode : MonoBehaviour
 
     void Start()
     {
-        //objStartCube = GameObject.FindGameObjectWithTag("Start");
-        //objEndCube = GameObject.FindGameObjectWithTag("End");
         pathArray = new List<Node>();
         
         FindPath();
@@ -61,21 +58,16 @@ public class TestCode : MonoBehaviour
 
     public void FindPath()
     {
-        PriorityQueue.closedList.Clear();
-        PriorityQueue.openList.Clear();
-
         startPos = startPos.transform;
         endPos = endPos.transform;
-        //startNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos.position)));
-        //goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
-        if (endPos.position != endPostion) {
-            endPostion = endPos.position;
+
+        if (endPos.position != endPosition) {
+            endPosition = endPos.position;
             Stopwatch sw = new Stopwatch();
             sw.Start();
             pathArray = AStar.FindPath(startPos.position, endPos.position);
             sw.Stop();
             print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
-            //Debug.Log(pathArray[0].position);
 
             if (pathArray == null) {
                 return;
@@ -109,10 +101,6 @@ public class TestCode : MonoBehaviour
             else {
                 i = j;
             }
-            //if (pathArray.Count > 1)
-            //{
-            //    print(AStar.GetDistance(pathArray[i] ,pathArray[i+1]));
-            //}
             while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i].worldPosition) {
                 startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i].worldPosition, Time.deltaTime* movespeed);
                 if (startPos.transform.position == pathArray[i].worldPosition) {

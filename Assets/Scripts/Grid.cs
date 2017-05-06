@@ -14,9 +14,7 @@ public class Grid : MonoBehaviour
                 s_Instance = FindObjectOfType(typeof(Grid))
                 as Grid;
                 if (s_Instance == null)
-                    Debug.Log("Could not locate a GridManager " +
-                    "object. \n You have to have exactly " +
-                    "one GridManager in the scene.");
+                    Debug.Log("Could not locate a GridManager object. \n You have to have exactly one GridManager in the scene.");
             }
             return s_Instance;
         }
@@ -26,12 +24,14 @@ public class Grid : MonoBehaviour
     public float nodeRadius;
     Node[,] grid;
 
-    float nodeDiameter;
+    float nodeDiameter { get { return nodeRadius * 2; } }
     int gridSizeX, gridSizeZ;
+
+    public bool showGrid;
+    public List<Node> path;
 
     void Awake()
     {
-        nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeZ = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
@@ -90,28 +90,23 @@ public class Grid : MonoBehaviour
         return grid[x, z];
     }
 
-    public List<Node> path;
-    //void OnDrawGizmos() {
-    //	Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x, gridWorldSize.y,1));
 
-    //	if (grid != null) {
-    //		foreach (SebNode n in grid) {
-    //			Gizmos.color = (n.walkable)?Color.white:Color.red;
-    //			if (path != null)
-    //				if (path.Contains(n))
-    //					Gizmos.color = Color.black;
-    //			Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter-.1f));
-    //		}
-    //	}
-    //       for (int i = 0; i < SebPathfinding.openList.Count; i++)
-    //       {
-    //           Gizmos.DrawCube(SebPathfinding.openList[i].worldPosition, Vector3.one * (nodeDiameter - .1f));
+    void OnDrawGizmos()
+    {
+        if (showGrid) { 
+            Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));
 
-    //       }
-    //       Gizmos.color = Color.red;
-    //       for (int i = 0; i < SebPathfinding.closedList.Count; i++)
-    //       {
-    //           Gizmos.DrawCube(SebPathfinding.closedList[i].worldPosition, Vector3.one * (nodeDiameter - .1f) * 0.3f);
-    //       }
-    //   }
+            if (grid != null)
+            {
+                foreach (Node n in grid)
+                {
+                    Gizmos.color = (n.walkable) ? Color.white : Color.red;
+                    if (path != null)
+                        if (path.Contains(n))
+                            Gizmos.color = Color.black;
+                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+                }
+            }
+        }
+    }
 }
