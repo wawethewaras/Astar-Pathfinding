@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 public class TestCode : MonoBehaviour
 {
-    private Transform startPos, endPos;
+    public Transform startPos, endPos;
     public Node startNode { get; set; }
     public Node goalNode { get; set; }
     public List<Node> pathArray;
-    public GameObject objStartCube, objEndCube;
+    //public GameObject objStartCube, objEndCube;
     private float elapsedTime = 0.0f;
     //Interval time between pathfinding
     public float intervalTime = 1.0f;
@@ -28,10 +28,11 @@ public class TestCode : MonoBehaviour
 
     public float nextWaypointDistance;
 
+
     void Start()
     {
-        objStartCube = GameObject.FindGameObjectWithTag("Start");
-        objEndCube = GameObject.FindGameObjectWithTag("End");
+        //objStartCube = GameObject.FindGameObjectWithTag("Start");
+        //objEndCube = GameObject.FindGameObjectWithTag("End");
         pathArray = new List<Node>();
         
         FindPath();
@@ -62,8 +63,9 @@ public class TestCode : MonoBehaviour
     {
         PriorityQueue.closedList.Clear();
         PriorityQueue.openList.Clear();
-        startPos = objStartCube.transform;
-        endPos = objEndCube.transform;
+
+        startPos = startPos.transform;
+        endPos = endPos.transform;
         //startNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos.position)));
         //goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
         if (endPos.position != endPostion) {
@@ -75,7 +77,9 @@ public class TestCode : MonoBehaviour
             print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
             //Debug.Log(pathArray[0].position);
 
-
+            if (pathArray == null) {
+                return;
+            }
             //Debug.Log("New path calculated");
             if (currentPath != null)
             {
@@ -109,9 +113,9 @@ public class TestCode : MonoBehaviour
             //{
             //    print(AStar.GetDistance(pathArray[i] ,pathArray[i+1]));
             //}
-            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/objStartCube.transform.position != pathArray[i].position) {                
-                objStartCube.transform.position =  Vector3.MoveTowards(objStartCube.transform.position, pathArray[i].position, Time.deltaTime* movespeed);
-                if (objStartCube.transform.position == pathArray[i].position) {
+            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i].worldPosition) {
+                startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i].worldPosition, Time.deltaTime* movespeed);
+                if (startPos.transform.position == pathArray[i].worldPosition) {
                     //Debug.Log("Goal reaced");
                 }
                 yield return null;
@@ -126,40 +130,40 @@ public class TestCode : MonoBehaviour
         yield return null;
     }
 
-    void OnDrawGizmos()
-    {
-        if (pathArray == null)
-            return;
-        if (pathArray.Count > 0)
-        {
-            int index = 1;
-            foreach (Node node in pathArray)
-            {
-                if (index < pathArray.Count)
-                {
-                    Node nextNode = (Node)pathArray[index];
-                    UnityEngine.Debug.DrawLine(node.position, nextNode.position,
-                    Color.green);
-                    index++;
-                }
-            }
-        }
-        if (showCalculatedObstacles)
-        {
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < PriorityQueue.openList.Count; i++)
-            {
-                Gizmos.DrawCube(PriorityQueue.openList[i], Vector3.one);
+    //void OnDrawGizmos()
+    //{
+    //    if (pathArray == null)
+    //        return;
+    //    if (pathArray.Count > 0)
+    //    {
+    //        int index = 1;
+    //        foreach (SebNode node in pathArray)
+    //        {
+    //            if (index < pathArray.Count)
+    //            {
+    //                SebNode nextNode = (SebNode)pathArray[index];
+    //                UnityEngine.Debug.DrawLine(node.worldPosition, nextNode.worldPosition,
+    //                Color.green);
+    //                index++;
+    //            }
+    //        }
+    //    }
+    //    if (showCalculatedObstacles)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        for (int i = 0; i < SebPathfinding.openSet.Count; i++)
+    //        {
+    //            Gizmos.DrawCube(SebPathfinding.openSet[i].worldPosition, Vector3.one);
 
-            }
-            Gizmos.color = Color.red;
-            for (int i = 0; i < PriorityQueue.closedList.Count; i++)
-            {
-                Gizmos.DrawCube(PriorityQueue.closedList[i], Vector3.one * 0.3f);
+    //        }
+    //        Gizmos.color = Color.red;
+    //        for (int i = 0; i < SebPathfinding.closedSet.Count; i++)
+    //        {
+    //            Gizmos.DrawCube(SebPathfinding.closedSet[i].worldPosition, Vector3.one * 0.3f);
 
-            }
-        }
+    //        }
+    //    }
 
 
-    }
+    //}
 }

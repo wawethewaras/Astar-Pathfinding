@@ -23,6 +23,8 @@ public class GridManager : MonoBehaviour
         }
     }
 
+    public LayerMask obstacleMask;
+
     public int numOfRows;
     public int numOfColumns;
     public float gridCellSize;
@@ -30,7 +32,7 @@ public class GridManager : MonoBehaviour
     public bool showObstacleBlocks = true;
     private Vector3 origin = new Vector3();
     private GameObject[] obstacleList;
-    public Node[,] nodes { get; set; }
+    public NodeOld[,] nodes { get; set; }
     public Vector3 Origin
     {
         get { return origin; }
@@ -45,14 +47,14 @@ public class GridManager : MonoBehaviour
     {
         obstacleList = GameObject.FindGameObjectsWithTag("Obstacle");
         //Creating the grid
-        nodes = new Node[numOfColumns, numOfRows];
+        nodes = new NodeOld[numOfColumns, numOfRows];
         int index = 0;
         for (int i = 0; i < numOfColumns; i++)
         {
             for (int j = 0; j < numOfRows; j++)
             {
                 Vector3 cellPos = GetGridCellCenter(index);
-                Node node = new Node(cellPos);
+                NodeOld node = new NodeOld(cellPos);
                 node.gridX = i;
                 node.gridY = j;
                 //Debug.Log(cellPos + " " + node.gridX + " " + node.gridY);
@@ -115,7 +117,7 @@ public class GridManager : MonoBehaviour
         int col = index % numOfColumns;
         return col;
     }
-    public void GetNeighbours(Node node, List<Node> neighbors)
+    public void GetNeighbours(NodeOld node, List<NodeOld> neighbors)
     {
         Vector3 neighborPos = node.position;
         int neighborIndex = GetGridIndex(neighborPos);
@@ -159,10 +161,10 @@ public class GridManager : MonoBehaviour
 
 
     }
-    void AssignNeighbour(int row, int column, List<Node> neighbors)
+    void AssignNeighbour(int row, int column, List<NodeOld> neighbors)
     {
         if (row != -1 && column != -1 && row < numOfRows && column < numOfColumns) {
-            Node nodeToAdd = nodes[row, column];
+            NodeOld nodeToAdd = nodes[row, column];
             if (!nodeToAdd.bObstacle)
             {
                 neighbors.Add(nodeToAdd);

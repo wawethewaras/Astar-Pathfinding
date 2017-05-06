@@ -12,7 +12,7 @@ public class ReCalculateObstacles : Editor {
         GridManager myScript = (GridManager)target;
         if (GUILayout.Button("Calculate grid"))
         {
-            myScript.CalculateObstacles();
+            //myScript.CalculateObstacles();
         }
     }
 }

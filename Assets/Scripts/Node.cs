@@ -1,55 +1,30 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class Node : IComparable
-{
-    //public float nodeTotalCost;
-    //public float estimatedCost;
-    
-    
-    public Vector3 position;
+public class Node {
+    public bool walkable;
+    public Vector3 worldPosition;
     public int gridX;
     public int gridY;
 
-    public bool bObstacle;
     public int gCost;
     public int hCost;
-
-    public int fCost {
-        get {
-            return gCost + hCost;
-        }
-    }
-
     public Node parent;
 
-    public Node()
+    public Node(bool _walkable, Vector3 _worldPos, int _gridX, int _gridY)
     {
-        bObstacle = false;
-        parent = null;
-    }
-    public Node(Vector3 pos)
-    {
-        bObstacle = false;
-        parent = null;
-        position = pos;
+        walkable = _walkable;
+        worldPosition = _worldPos;
+        gridX = _gridX;
+        gridY = _gridY;
     }
 
-    public void MarkAsObstacle()
+    public int fCost
     {
-        bObstacle = true;
-    }
-    public int CompareTo(object obj)
-    {
-        Node node = (Node)obj;
-        //Negative value means object comes before this in the sort
-        //order.
-        if (fCost < node.fCost)
-            return -1;
-        //Positive value means object comes after this in the sort
-        //order.
-        if (fCost > node.fCost) return 1;
-        return 0;
+        get
+        {
+            return gCost + hCost;
+        }
     }
 }
