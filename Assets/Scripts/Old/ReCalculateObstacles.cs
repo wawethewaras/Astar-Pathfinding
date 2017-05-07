@@ -2,17 +2,17 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(GridManager))]
+[CustomEditor(typeof(Grid))]
 public class ReCalculateObstacles : Editor {
 
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        GridManager myScript = (GridManager)target;
+        Grid myScript = (Grid)target;
         if (GUILayout.Button("Calculate grid"))
         {
-            //myScript.CalculateObstacles();
+            myScript.CreateGrid();
         }
     }
 }

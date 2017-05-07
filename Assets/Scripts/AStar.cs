@@ -7,17 +7,21 @@ public static class AStar
 
     public static List<Node> openList = new List<Node>();
     public static List<Node> closedList = new List<Node>();
-
+    public static bool pathFound;
     public static int numberOfnodes;
-    public static int numberOfClosednodes;
-    public static List<Vector3> list;
+
 
 
     public static List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
     {
         openList.Clear();
         closedList.Clear();
+        pathFound = false;
 
+        //RaycastHit2D hit = Physics2D.Raycast(startPos, targetPos, Grid.instance.unwalkableMask);
+        //if (hit.collider != null) {
+        //    Debug.Log("Hit?");
+        //}
 
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
@@ -49,6 +53,7 @@ public static class AStar
 
             if (node == targetNode)
             {
+                pathFound = true;
                 return RetracePath(startNode, targetNode);
             }
 
@@ -78,6 +83,7 @@ public static class AStar
             }
         }
         Debug.Log("Path not found");
+
         return null;
     }
 

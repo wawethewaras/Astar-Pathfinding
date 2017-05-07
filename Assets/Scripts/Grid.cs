@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class Grid : MonoBehaviour
 {
@@ -39,7 +40,7 @@ public class Grid : MonoBehaviour
         CreateGrid();
     }
 
-    void CreateGrid()
+    public void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeZ];
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
@@ -49,7 +50,11 @@ public class Grid : MonoBehaviour
             for (int z = 0; z < gridSizeZ; z++)
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (z * nodeDiameter + nodeRadius);
-                bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
+                bool walkable = true;
+                if (colliders.Length > 0) {
+                    walkable = false;
+                }
                 grid[x, z] = new Node(walkable, worldPoint, x, z);
             }
         }
@@ -109,20 +114,36 @@ public class Grid : MonoBehaviour
                     Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
             }
+            if (AStar.pathFound) {
+                //Shows nodes added to open list
+                Gizmos.color = Color.yellow;
+                for (int i = 0; i < AStar.openList.Count; i++)
+                {
+                    Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one);
 
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < AStar.openList.Count; i++)
-            {
-                Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one);
+                }
+                //Shows nodes added to closed list
+                Gizmos.color = Color.red;
+                for (int i = 0; i < AStar.closedList.Count; i++)
+                {
+                    Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * 0.3f);
 
+                }
+
+                //Draws line from node to it's parent
+                Gizmos.color = Color.green;
+                for (int i = 0; i < AStar.closedList.Count; i++)
+                {
+                    if (AStar.closedList[i].parent != null)
+                    {
+                        Gizmos.DrawLine(AStar.closedList[i].worldPosition, AStar.closedList[i].parent.worldPosition);
+                    }
+
+                }
             }
-            Gizmos.color = Color.red;
-            for (int i = 0; i < AStar.closedList.Count; i++)
-            {
-                Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * 0.3f);
 
-            }
 
         }
     }
 }
+
