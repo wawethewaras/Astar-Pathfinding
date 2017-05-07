@@ -8,8 +8,17 @@ public static class AStar
     public static List<Node> openList = new List<Node>();
     public static List<Node> closedList = new List<Node>();
 
+    public static int numberOfnodes;
+    public static int numberOfClosednodes;
+    public static List<Vector3> list;
+
+
     public static List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
     {
+        openList.Clear();
+        closedList.Clear();
+
+
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
 
@@ -35,7 +44,9 @@ public static class AStar
             openSet.Remove(node);
             closedSet.Add(node);
             //For counting path
-            closedList.Add(startNode);
+            closedList.Add(node);
+            numberOfnodes++;
+
             if (node == targetNode)
             {
                 return RetracePath(startNode, targetNode);
@@ -55,10 +66,14 @@ public static class AStar
                     neighbour.hCost = GetDistance(neighbour, targetNode);
                     neighbour.parent = node;
 
-                    if (!openSet.Contains(neighbour))
+                    if (!openSet.Contains(neighbour)) {
                         openSet.Add(neighbour);
-                    //For counting path
-                    openList.Add(startNode);
+                        //For counting path
+                        openList.Add(neighbour);
+                        numberOfnodes++;
+                    }
+
+
                 }
             }
         }

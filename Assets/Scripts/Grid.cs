@@ -30,6 +30,8 @@ public class Grid : MonoBehaviour
     public bool showGrid;
     public List<Node> path;
 
+
+
     void Awake()
     {
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
@@ -107,6 +109,20 @@ public class Grid : MonoBehaviour
                     Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
             }
+
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < AStar.openList.Count; i++)
+            {
+                Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one);
+
+            }
+            Gizmos.color = Color.red;
+            for (int i = 0; i < AStar.closedList.Count; i++)
+            {
+                Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * 0.3f);
+
+            }
+
         }
     }
 }

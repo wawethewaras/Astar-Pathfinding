@@ -68,7 +68,8 @@ public class CountPath : MonoBehaviour
             pathArray = AStar.FindPath(startPos.position, endPos.position);
             sw.Stop();
             print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
-
+            print(AStar.numberOfnodes);
+            AStar.numberOfnodes = 0;
             if (pathArray == null) {
                 return;
             }
@@ -104,6 +105,7 @@ public class CountPath : MonoBehaviour
             while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i].worldPosition) {
                 startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i].worldPosition, Time.deltaTime* movespeed);
                 if (startPos.transform.position == pathArray[i].worldPosition) {
+
                     //Debug.Log("Goal reaced");
                 }
                 yield return null;
