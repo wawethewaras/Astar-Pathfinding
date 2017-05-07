@@ -14,8 +14,11 @@ public class Grid : MonoBehaviour
             {
                 s_Instance = FindObjectOfType(typeof(Grid))
                 as Grid;
-                if (s_Instance == null)
+                if (s_Instance == null) {
                     Debug.Log("Could not locate a GridManager object. \n You have to have exactly one GridManager in the scene.");
+                    Debug.Break();
+                }
+
             }
             return s_Instance;
         }
@@ -53,13 +56,10 @@ public class Grid : MonoBehaviour
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (z * nodeDiameter + nodeRadius);
                 bool walkable = true;
 
-                //Precalculate obstacles
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
-                if (colliders.Length > 0)
-                {
-                    walkable = false;
-                }
                 grid[x, z] = new Node(walkable, worldPoint, x, z);
+
+                ////Precalculate obstacles
+                //AStar.CheckIfNodeIsObstacle(grid[x, z]);
             }
         }
     }
@@ -81,7 +81,6 @@ public class Grid : MonoBehaviour
                 Node newNode = grid[checkX, checkY];
                 //Calculate obstacles while creating path
                 AStar.CheckIfNodeIsObstacle(newNode);
-
                 if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeZ)
                 {
                     //Prevent corner cutting

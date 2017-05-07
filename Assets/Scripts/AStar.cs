@@ -39,7 +39,7 @@ public static class AStar
         openSet.Add(startNode);
         //For counting path
         openList.Add(startNode);
-
+        Grid.instance.GetNeighbours(startNode);
 
         while (openSet.Count > 0)
         {
