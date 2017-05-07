@@ -29,7 +29,7 @@ public class Grid : MonoBehaviour
     Node[,] grid;
 
     float nodeDiameter { get { return nodeRadius * 2; } }
-    int gridSizeX, gridSizeZ;
+    int gridSizeX, gridSizeY;
 
     public bool showGrid;
     public List<Node> path;
@@ -40,26 +40,24 @@ public class Grid : MonoBehaviour
     void Awake()
     {
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
-        gridSizeZ = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
     }
 
     public void CreateGrid()
     {
-        grid = new Node[gridSizeX, gridSizeZ];
+        grid = new Node[gridSizeX, gridSizeY];
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
-
         for (int x = 0; x < gridSizeX; x++)
         {
-            for (int z = 0; z < gridSizeZ; z++)
+            for (int y = 0; y < gridSizeY; y++)
             {
-                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (z * nodeDiameter + nodeRadius);
+                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
                 bool walkable = true;
-
-                grid[x, z] = new Node(walkable, worldPoint, x, z);
-
+                //print(worldPoint);
+                grid[x, y] = new Node(walkable, worldPoint, x, y);
                 ////Precalculate obstacles
-                //AStar.CheckIfNodeIsObstacle(grid[x, z]);
+                AStar.CheckIfNodeIsObstacle(grid[x, y]);
             }
         }
     }
@@ -78,11 +76,12 @@ public class Grid : MonoBehaviour
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
 
-                Node newNode = grid[checkX, checkY];
-                //Calculate obstacles while creating path
-                AStar.CheckIfNodeIsObstacle(newNode);
-                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeZ)
+
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
+                    Node newNode = grid[checkX, checkY];
+                    //Calculate obstacles while creating path
+                    AStar.CheckIfNodeIsObstacle(newNode);
                     //Prevent corner cutting
                     if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false))
                     {
@@ -101,28 +100,29 @@ public class Grid : MonoBehaviour
 
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
-        float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-        float percentZ = (worldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;
+        float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
+        float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
+        float percentX = (positionOfNodeInGridX + gridWorldSize.x/2) / gridWorldSize.x;
+        float percentY = (positionOfNodeInGridY + gridWorldSize.y/2) / gridWorldSize.y;
         percentX = Mathf.Clamp01(percentX);
-        percentZ = Mathf.Clamp01(percentZ);
-
+        percentY = Mathf.Clamp01(percentY);
         int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-        int z = Mathf.RoundToInt((gridSizeZ - 1) * percentZ);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        ////If target node is inside collider return nearby node
+        //if (grid[x, z].walkable == false)
+        //{
+        //    List<Node> neigours = GetNeighbours(grid[x, z]);
+        //    foreach (Node n in neigours)
+        //    {
+        //        if (n.walkable)
+        //        {
+        //            return n;
+        //        }
+        //    }
+        //}
+        //print(grid[x, y].worldPosition);
 
-        //If target node is inside collider return nearby node
-        if (grid[x, z].walkable == false)
-        {
-            List<Node> neigours = GetNeighbours(grid[x, z]);
-            foreach (Node n in neigours)
-            {
-                if (n.walkable)
-                {
-                    return n;
-                }
-            }
-        }
-
-        return grid[x, z];
+        return grid[x, y];
     }
 
 
@@ -147,14 +147,14 @@ public class Grid : MonoBehaviour
                 Gizmos.color = Color.yellow;
                 for (int i = 0; i < AStar.openList.Count; i++)
                 {
-                    Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one);
+                    Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one * (nodeDiameter - .1f));
 
                 }
                 //Shows nodes added to closed list
                 Gizmos.color = Color.red;
                 for (int i = 0; i < AStar.closedList.Count; i++)
                 {
-                    Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * 0.3f);
+                    Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * (nodeDiameter - .1f) * 0.3f);
 
                 }
 

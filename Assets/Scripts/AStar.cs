@@ -17,7 +17,7 @@ public static class AStar
         closedList.Clear();
         pathFound = false;
 
-        
+
 
         //RaycastHit2D hit = Physics2D.Raycast(startPos, targetPos, Grid.instance.unwalkableMask);
         //if (hit.collider != null) {
@@ -26,7 +26,6 @@ public static class AStar
 
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
-
         Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
         if (colliders.Length > 0 || targetNode.walkable == false)
         {

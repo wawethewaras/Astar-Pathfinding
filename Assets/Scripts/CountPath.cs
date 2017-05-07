@@ -25,7 +25,6 @@ public class CountPath : MonoBehaviour
 
     public bool showCalculatedObstacles;
 
-    public float nextWaypointDistance;
 
 
     void Start()
@@ -58,8 +57,11 @@ public class CountPath : MonoBehaviour
 
     public void FindPath()
     {
-        startPos = startPos.transform;
-        endPos = endPos.transform;
+        if (startPos == null || endPos == null) {
+            print("Missing start position or endposition");
+            return;
+        }
+
 
         if (endPos.position != endPosition) {
             endPosition = endPos.position;
