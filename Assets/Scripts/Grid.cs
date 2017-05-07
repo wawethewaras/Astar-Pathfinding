@@ -50,11 +50,13 @@ public class Grid : MonoBehaviour
             for (int z = 0; z < gridSizeZ; z++)
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (z * nodeDiameter + nodeRadius);
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
                 bool walkable = true;
-                if (colliders.Length > 0) {
-                    walkable = false;
-                }
+
+                //Precalculate obstacles
+                //Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
+                //if (colliders.Length > 0) {
+                //    walkable = false;
+                //}
                 grid[x, z] = new Node(walkable, worldPoint, x, z);
             }
         }

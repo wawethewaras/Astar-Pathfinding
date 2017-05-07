@@ -18,6 +18,8 @@ public static class AStar
         closedList.Clear();
         pathFound = false;
 
+        
+
         //RaycastHit2D hit = Physics2D.Raycast(startPos, targetPos, Grid.instance.unwalkableMask);
         //if (hit.collider != null) {
         //    Debug.Log("Hit?");
@@ -25,6 +27,13 @@ public static class AStar
 
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+        if (colliders.Length > 0 || targetNode.walkable == false)
+        {
+            Debug.Log("Goal inside collider");
+            return null;
+        }
 
         List<Node> openSet = new List<Node>();
         List<Node> closedSet = new List<Node>();
@@ -59,6 +68,16 @@ public static class AStar
 
             foreach (Node neighbour in Grid.instance.GetNeighbours(node))
             {
+                //Calculate obstacles while creating path
+                Collider2D[] goalIsInsideCollider = Physics2D.OverlapCircleAll(neighbour.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+                if (goalIsInsideCollider.Length > 0)
+                {
+                    neighbour.walkable = false;
+                }
+                else {
+                    neighbour.walkable = true;
+                }
+
                 if (!neighbour.walkable || closedSet.Contains(neighbour))
                 {
                     continue;
