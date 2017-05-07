@@ -31,6 +31,7 @@ public class Grid : MonoBehaviour
     public bool showGrid;
     public List<Node> path;
 
+    public bool cutCorners;
 
 
     void Awake()
@@ -53,10 +54,11 @@ public class Grid : MonoBehaviour
                 bool walkable = true;
 
                 //Precalculate obstacles
-                //Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
-                //if (colliders.Length > 0) {
-                //    walkable = false;
-                //}
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPoint, nodeRadius, unwalkableMask);
+                if (colliders.Length > 0)
+                {
+                    walkable = false;
+                }
                 grid[x, z] = new Node(walkable, worldPoint, x, z);
             }
         }
@@ -68,17 +70,28 @@ public class Grid : MonoBehaviour
 
         for (int x = -1; x <= 1; x++)
         {
-            for (int z = -1; z <= 1; z++)
+            for (int y = -1; y <= 1; y++)
             {
-                if (x == 0 && z == 0)
+                if (x == 0 && y == 0)
                     continue;
 
                 int checkX = node.gridX + x;
-                int checkZ = node.gridY + z;
+                int checkY = node.gridY + y;
 
-                if (checkX >= 0 && checkX < gridSizeX && checkZ >= 0 && checkZ < gridSizeZ)
+                Node newNode = grid[checkX, checkY];
+                //Calculate obstacles while creating path
+                AStar.CheckIfNodeIsObstacle(newNode);
+
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeZ)
                 {
-                    neighbours.Add(grid[checkX, checkZ]);
+                    //Prevent corner cutting
+                    if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false))
+                    {
+                        continue;
+                    }
+                    else {
+                        neighbours.Add(newNode);
+                    }
                 }
             }
         }
@@ -96,6 +109,20 @@ public class Grid : MonoBehaviour
 
         int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
         int z = Mathf.RoundToInt((gridSizeZ - 1) * percentZ);
+
+        //If target node is inside collider return nearby node
+        if (grid[x, z].walkable == false)
+        {
+            List<Node> neigours = GetNeighbours(grid[x, z]);
+            foreach (Node n in neigours)
+            {
+                if (n.walkable)
+                {
+                    return n;
+                }
+            }
+        }
+
         return grid[x, z];
     }
 

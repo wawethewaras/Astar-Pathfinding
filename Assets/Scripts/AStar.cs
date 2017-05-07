@@ -8,7 +8,6 @@ public static class AStar
     public static List<Node> openList = new List<Node>();
     public static List<Node> closedList = new List<Node>();
     public static bool pathFound;
-    public static int numberOfnodes;
 
 
 
@@ -58,7 +57,6 @@ public static class AStar
             closedSet.Add(node);
             //For counting path
             closedList.Add(node);
-            numberOfnodes++;
 
             if (node == targetNode)
             {
@@ -69,14 +67,7 @@ public static class AStar
             foreach (Node neighbour in Grid.instance.GetNeighbours(node))
             {
                 //Calculate obstacles while creating path
-                Collider2D[] goalIsInsideCollider = Physics2D.OverlapCircleAll(neighbour.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-                if (goalIsInsideCollider.Length > 0)
-                {
-                    neighbour.walkable = false;
-                }
-                else {
-                    neighbour.walkable = true;
-                }
+                CheckIfNodeIsObstacle(neighbour);
 
                 if (!neighbour.walkable || closedSet.Contains(neighbour))
                 {
@@ -94,7 +85,6 @@ public static class AStar
                         openSet.Add(neighbour);
                         //For counting path
                         openList.Add(neighbour);
-                        numberOfnodes++;
                     }
 
 
@@ -124,6 +114,18 @@ public static class AStar
         return path;
 
 
+    }
+
+    public static void CheckIfNodeIsObstacle(Node node) {
+        ////Calculate obstacles while creating path
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(node.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+        if (colliders.Length > 0)
+        {
+            node.walkable = false;
+        }
+        else {
+            node.walkable = true;
+        }
     }
 
     static int GetDistance(Node nodeA, Node nodeB)

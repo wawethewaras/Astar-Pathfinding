@@ -68,8 +68,7 @@ public class CountPath : MonoBehaviour
             pathArray = AStar.FindPath(startPos.position, endPos.position);
             sw.Stop();
             print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
-            print(AStar.numberOfnodes);
-            AStar.numberOfnodes = 0;
+            print("Number of nodes counted " + AStar.openList.Count);
             if (pathArray == null) {
                 return;
             }
