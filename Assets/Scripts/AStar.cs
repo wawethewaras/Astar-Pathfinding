@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public static class AStar
 {
 
+    //For showing calculated path. Should be removed from final version.
     public static List<Node> openList = new List<Node>();
     public static List<Node> closedList = new List<Node>();
     public static bool pathFound;
@@ -18,14 +19,14 @@ public static class AStar
         pathFound = false;
 
 
-
-        //RaycastHit2D hit = Physics2D.Raycast(startPos, targetPos, Grid.instance.unwalkableMask);
-        //if (hit.collider != null) {
-        //    Debug.Log("Hit?");
-        //}
-
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
+        Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
+        List<Node> closedSet = new List<Node>();
+
+
+
+        //Check if goal is inside collider
         Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
         if (colliders.Length > 0 || targetNode.walkable == false)
         {
@@ -33,29 +34,28 @@ public static class AStar
             return null;
         }
 
-        Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
-        List<Node> closedSet = new List<Node>();
+        //Check if can see target and is there need to calculate path
+        bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
+        if (cantSeeTarget == false)
+        {
+            Debug.Log("Can see target");
+            List<Node> path = new List<Node>(2);
+            path.Add(startNode);
+            path.Add(targetNode);
+            return path;
+        }
+
         openSet.Add(startNode);
-        //For counting path
+        //For showing path counting 
         openList.Add(startNode);
         Grid.instance.GetNeighbours(startNode);
 
         while (openSet.Count > 0)
         {
             Node node = openSet.RemoveFirst();
-            //Node node = openSet[0];
-            //for (int i = 1; i < openSet.Count; i++)
-            //{
-            //    if (openSet[i].fCost < node.fCost || openSet[i].fCost == node.fCost)
-            //    {
-            //        if (openSet[i].hCost < node.hCost)
-            //            node = openSet[i];
-            //    }
-            //}
-
-            //openSet.Remove(node);
             closedSet.Add(node);
-            //For counting path
+
+            //For showing path counting 
             closedList.Add(node);
 
             if (node == targetNode)
@@ -84,7 +84,7 @@ public static class AStar
                     if (!openSet.Contains(neighbour))
                     {
                         openSet.Add(neighbour);
-                        //For counting path
+                        //For showing path counting 
                         openList.Add(neighbour);
                     }
                     else {

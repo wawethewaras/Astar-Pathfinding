@@ -35,7 +35,13 @@ public class CountPath : MonoBehaviour
     }
     void Update()
     {
-
+        if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
+        {
+            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
+        }
+        else {
+            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
+        }
         //Count path more often if target is near
         if (autoCountPath)
         {

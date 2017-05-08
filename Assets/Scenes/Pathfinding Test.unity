@@ -494,7 +494,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 310692849}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46, y: 37.3, z: 0}
+  m_LocalPosition: {x: -3.9, y: -9.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 145589129}
@@ -1153,7 +1153,7 @@ MonoBehaviour:
     m_Bits: 256
   gridWorldSize: {x: 100, y: 100}
   nodeRadius: 1
-  showGrid: 1
+  showGrid: 0
   cutCorners: 0
 --- !u!4 &1671852229
 Transform:
