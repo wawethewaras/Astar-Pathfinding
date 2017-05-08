@@ -33,7 +33,7 @@ public static class AStar
             return null;
         }
 
-        List<Node> openSet = new List<Node>();
+        Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         List<Node> closedSet = new List<Node>();
         openSet.Add(startNode);
         //For counting path
@@ -42,17 +42,18 @@ public static class AStar
 
         while (openSet.Count > 0)
         {
-            Node node = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
-            {
-                if (openSet[i].fCost < node.fCost || openSet[i].fCost == node.fCost)
-                {
-                    if (openSet[i].hCost < node.hCost)
-                        node = openSet[i];
-                }
-            }
+            Node node = openSet.RemoveFirst();
+            //Node node = openSet[0];
+            //for (int i = 1; i < openSet.Count; i++)
+            //{
+            //    if (openSet[i].fCost < node.fCost || openSet[i].fCost == node.fCost)
+            //    {
+            //        if (openSet[i].hCost < node.hCost)
+            //            node = openSet[i];
+            //    }
+            //}
 
-            openSet.Remove(node);
+            //openSet.Remove(node);
             closedSet.Add(node);
             //For counting path
             closedList.Add(node);
@@ -80,10 +81,14 @@ public static class AStar
                     neighbour.hCost = GetDistance(neighbour, targetNode);
                     neighbour.parent = node;
 
-                    if (!openSet.Contains(neighbour)) {
+                    if (!openSet.Contains(neighbour))
+                    {
                         openSet.Add(neighbour);
                         //For counting path
                         openList.Add(neighbour);
+                    }
+                    else {
+                        openSet.UpdateItem(neighbour);
                     }
 
 

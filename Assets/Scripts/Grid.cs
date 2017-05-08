@@ -36,6 +36,11 @@ public class Grid : MonoBehaviour
 
     public bool cutCorners;
 
+    public int Maxsize {
+        get {
+            return gridSizeX * gridSizeY;
+        }
+    }
 
     void Awake()
     {
