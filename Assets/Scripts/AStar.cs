@@ -34,16 +34,16 @@ public static class AStar
             return null;
         }
 
-        ////Check if can see target and is there need to calculate path
-        //bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
-        //if (cantSeeTarget == false)
-        //{
-        //    Debug.Log("Can see target");
-        //    List<Node> path = new List<Node>(2);
-        //    path.Add(startNode);
-        //    path.Add(targetNode);
-        //    return path;
-        //}
+        //Check if can see target and is there need to calculate path
+        bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
+        if (cantSeeTarget == false)
+        {
+            Debug.Log("Can see target");
+            List<Node> path = new List<Node>(2);
+            path.Add(startNode);
+            path.Add(targetNode);
+            return path;
+        }
 
         openSet.Add(startNode);
         //For showing path counting 

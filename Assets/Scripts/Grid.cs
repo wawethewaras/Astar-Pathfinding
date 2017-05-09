@@ -23,6 +23,7 @@ public class Grid : MonoBehaviour
             return s_Instance;
         }
     }
+    public Transform player;
     public LayerMask unwalkableMask;
     public TerrainType[] walkableRegions;
     public LayerMask walkableMask;
@@ -55,7 +56,6 @@ public class Grid : MonoBehaviour
             walkableMask.value |= region.terrainMask.value;
             walkableRegionsDictonary.Add(Mathf.RoundToInt(Mathf.Log(region.terrainMask.value,2)),region.TerrainPenalty);
         }
-        print(walkableMask.value);
         CreateGrid();
     }
 
@@ -77,7 +77,6 @@ public class Grid : MonoBehaviour
 
                 if (Physics2D.Linecast(worldPoint, Vector2.one, walkableMask)) {
                     walkableRegionsDictonary.TryGetValue(hit.collider.gameObject.layer,out movementPenalty);
-                    print(hit.collider.gameObject.layer);
                 }
 
                 grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
@@ -134,21 +133,24 @@ public class Grid : MonoBehaviour
         int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
         int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
         ////If target node is inside collider return nearby node
-        //if (grid[x, z].walkable == false)
+        //if (grid[x, y].walkable == false)
         //{
-        //    List<Node> neigours = GetNeighbours(grid[x, z]);
+        //    print("This happened");
+        //    List<Node> neigours = GetNeighbours(grid[x, y]);
         //    foreach (Node n in neigours)
         //    {
+        //        print(n.walkable);
         //        if (n.walkable)
         //        {
         //            return n;
         //        }
         //    }
         //}
-        //print(grid[x, y].worldPosition);
 
         return grid[x, y];
     }
+
+
 
 
     void OnDrawGizmos()
@@ -166,6 +168,9 @@ public class Grid : MonoBehaviour
                             Gizmos.color = Color.black;
                     Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
+
+                Gizmos.color = Color.blue;
+                Gizmos.DrawCube(NodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
             if (AStar.pathFound) {
                 //Shows nodes added to open list
@@ -193,8 +198,8 @@ public class Grid : MonoBehaviour
                     }
 
                 }
-            }
 
+            }
 
         }
     }
