@@ -104,16 +104,12 @@ public static class AStar
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
-        float pathLength = 0;
         while (currentNode != startNode)
         {
             path.Add(currentNode);
-            pathLength++;
-
             currentNode = currentNode.parent;
         }
         path.Reverse();
-        Debug.Log("Path lenght: " + pathLength);
         Grid.instance.path = path;
         return path;
 

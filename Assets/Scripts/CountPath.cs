@@ -75,20 +75,26 @@ public class CountPath : MonoBehaviour
             sw.Start();
             pathArray = AStar.FindPath(startPos.position, endPos.position);
             sw.Stop();
-            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms");
-            print("Number of nodes counted " + AStar.openList.Count);
+
             if (pathArray == null) {
                 return;
             }
+            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathArray.Count);
             //Debug.Log("New path calculated");
-            if (currentPath != null)
-            {
-                StopCoroutine(currentPath);
-            }
-            currentPath = movepath(pathArray);
-            StartCoroutine(currentPath);
+            OnPathFound();
         }
 
+
+    }
+
+    public void OnPathFound()
+    {
+        if (currentPath != null)
+        {
+            StopCoroutine(currentPath);
+        }
+        currentPath = movepath(pathArray);
+        StartCoroutine(currentPath);
 
     }
 
@@ -127,40 +133,4 @@ public class CountPath : MonoBehaviour
         yield return null;
     }
 
-    //void OnDrawGizmos()
-    //{
-    //    if (pathArray == null)
-    //        return;
-    //    if (pathArray.Count > 0)
-    //    {
-    //        int index = 1;
-    //        foreach (SebNode node in pathArray)
-    //        {
-    //            if (index < pathArray.Count)
-    //            {
-    //                SebNode nextNode = (SebNode)pathArray[index];
-    //                UnityEngine.Debug.DrawLine(node.worldPosition, nextNode.worldPosition,
-    //                Color.green);
-    //                index++;
-    //            }
-    //        }
-    //    }
-    //    if (showCalculatedObstacles)
-    //    {
-    //        Gizmos.color = Color.yellow;
-    //        for (int i = 0; i < SebPathfinding.openSet.Count; i++)
-    //        {
-    //            Gizmos.DrawCube(SebPathfinding.openSet[i].worldPosition, Vector3.one);
-
-    //        }
-    //        Gizmos.color = Color.red;
-    //        for (int i = 0; i < SebPathfinding.closedSet.Count; i++)
-    //        {
-    //            Gizmos.DrawCube(SebPathfinding.closedSet[i].worldPosition, Vector3.one * 0.3f);
-
-    //        }
-    //    }
-
-
-    //}
 }
