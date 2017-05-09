@@ -24,6 +24,10 @@ public class Grid : MonoBehaviour
         }
     }
     public LayerMask unwalkableMask;
+    public TerrainType[] walkableRegions;
+    public LayerMask walkableMask;
+    Dictionary<int, int> walkableRegionsDictonary = new Dictionary<int, int>();
+
     public Vector2 gridWorldSize;
     public float nodeRadius;
     Node[,] grid;
@@ -46,6 +50,12 @@ public class Grid : MonoBehaviour
     {
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+        foreach (TerrainType region in walkableRegions) {
+            walkableMask.value |= region.terrainMask.value;
+            walkableRegionsDictonary.Add(Mathf.RoundToInt(Mathf.Log(region.terrainMask.value,2)),region.TerrainPenalty);
+        }
+        print(walkableMask.value);
         CreateGrid();
     }
 
@@ -60,7 +70,17 @@ public class Grid : MonoBehaviour
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
                 bool walkable = true;
                 //print(worldPoint);
-                grid[x, y] = new Node(walkable, worldPoint, x, y);
+                int movementPenalty = 0;
+
+                //Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
+                RaycastHit2D hit = Physics2D.Linecast(worldPoint, Vector2.one, walkableMask);
+
+                if (Physics2D.Linecast(worldPoint, Vector2.one, walkableMask)) {
+                    walkableRegionsDictonary.TryGetValue(hit.collider.gameObject.layer,out movementPenalty);
+                    print(hit.collider.gameObject.layer);
+                }
+
+                grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
                 ////Precalculate obstacles
                 AStar.CheckIfNodeIsObstacle(grid[x, y]);
             }
@@ -178,5 +198,12 @@ public class Grid : MonoBehaviour
 
         }
     }
+
+    [System.Serializable]
+    public class TerrainType {
+        public LayerMask terrainMask;
+        public int TerrainPenalty;
+    }
+
 }
 

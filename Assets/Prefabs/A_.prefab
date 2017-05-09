@@ -54,6 +54,15 @@ MonoBehaviour:
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 256
+  walkableRegions:
+  - terrainMask:
+      serializedVersion: 2
+      m_Bits: 4096
+    TerrainPenalty: 0
+  - terrainMask:
+      serializedVersion: 2
+      m_Bits: 8192
+    TerrainPenalty: 5
   gridWorldSize: {x: 100, y: 100}
   nodeRadius: 1
   showGrid: 0
