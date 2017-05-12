@@ -8,7 +8,8 @@ public class CountPath : MonoBehaviour
     public Transform startPos, endPos;
     public Node startNode { get; set; }
     public Node goalNode { get; set; }
-    public List<Node> pathArray;
+    //public List<Node> pathArray;
+    public Vector3[] pathArray;
 
     private float elapsedTime = 0.0f;
     //Interval time between pathfinding
@@ -29,7 +30,7 @@ public class CountPath : MonoBehaviour
 
     void Start()
     {
-        pathArray = new List<Node>();
+        //pathArray = new List<Node>();
         startPos = transform;
         FindPath();
     }
@@ -79,7 +80,7 @@ public class CountPath : MonoBehaviour
             if (pathArray == null) {
                 return;
             }
-            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathArray.Count);
+            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathArray.Length);
             //Debug.Log("New path calculated");
             OnPathFound();
         }
@@ -99,15 +100,15 @@ public class CountPath : MonoBehaviour
     }
 
 
-    public IEnumerator movepath(List<Node> pathArray) {
+    public IEnumerator movepath(Vector3[] pathArray) {
         int security = 0;
         int i = 0;
-        if (pathArray == null || pathArray.Count <= 1)
+        if (pathArray == null || pathArray.Length <= 1)
         {
             yield return null;
         }
-        for (int j = 0; j < pathArray.Count; j++) {
-            if (i == 0 && pathArray.Count > 1)
+        for (int j = 0; j < pathArray.Length; j++) {
+            if (i == 0 && pathArray.Length > 1)
             {
                 i = 1;
             }
@@ -115,9 +116,9 @@ public class CountPath : MonoBehaviour
             else {
                 i = j;
             }
-            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i].worldPosition) {
-                startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i].worldPosition, Time.deltaTime* movespeed);
-                if (startPos.transform.position == pathArray[i].worldPosition) {
+            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i]) {
+                startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime* movespeed);
+                if (startPos.transform.position == pathArray[i]) {
 
                     //Debug.Log("Goal reaced");
                 }

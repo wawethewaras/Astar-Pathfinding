@@ -12,7 +12,7 @@ public static class AStar
 
 
 
-    public static List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
+    public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
     {
         openList.Clear();
         closedList.Clear();
@@ -22,28 +22,28 @@ public static class AStar
         Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
-        List<Node> closedSet = new List<Node>();
+        Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
 
 
-        //Check if goal is inside collider
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        if (colliders.Length > 0 || targetNode.walkable == false)
-        {
-            Debug.Log("Goal inside collider");
-            return null;
-        }
+        ////Check if goal is inside collider
+        //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+        //if (colliders.Length > 0 || targetNode.walkable == false)
+        //{
+        //    Debug.Log("Goal inside collider");
+        //    return null;
+        //}
 
-        //Check if can see target and is there need to calculate path
-        bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
-        if (cantSeeTarget == false)
-        {
-            Debug.Log("Can see target");
-            List<Node> path = new List<Node>(2);
-            path.Add(startNode);
-            path.Add(targetNode);
-            return path;
-        }
+        ////Check if can see target and is there need to calculate path
+        //bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
+        //if (cantSeeTarget == false)
+        //{
+        //    Debug.Log("Can see target");
+        //    List<Node> path = new List<Node>(2);
+        //    path.Add(startNode);
+        //    path.Add(targetNode);
+        //    return path;
+        //}
 
         openSet.Add(startNode);
         //For showing path counting 
@@ -67,7 +67,7 @@ public static class AStar
             foreach (Node neighbour in Grid.instance.GetNeighbours(node))
             {
                 //Calculate obstacles while creating path
-                CheckIfNodeIsObstacle(neighbour);
+                //CheckIfNodeIsObstacle(neighbour);
 
                 if (!neighbour.walkable || closedSet.Contains(neighbour))
                 {
@@ -100,7 +100,7 @@ public static class AStar
         return null;
     }
 
-    public static List<Node> RetracePath(Node startNode, Node endNode)
+    public static Vector3[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
@@ -111,9 +111,27 @@ public static class AStar
         }
         path.Reverse();
         Grid.instance.path = path;
-        return path;
+        
+        return  SimplifyPath(path);
 
 
+    }
+
+    public static Vector3[] SimplifyPath(List<Node> path)
+    {
+        List<Vector3> waypoints = new List<Vector3>();
+        Vector2 directionOld = Vector2.zero;
+
+        for (int i = 1; i < path.Count; i++)
+        {
+            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+            if (directionNew != directionOld || i+1 == path.Count)
+            {
+                waypoints.Add(path[i].worldPosition);
+            }
+            directionOld = directionNew;
+        }
+        return waypoints.ToArray();
     }
 
     public static void CheckIfNodeIsObstacle(Node node) {

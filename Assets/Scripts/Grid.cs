@@ -105,7 +105,7 @@ public class Grid : MonoBehaviour
                 {
                     Node newNode = grid[checkX, checkY];
                     //Calculate obstacles while creating path
-                    AStar.CheckIfNodeIsObstacle(newNode);
+                    //AStar.CheckIfNodeIsObstacle(newNode);
                     //Prevent corner cutting
                     if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false || grid[checkX, checkY].walkable == false))
                     {
@@ -210,5 +210,20 @@ public class Grid : MonoBehaviour
         public int TerrainPenalty;
     }
 
+}
+
+[CustomEditor(typeof(Grid))]
+public class ObjectBuilderEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+
+        Grid myScript = (Grid)target;
+        if (GUILayout.Button("Build Object"))
+        {
+            myScript.CreateGrid();
+        }
+    }
 }
 
