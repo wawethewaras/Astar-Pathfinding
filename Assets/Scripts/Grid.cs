@@ -107,7 +107,7 @@ public class Grid : MonoBehaviour
                     //Calculate obstacles while creating path
                     AStar.CheckIfNodeIsObstacle(newNode);
                     //Prevent corner cutting
-                    if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false))
+                    if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false || grid[checkX, checkY].walkable == false))
                     {
                         continue;
                     }

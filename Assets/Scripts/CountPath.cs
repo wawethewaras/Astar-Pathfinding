@@ -30,7 +30,7 @@ public class CountPath : MonoBehaviour
     void Start()
     {
         pathArray = new List<Node>();
-        
+        startPos = transform;
         FindPath();
     }
     void Update()
