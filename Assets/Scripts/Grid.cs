@@ -86,10 +86,10 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public List<Node> GetNeighbours(Node node)
+    public Node[] GetNeighbours(Node node)
     {
-        List<Node> neighbours = new List<Node>();
-
+        Node[] neighbours = new Node[8];
+        int index = 0;
         for (int x = -1; x <= 1; x++)
         {
             for (int y = -1; y <= 1; y++)
@@ -104,6 +104,10 @@ public class Grid : MonoBehaviour
                 if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
                     Node newNode = grid[checkX, checkY];
+                    if (node.parent == newNode)
+                    {
+                        continue;
+                    }
                     //Calculate obstacles while creating path
                     //AStar.CheckIfNodeIsObstacle(newNode);
                     //Prevent corner cutting
@@ -112,7 +116,9 @@ public class Grid : MonoBehaviour
                         continue;
                     }
                     else {
-                        neighbours.Add(newNode);
+                        //neighbours.Add(newNode);
+                        neighbours[index] = newNode;
+                        index++;
                     }
                 }
             }

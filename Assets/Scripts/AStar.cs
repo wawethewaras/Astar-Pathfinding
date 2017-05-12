@@ -26,13 +26,13 @@ public static class AStar
 
 
 
-        ////Check if goal is inside collider
+        //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        //if (colliders.Length > 0 || targetNode.walkable == false)
-        //{
-        //    Debug.Log("Goal inside collider");
-        //    return null;
-        //}
+        if (/*colliders.Length > 0 || */targetNode.walkable == false)
+        {
+            Debug.Log("Goal inside collider");
+            return null;
+        }
 
         ////Check if can see target and is there need to calculate path
         //bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
@@ -63,9 +63,15 @@ public static class AStar
                 pathFound = true;
                 return RetracePath(startNode, targetNode);
             }
-
-            foreach (Node neighbour in Grid.instance.GetNeighbours(node))
+            Node[] neighbours = Grid.instance.GetNeighbours(node);
+            Node neighbour;
+            //foreach (Node neighbour in Grid.instance.GetNeighbours(node))
+            for (int i = 0; i < neighbours.Length; i++)
             {
+                neighbour = neighbours[i];
+                if (neighbour == null) {
+                    break;
+                }
                 //Calculate obstacles while creating path
                 //CheckIfNodeIsObstacle(neighbour);
 
@@ -73,7 +79,9 @@ public static class AStar
                 {
                     continue;
                 }
-
+                //if (node.parent == neighbour) {
+                //    continue;
+                //}
                 int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
                 if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                 {
@@ -148,11 +156,19 @@ public static class AStar
 
     static int GetDistance(Node nodeA, Node nodeB)
     {
-        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
-        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+        int dstX = Abs(nodeA.gridX - nodeB.gridX);
+        int dstY = Abs(nodeA.gridY - nodeB.gridY);
 
         if (dstX > dstY)
             return 14 * dstY + 10 * (dstX - dstY);
         return 14 * dstX + 10 * (dstY - dstX);
     }
+
+    public static int Abs(int value)
+    {
+        if (value >= 0)
+            return value;
+        return -value;
+    }
+
 }
