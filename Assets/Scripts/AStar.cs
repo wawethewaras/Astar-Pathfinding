@@ -10,6 +10,8 @@ public static class AStar
     public static List<Node> closedList = new List<Node>();
     public static bool pathFound;
 
+    //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional astar
+    private const float heurasticMultiplier = 2f;
 
 
     public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
@@ -24,8 +26,6 @@ public static class AStar
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
-
-
         //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
         if (/*colliders.Length > 0 || */targetNode.walkable == false)
@@ -39,9 +39,9 @@ public static class AStar
         //if (cantSeeTarget == false)
         //{
         //    Debug.Log("Can see target");
-        //    List<Node> path = new List<Node>(2);
-        //    path.Add(startNode);
-        //    path.Add(targetNode);
+        //    Vector3[] path = new Vector3[2];
+        //    path[0] = startPos;
+        //    path[1] = targetPos;
         //    return path;
         //}
 
@@ -86,7 +86,8 @@ public static class AStar
                 if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                 {
                     neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = GetDistance(neighbour, targetNode);
+                    //Heurastics have high value so algoritmin works bit more like Greedy best first
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode)*heurasticMultiplier);
                     neighbour.parent = node;
 
                     if (!openSet.Contains(neighbour))

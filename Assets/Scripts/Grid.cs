@@ -73,10 +73,21 @@ public class Grid : MonoBehaviour
                 int movementPenalty = 0;
 
                 //Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
-                RaycastHit2D hit = Physics2D.Linecast(worldPoint, Vector2.one, walkableMask);
+                Collider2D[] hit = Physics2D.OverlapAreaAll(worldPoint,Vector2.one* nodeRadius, walkableMask);
 
-                if (Physics2D.Linecast(worldPoint, Vector2.one, walkableMask)) {
-                    walkableRegionsDictonary.TryGetValue(hit.collider.gameObject.layer,out movementPenalty);
+                if (Physics2D.OverlapArea(worldPoint, Vector2.one, walkableMask))
+                {
+                    //walkableRegionsDictonary.TryGetValue(hit.collider.gameObject.layer,out movementPenalty);
+                    int newPenalty = 0;
+                    for (int i = 0; i < hit.Length; i++)
+                    {
+
+                        walkableRegionsDictonary.TryGetValue(hit[i].gameObject.layer, out newPenalty);
+                        if (newPenalty > movementPenalty)
+                        {
+                            movementPenalty = newPenalty;
+                        }
+                    }
                 }
 
                 grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);

@@ -80,7 +80,11 @@ public class CountPath : MonoBehaviour
             if (pathArray == null) {
                 return;
             }
-            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathArray.Length);
+            int pathLenght = 0;
+            for (int i = 0; i < pathArray.Length -1;i++) {
+                pathLenght += Mathf.RoundToInt( Vector3.Distance(pathArray[i], pathArray[i+1]));
+            }
+            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathLenght);
             //Debug.Log("New path calculated");
             OnPathFound();
         }
