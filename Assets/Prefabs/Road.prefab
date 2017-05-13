@@ -35,8 +35,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1735310599145890}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.8, y: -6, z: 0}
-  m_LocalScale: {x: 3.2993271, y: 11.904976, z: 0}
+  m_LocalPosition: {x: 13.2, y: 59, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -57,14 +57,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.09, y: 1.72}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 3.09, y: 1.72}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.09, y: 1.72}
+  m_Size: {x: 4, y: 4}
   m_EdgeRadius: 0
 --- !u!212 &212804451073202728
 SpriteRenderer:
@@ -99,7 +99,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8572b9737292431439ba7e4f4abb6be1, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.541}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

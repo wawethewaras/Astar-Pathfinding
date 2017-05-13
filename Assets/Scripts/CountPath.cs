@@ -36,13 +36,13 @@ public class CountPath : MonoBehaviour
     }
     void Update()
     {
-        if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
-        {
-            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
-        }
-        else {
-            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
-        }
+        //if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
+        //{
+        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
+        //}
+        //else {
+        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
+        //}
         //Count path more often if target is near
         if (autoCountPath)
         {
@@ -146,6 +146,19 @@ public class CountPath : MonoBehaviour
         }
 
         yield return null;
+    }
+
+    public void OnDrawGizmos()
+    {
+        if (pathArray != null)
+        {
+            for (int i = 0; i < pathArray.Length-1; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(pathArray[i], Vector3.one);
+                Gizmos.DrawLine(pathArray[i], pathArray[i+1]);
+            }
+        }
     }
 
 }

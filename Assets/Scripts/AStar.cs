@@ -138,7 +138,7 @@ public static class AStar
             currentNode = currentNode.parent;
         }
         path.Reverse();
-        Grid.instance.path = path;
+        //Grid.instance.path = path;
         
         return  SimplifyPath(path);
 
