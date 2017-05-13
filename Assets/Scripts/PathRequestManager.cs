@@ -5,17 +5,32 @@ using System;
 
 public class PathRequestManager : MonoBehaviour {
 
+    private static PathRequestManager s_Instance = null;
+    public static PathRequestManager instance
+    {
+        get
+        {
+            if (s_Instance == null)
+            {
+                s_Instance = FindObjectOfType(typeof(PathRequestManager))
+                as PathRequestManager;
+                if (s_Instance == null)
+                {
+                    Debug.Log("Could not locate a PathRequestManager object. \n You have to have exactly one PathRequestManager in the scene.");
+                    Debug.Break();
+                }
+
+            }
+            return s_Instance;
+        }
+    }
+
     Queue<PathRequest> pathRequestQueue = new Queue<PathRequest>();
     PathRequest currentPathRequest;
 
-    static PathRequestManager instance;
 
     bool isProcessingPath;
 
-    void Awake()
-    {
-        instance = this;
-    }
 
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
     {
@@ -30,7 +45,7 @@ public class PathRequestManager : MonoBehaviour {
         {
             currentPathRequest = pathRequestQueue.Dequeue();
             isProcessingPath = true;
-            AStar.FindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd);
+            AStar.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd, this);
         }
     }
 

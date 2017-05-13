@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 
 public static class AStar
 {
@@ -10,20 +12,28 @@ public static class AStar
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional astar
     private const float heurasticMultiplier = 2f;
 
-
-    public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
+    public static void StartFindPath(Vector3 startPos, Vector3 targetPos, MonoBehaviour requester)
     {
-        Node startNode = Grid.instance.PlayerNodeFromWorldPoint(startPos);
+        requester.StartCoroutine(FindPath(startPos, targetPos));
+    }
+
+    public static IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
+    {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
-
+        bool pathSuccess = false;
+        Vector3[] waypoints = new Vector3[0];
         //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
         if (/*colliders.Length > 0 || */targetNode.walkable == false)
         {
-            Debug.Log("Goal inside collider");
-            return null;
+            UnityEngine.Debug.Log("Goal inside collider");
+            yield return null;
         }
 
         ////Check if can see target and is there need to calculate path
@@ -59,8 +69,11 @@ public static class AStar
 
             if (node == targetNode)
             {
+                sw.Stop();
+                UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count);
                 Grid.pathFound = true;
-                return RetracePath(startNode, targetNode);
+                pathSuccess = true;
+                break;
             }
             Node[] neighbours = Grid.instance.GetNeighbours(node);
             Node neighbour;
@@ -106,9 +119,13 @@ public static class AStar
                 }
             }
         }
-        Debug.Log("Path not found");
+        yield return null;
 
-        return null;
+        if (pathSuccess)
+        {
+            waypoints = RetracePath(startNode, targetNode);
+        }
+        PathRequestManager.instance.FinishedProcessingPath(waypoints, pathSuccess);
     }
 
     public static Vector3[] RetracePath(Node startNode, Node endNode)

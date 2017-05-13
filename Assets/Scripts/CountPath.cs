@@ -76,10 +76,9 @@ public class CountPath : MonoBehaviour
             Grid.closedList.Clear();
             Grid.pathFound = false;
             endPosition = endPos.position;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            pathArray = AStar.FindPath(startPos.position, endPos.position);
-            sw.Stop();
+
+            PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
+
 
             if (pathArray == null) {
                 return;
@@ -88,22 +87,28 @@ public class CountPath : MonoBehaviour
             for (int i = 0; i < pathArray.Length -1;i++) {
                 pathLenght += Mathf.RoundToInt( Vector3.Distance(pathArray[i], pathArray[i+1]));
             }
-            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
+            //print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
             //Debug.Log("New path calculated");
-            OnPathFound();
+            //OnPathFound();
         }
 
 
     }
 
-    public void OnPathFound()
+
+    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
-        if (currentPath != null)
-        {
-            StopCoroutine(currentPath);
+        if (pathSuccessful) {
+            pathArray = newPath;
+
+            if (currentPath != null)
+            {
+                StopCoroutine(currentPath);
+            }
+            currentPath = movepath(pathArray);
+            StartCoroutine(currentPath);
         }
-        currentPath = movepath(pathArray);
-        StartCoroutine(currentPath);
+
 
     }
 
@@ -124,6 +129,7 @@ public class CountPath : MonoBehaviour
             else {
                 i = j;
             }
+
             while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i]) {
                 startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime* movespeed);
                 if (startPos.transform.position == pathArray[i]) {
