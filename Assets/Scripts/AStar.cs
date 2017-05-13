@@ -5,10 +5,7 @@ using System.Collections.Generic;
 public static class AStar
 {
 
-    //For showing calculated path. Should be removed from final version.
-    public static List<Node> openList = new List<Node>();
-    public static List<Node> closedList = new List<Node>();
-    public static bool pathFound;
+
 
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional astar
     private const float heurasticMultiplier = 2f;
@@ -16,13 +13,8 @@ public static class AStar
 
     public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        openList.Clear();
-        closedList.Clear();
-        pathFound = false;
-
-
-        Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
-        Node targetNode = Grid.instance.NodeFromWorldPoint(targetPos);
+        Node startNode = Grid.instance.PlayerNodeFromWorldPoint(startPos);
+        Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
@@ -47,7 +39,10 @@ public static class AStar
 
         openSet.Add(startNode);
         //For showing path counting 
-        openList.Add(startNode);
+        if (Grid.instance.showGrid) {
+            Grid.openList.Add(startNode);
+        }
+
         Grid.instance.GetNeighbours(startNode);
 
         while (openSet.Count > 0)
@@ -56,11 +51,15 @@ public static class AStar
             closedSet.Add(node);
 
             //For showing path counting 
-            closedList.Add(node);
+            if (Grid.instance.showGrid)
+            {
+                Grid.closedList.Add(node);
+            }
+
 
             if (node == targetNode)
             {
-                pathFound = true;
+                Grid.pathFound = true;
                 return RetracePath(startNode, targetNode);
             }
             Node[] neighbours = Grid.instance.GetNeighbours(node);
@@ -70,7 +69,7 @@ public static class AStar
             {
                 neighbour = neighbours[i];
                 if (neighbour == null) {
-                    break;
+                    continue;
                 }
                 //Calculate obstacles while creating path
                 //CheckIfNodeIsObstacle(neighbour);
@@ -94,7 +93,10 @@ public static class AStar
                     {
                         openSet.Add(neighbour);
                         //For showing path counting 
-                        openList.Add(neighbour);
+                        if (Grid.instance.showGrid)
+                        {
+                            Grid.openList.Add(neighbour);
+                        }
                     }
                     else {
                         openSet.UpdateItem(neighbour);

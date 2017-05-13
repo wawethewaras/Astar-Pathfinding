@@ -9,7 +9,7 @@ public class CountPath : MonoBehaviour
     public Node startNode { get; set; }
     public Node goalNode { get; set; }
     //public List<Node> pathArray;
-    public Vector3[] pathArray;
+    private Vector3[] pathArray;
 
     private float elapsedTime = 0.0f;
     //Interval time between pathfinding
@@ -64,6 +64,7 @@ public class CountPath : MonoBehaviour
 
     public void FindPath()
     {
+
         if (startPos == null || endPos == null) {
             print("Missing start position or endposition");
             return;
@@ -71,6 +72,9 @@ public class CountPath : MonoBehaviour
 
 
         if (endPos.position != endPosition) {
+            Grid.openList.Clear();
+            Grid.closedList.Clear();
+            Grid.pathFound = false;
             endPosition = endPos.position;
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -84,7 +88,7 @@ public class CountPath : MonoBehaviour
             for (int i = 0; i < pathArray.Length -1;i++) {
                 pathLenght += Mathf.RoundToInt( Vector3.Distance(pathArray[i], pathArray[i+1]));
             }
-            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + AStar.openList.Count + ". Path lenght: " + pathLenght);
+            print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
             //Debug.Log("New path calculated");
             OnPathFound();
         }

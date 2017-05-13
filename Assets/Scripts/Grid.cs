@@ -23,23 +23,38 @@ public class Grid : MonoBehaviour
             return s_Instance;
         }
     }
-    public Transform player;
-    public LayerMask unwalkableMask;
-    public TerrainType[] walkableRegions;
-    public LayerMask walkableMask;
-    Dictionary<int, int> walkableRegionsDictonary = new Dictionary<int, int>();
-
+    [Header("GRID")]
     public Vector2 gridWorldSize;
     public float nodeRadius;
     Node[,] grid;
 
     float nodeDiameter { get { return nodeRadius * 2; } }
-    int gridSizeX, gridSizeY;
+    private int gridSizeX, gridSizeY;
+
+
+
+
+
+    [Header("LAYERS")]
+    public LayerMask unwalkableMask;
+    public TerrainType[] walkableRegions;
+    public LayerMask walkableMask;
+    Dictionary<int, int> walkableRegionsDictonary = new Dictionary<int, int>();
+
+
 
     public bool showGrid;
     public List<Node> path;
 
     public bool cutCorners;
+
+    //This is for showing calculated path. Can be removed from final version
+    public Transform player;
+    //For showing calculated path. Should be removed from final version.
+    public static List<Node> openList = new List<Node>();
+    public static List<Node> closedList = new List<Node>();
+    public static bool pathFound;
+
 
     public int Maxsize {
         get {
@@ -122,7 +137,7 @@ public class Grid : MonoBehaviour
                     //Calculate obstacles while creating path
                     //AStar.CheckIfNodeIsObstacle(newNode);
                     //Prevent corner cutting
-                    if (cutCorners == false && (grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false || grid[checkX, checkY].walkable == false))
+                    if (cutCorners == false && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false))
                     {
                         continue;
                     }
@@ -134,7 +149,6 @@ public class Grid : MonoBehaviour
                 }
             }
         }
-
         return neighbours;
     }
 
@@ -149,25 +163,87 @@ public class Grid : MonoBehaviour
         percentY = Mathf.Clamp01(percentY);
         int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
         int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
-        ////If target node is inside collider return nearby node
-        //if (grid[x, y].walkable == false)
-        //{
-        //    print("This happened");
-        //    List<Node> neigours = GetNeighbours(grid[x, y]);
-        //    foreach (Node n in neigours)
-        //    {
-        //        print(n.walkable);
-        //        if (n.walkable)
-        //        {
-        //            return n;
-        //        }
-        //    }
-        //}
-
         return grid[x, y];
     }
 
 
+
+    public Node PlayerNodeFromWorldPoint(Vector3 worldPosition)
+    {
+        float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
+        float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
+        float percentX = (positionOfNodeInGridX + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (positionOfNodeInGridY + gridWorldSize.y / 2) / gridWorldSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        //If target node is inside collider return nearby node
+        if (grid[x, y].walkable == false)
+        {
+            //Node[] neighbours 
+            Node neighbour = FindWalkableInRadius(x, y, 1);
+            if (neighbour != null)
+            {
+                return neighbour;
+            }
+        }
+
+        return grid[x, y];
+    }
+
+    Node FindWalkableInRadius(int centreX, int centreY, int radius)
+    {
+
+        for (int i = -radius; i <= radius; i++)
+        {
+            int verticalSearchX = i + centreX;
+            int horizontalSearchY = i + centreY;
+
+            // top
+            if (InBounds(verticalSearchX, centreY + radius))
+            {
+                if (grid[verticalSearchX, centreY + radius].walkable)
+                {
+                    return grid[verticalSearchX, centreY + radius];
+                }
+            }
+
+            // bottom
+            if (InBounds(verticalSearchX, centreY - radius))
+            {
+                if (grid[verticalSearchX, centreY - radius].walkable)
+                {
+                    return grid[verticalSearchX, centreY - radius];
+                }
+            }
+            // right
+            if (InBounds(centreY + radius, horizontalSearchY))
+            {
+                if (grid[centreX + radius, horizontalSearchY].walkable)
+                {
+                    return grid[centreX + radius, horizontalSearchY];
+                }
+            }
+
+            // left
+            if (InBounds(centreY - radius, horizontalSearchY))
+            {
+                if (grid[centreX - radius, horizontalSearchY].walkable)
+                {
+                    return grid[centreX - radius, horizontalSearchY];
+                }
+            }
+
+        }
+
+        return null;
+
+    }
+    bool InBounds(int x, int y)
+    {
+        return x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY;
+    }
 
 
     void OnDrawGizmos()
@@ -189,29 +265,29 @@ public class Grid : MonoBehaviour
                 Gizmos.color = Color.blue;
                 Gizmos.DrawCube(NodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
-            if (AStar.pathFound) {
+            if (pathFound) {
                 //Shows nodes added to open list
                 Gizmos.color = Color.yellow;
-                for (int i = 0; i < AStar.openList.Count; i++)
+                for (int i = 0; i < openList.Count; i++)
                 {
-                    Gizmos.DrawCube(AStar.openList[i].worldPosition, Vector3.one * (nodeDiameter - .1f));
+                    Gizmos.DrawSphere(openList[i].worldPosition, (nodeRadius - .1f));
 
                 }
                 //Shows nodes added to closed list
                 Gizmos.color = Color.red;
-                for (int i = 0; i < AStar.closedList.Count; i++)
+                for (int i = 0; i < closedList.Count; i++)
                 {
-                    Gizmos.DrawCube(AStar.closedList[i].worldPosition, Vector3.one * (nodeDiameter - .1f) * 0.3f);
+                    Gizmos.DrawCube(closedList[i].worldPosition, Vector3.one * (nodeDiameter - .1f) * 0.3f);
 
                 }
 
                 //Draws line from node to it's parent
                 Gizmos.color = Color.green;
-                for (int i = 0; i < AStar.closedList.Count; i++)
+                for (int i = 0; i < closedList.Count; i++)
                 {
-                    if (AStar.closedList[i].parent != null)
+                    if (closedList[i].parent != null)
                     {
-                        Gizmos.DrawLine(AStar.closedList[i].worldPosition, AStar.closedList[i].parent.worldPosition);
+                        Gizmos.DrawLine(closedList[i].worldPosition, closedList[i].parent.worldPosition);
                     }
 
                 }
