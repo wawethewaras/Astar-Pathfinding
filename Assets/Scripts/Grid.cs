@@ -7,7 +7,7 @@ using UnityEditor;
 public class TerrainType
 {
     public LayerMask terrainMask;
-    public int TerrainPenalty;
+    public int terrainPenalty;
 }
 
 public class Grid : MonoBehaviour
@@ -37,7 +37,7 @@ public class Grid : MonoBehaviour
     public LayerMask unwalkableMask;
     public TerrainType[] walkableRegions;
     public LayerMask walkableMask;
-    Dictionary<int, int> walkableRegionsDictonary = new Dictionary<int, int>();
+    Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
 
     [Header("Advanced")]
     public bool showGrid;
@@ -60,15 +60,15 @@ public class Grid : MonoBehaviour
 
     void Awake()
     {
-
-        CreateGrid();
-
         //Adding walkable regions to dictonary
-        foreach (TerrainType region in walkableRegions) {
+        foreach (TerrainType region in walkableRegions)
+        {
             walkableMask.value |= region.terrainMask.value;
-            walkableRegionsDictonary.Add(Mathf.RoundToInt(Mathf.Log(region.terrainMask.value,2)),region.TerrainPenalty);
+            walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
+
         }
 
+        CreateGrid();
 
     }
 
@@ -81,25 +81,26 @@ public class Grid : MonoBehaviour
         for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
-                bool walkable = true;
-                int movementPenalty = 0;
+                bool walkable = (Physics2D.OverlapCircle(worldPoint, nodeRadius, unwalkableMask) == null);
 
-                Collider2D[] hit = Physics2D.OverlapAreaAll(worldPoint,Vector2.one* nodeRadius, walkableMask);
-                if (Physics2D.OverlapArea(worldPoint, Vector2.one, walkableMask)) {
-                    int newPenalty = 0;
+                int movementPenalty = 0;
+                int newPenalty = 0;
+
+                Collider2D[] hit = Physics2D.OverlapCircleAll(worldPoint,nodeRadius, walkableMask);
+                if (hit.Length > 0) {
                     for (int i = 0; i < hit.Length; i++) {
-                        walkableRegionsDictonary.TryGetValue(hit[i].gameObject.layer, out newPenalty);
+                        walkableRegionsDictionary.TryGetValue(hit[i].gameObject.layer, out newPenalty);
+
                         //Return terrain with highest movement penalty
                         if (newPenalty > movementPenalty) {
                             movementPenalty = newPenalty;
+
                         }
                     }
                 }
 
                 grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
 
-                ////Precalculate obstacles
-                CheckIfNodeIsObstacle(grid[x, y]);
             }
         }
     }

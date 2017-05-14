@@ -65,9 +65,9 @@ public class CountPath : MonoBehaviour
 
 
         if (endPos.position != endPosition) {
-            Grid.openList.Clear();
-            Grid.closedList.Clear();
-            Grid.pathFound = false;
+            //Grid.openList.Clear();
+            //Grid.closedList.Clear();
+            //Grid.pathFound = false;
             endPosition = endPos.position;
 
             //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
