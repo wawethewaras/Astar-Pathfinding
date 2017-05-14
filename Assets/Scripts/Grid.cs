@@ -36,7 +36,7 @@ public class Grid : MonoBehaviour
     [Header("LAYERS")]
     public LayerMask unwalkableMask;
     public TerrainType[] walkableRegions;
-    public LayerMask walkableMask;
+    LayerMask walkableMask;
     Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
 
     [Header("Advanced")]
@@ -182,7 +182,6 @@ public class Grid : MonoBehaviour
 
     Node FindWalkableInRadius(int centreX, int centreY, int radius)
     {
-
         for (int i = -radius; i <= radius; i++) {
             int verticalSearchX = i + centreX;
             int horizontalSearchY = i + centreY;

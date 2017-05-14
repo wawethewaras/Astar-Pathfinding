@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System;
 
 public static class AStar
 {
@@ -134,16 +134,16 @@ public static class AStar
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
-        Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
+        Node startNode = Grid.instance.PlayerNodeFromWorldPoint(startPos);
         Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
         //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        if (/*colliders.Length > 0 || */targetNode.walkable == false)
+        if (/*colliders.Length > 0 || */targetNode.walkable == false || startNode.walkable == false)
         {
-            UnityEngine.Debug.Log("Goal inside collider");
+            UnityEngine.Debug.Log("Start or goal inside collider");
             return null;
         }
 
@@ -181,12 +181,12 @@ public static class AStar
                 //For testing path calculation. Can be removed from final version.
                 sw.Stop();
                 Vector3[] path = RetracePath(startNode, targetNode);
-                int pathLenght = 0;
-                for (int i = 0; i < path.Length - 1; i++)
-                {
-                    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
-                }
-                UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
+                //int pathLenght = 0;
+                //for (int i = 0; i < path.Length - 1; i++)
+                //{
+                //    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
+                //}
+                //UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
                 Grid.pathFound = true;
 
                 return RetracePath(startNode, targetNode);
@@ -230,6 +230,11 @@ public static class AStar
 
     public static Vector3[] RetracePath(Node startNode, Node targetNode)
     {
+        if (startNode == targetNode) {
+            Vector3[] shortPath = new Vector3[1];
+            shortPath[0] = targetNode.worldPosition;
+            return shortPath;
+        }
         List<Node> path = new List<Node>();
         Node currentNode = targetNode;
         while (currentNode != startNode)
@@ -237,8 +242,10 @@ public static class AStar
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        path.Reverse();       
-        return  SimplifyPath(path);
+        //path.Reverse();
+        Vector3[] waypoints = SimplifyPath(path);
+        Array.Reverse(waypoints);
+        return waypoints;
 
 
     }
@@ -250,12 +257,41 @@ public static class AStar
 
         for (int i = 1; i < path.Count; i++) {
             Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if (directionNew != directionOld || i+1 == path.Count) {
+            if (directionNew != directionOld) {
                 waypoints.Add(path[i].worldPosition);
             }
             directionOld = directionNew;
         }
+        waypoints.Add(path[path.Count - 1].worldPosition);
         return waypoints.ToArray();
+    }
+
+    public static Vector3[] pathSmooter(Vector3[] path) {
+        List<Vector3> waypoints = new List<Vector3>();
+        int currentNode = 0;
+        waypoints.Add(path[0]);
+
+        int security = 0;
+        for (int i = 1; i < path.Length; i++)
+        {
+            security++;
+            if (security >= 100) {
+                UnityEngine.Debug.LogError("Crash");
+                break;
+            }
+            bool cantSeeTarget = (Physics2D.CircleCastAll(path[currentNode], Grid.instance.nodeRadius, path[i], Vector3.Distance(path[currentNode], path[i]),Grid.instance.unwalkableMask)).Length > 0;
+            //bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], Grid.instance.unwalkableMask);
+            if (cantSeeTarget)
+            {
+                waypoints.Add(path[i - 1]);
+                currentNode = i - 1;
+
+            }
+
+        }
+        //waypoints.Add(path[path.Length-1]);
+        return waypoints.ToArray();
+
     }
 
     static int GetDistance(Node nodeA, Node nodeB) {

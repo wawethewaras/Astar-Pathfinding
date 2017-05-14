@@ -65,16 +65,16 @@ public class CountPath : MonoBehaviour
 
 
         if (endPos.position != endPosition) {
-            //Grid.openList.Clear();
-            //Grid.closedList.Clear();
-            //Grid.pathFound = false;
+            Grid.openList.Clear();
+            Grid.closedList.Clear();
+            Grid.pathFound = false;
             endPosition = endPos.position;
 
             //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
             pathArray = AStar.FindPath(startPos.position, endPos.position);
-
             //Check if path found
             if (pathArray == null) {
+                print("Path not Found");
                 return;
             }
             OnPathFound();
@@ -119,8 +119,15 @@ public class CountPath : MonoBehaviour
         for (int i = 0; i < pathArray.Length; i++) {
             while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i]) {
                 startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime* movespeed);
-                if (startPos.transform.position == pathArray[i]) {
-                    //Debug.Log("Goal reaced");
+
+                //If end node reached let's just move torward target position
+                if (startPos.transform.position == pathArray[pathArray.Length-1]) {
+                    pathArray[pathArray.Length - 1] = endPosition;
+
+                    //This is to prevent overload. Might not be nessesary
+                    if (endPosition != endPos.position) {
+                        break;
+                    }
                 }
                 yield return null;
             }
