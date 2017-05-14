@@ -21,6 +21,7 @@ public class CountPath : MonoBehaviour
 
     private bool readyToCountPath;
 
+    public float nextWaypointDistance;
 
     void Start()
     {
@@ -117,7 +118,9 @@ public class CountPath : MonoBehaviour
             yield return null;
         }
         for (int i = 0; i < pathArray.Length; i++) {
-            while (/*(objStartCube.transform.position - pathArray[i].position).sqrMagnitude > nextWaypointDistance * nextWaypointDistance*/startPos.transform.position != pathArray[i]) {
+            while (startPos.transform.position != pathArray[i])
+            {
+                //while ((startPos.transform.position - pathArray[i]).sqrMagnitude > nextWaypointDistance && startPos.transform.position != pathArray[pathArray.Length - 1]) {
                 startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime* movespeed);
 
                 //If end node reached let's just move torward target position

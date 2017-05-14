@@ -30,7 +30,7 @@ public class Grid : MonoBehaviour
     public float nodeRadius;
     private Node[,] grid;
 
-    private float nodeDiameter { get { return nodeRadius * 2; } }
+    public float nodeDiameter { get { return nodeRadius * 2; } }
     private int gridSizeX, gridSizeY;
 
     [Header("LAYERS")]

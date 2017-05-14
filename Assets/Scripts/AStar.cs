@@ -245,7 +245,7 @@ public static class AStar
         //path.Reverse();
         Vector3[] waypoints = SimplifyPath(path);
         Array.Reverse(waypoints);
-        return waypoints;
+        return pathSmooter(waypoints);
 
 
     }
@@ -279,8 +279,8 @@ public static class AStar
                 UnityEngine.Debug.LogError("Crash");
                 break;
             }
-            bool cantSeeTarget = (Physics2D.CircleCastAll(path[currentNode], Grid.instance.nodeRadius, path[i], Vector3.Distance(path[currentNode], path[i]),Grid.instance.unwalkableMask)).Length > 0;
-            //bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], Grid.instance.unwalkableMask);
+            //bool cantSeeTarget = (Physics2D.CircleCastAll(path[currentNode], Grid.instance.nodeRadius, path[i], Vector3.Distance(path[currentNode], path[i]),Grid.instance.unwalkableMask)).Length > 0;
+            bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], Grid.instance.unwalkableMask);
             if (cantSeeTarget)
             {
                 waypoints.Add(path[i - 1]);
@@ -289,7 +289,7 @@ public static class AStar
             }
 
         }
-        //waypoints.Add(path[path.Length-1]);
+        waypoints.Add(path[path.Length-1]);
         return waypoints.ToArray();
 
     }
