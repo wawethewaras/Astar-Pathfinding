@@ -45,7 +45,7 @@ public class PathRequestManager : MonoBehaviour {
         {
             currentPathRequest = pathRequestQueue.Dequeue();
             isProcessingPath = true;
-            AStar.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd, this);
+            //AStar.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd, this);
         }
     }
 

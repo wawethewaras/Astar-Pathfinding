@@ -24,34 +24,34 @@ public class CountPath : MonoBehaviour
     public float movespeed;
     public bool autoCountPath;
 
-    public bool showCalculatedObstacles;
-
+    bool readyToCountPath;
 
 
     void Start()
     {
         //pathArray = new List<Node>();
+        readyToCountPath = true;
         startPos = transform;
         FindPath();
     }
     void Update()
     {
-        //if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
-        //{
-        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
-        //}
-        //else {
-        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
-        //}
+        if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
+        {
+            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
+        }
+        else {
+            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
+        }
         //Count path more often if target is near
         if (autoCountPath)
         {
-            elapsedTime += Time.deltaTime;
-            if (elapsedTime >= intervalTime)
-            {
-                elapsedTime = 0.0f;
+            //elapsedTime += Time.deltaTime;
+            //if (elapsedTime >= intervalTime)
+            //{
+            //    elapsedTime = 0.0f;
                 FindPath();
-            }
+            //}
         }
         else {
             if (Input.GetButtonDown("Jump"))
@@ -64,6 +64,9 @@ public class CountPath : MonoBehaviour
 
     public void FindPath()
     {
+        if (readyToCountPath == false) {
+            return;
+        }
 
         if (startPos == null || endPos == null) {
             print("Missing start position or endposition");
@@ -77,8 +80,8 @@ public class CountPath : MonoBehaviour
             Grid.pathFound = false;
             endPosition = endPos.position;
 
-            PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
-
+            //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
+            pathArray = AStar.FindPath(startPos.position, endPos.position);
 
             if (pathArray == null) {
                 return;
@@ -88,29 +91,40 @@ public class CountPath : MonoBehaviour
                 pathLenght += Mathf.RoundToInt( Vector3.Distance(pathArray[i], pathArray[i+1]));
             }
             //print("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
-            //Debug.Log("New path calculated");
-            //OnPathFound();
+            OnPathFound();
         }
+        StartCoroutine(PathCountDelay());
 
 
     }
 
-
-    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
+    public void OnPathFound()
     {
-        if (pathSuccessful) {
-            pathArray = newPath;
+        if (currentPath != null)
+        {
+            StopCoroutine(currentPath);
 
-            if (currentPath != null)
-            {
-                StopCoroutine(currentPath);
-            }
-            currentPath = movepath(pathArray);
-            StartCoroutine(currentPath);
         }
-
-
+        currentPath = movepath(pathArray);
+        StartCoroutine(currentPath);
     }
+
+    //Working on a path requester
+    //public void OnPathFoundRequester(Vector3[] newPath, bool pathSuccessful)
+    //{
+    //    if (pathSuccessful) {
+    //        pathArray = newPath;
+
+    //        if (currentPath != null)
+    //        {
+    //            StopCoroutine(currentPath);
+    //        }
+    //        currentPath = movepath(pathArray);
+    //        StartCoroutine(currentPath);
+    //    }
+
+
+    //}
 
 
     public IEnumerator movepath(Vector3[] pathArray) {
@@ -159,6 +173,15 @@ public class CountPath : MonoBehaviour
                 Gizmos.DrawLine(pathArray[i], pathArray[i+1]);
             }
         }
+    }
+
+    public IEnumerator PathCountDelay()
+    {
+        readyToCountPath = false;
+        float counter = Random.Range(intervalTime+0.1f, intervalTime+0.25f);
+        yield return new WaitForSeconds(counter);
+        readyToCountPath = true;
+
     }
 
 }

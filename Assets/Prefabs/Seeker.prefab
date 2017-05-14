@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1168495134495414}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15, y: 61, z: 0}
+  m_LocalPosition: {x: 82.7, y: -45.4, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -70,7 +70,7 @@ CircleCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1168495134495414}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -109,8 +109,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startPos: {fileID: 4074041793286640}
   endPos: {fileID: 0}
-  intervalTime: 0.1
-  movespeed: 4
+  intervalTime: 0.05
+  movespeed: 30
   autoCountPath: 1
   showCalculatedObstacles: 1
 --- !u!212 &212026538347354236

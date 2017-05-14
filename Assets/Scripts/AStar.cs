@@ -12,12 +12,124 @@ public static class AStar
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional astar
     private const float heurasticMultiplier = 2f;
 
-    public static void StartFindPath(Vector3 startPos, Vector3 targetPos, MonoBehaviour requester)
-    {
-        requester.StartCoroutine(FindPath(startPos, targetPos));
-    }
+    //Ment to be used with pathrequester
+    //public static void StartFindPath(Vector3 startPos, Vector3 targetPos, MonoBehaviour requester)
+    //{
+    //    requester.StartCoroutine(FindPathRequest(startPos, targetPos));
+    //}
 
-    public static IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
+    //public static IEnumerator FindPathRequest(Vector3 startPos, Vector3 targetPos)
+    //{
+    //    Stopwatch sw = new Stopwatch();
+    //    sw.Start();
+
+    //    Node startNode = Grid.instance.NodeFromWorldPoint(startPos);
+    //    Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
+    //    Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
+    //    Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
+    //    bool pathSuccess = false;
+    //    Vector3[] waypoints = new Vector3[0];
+    //    //Check if goal is inside collider
+    //    //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+    //    if (/*colliders.Length > 0 || */targetNode.walkable == false)
+    //    {
+    //        UnityEngine.Debug.Log("Goal inside collider");
+    //        yield return null;
+    //    }
+
+    //    ////Check if can see target and is there need to calculate path
+    //    //bool cantSeeTarget = Physics2D.Linecast(startPos, targetPos, Grid.instance.unwalkableMask);
+    //    //if (cantSeeTarget == false)
+    //    //{
+    //    //    Debug.Log("Can see target");
+    //    //    Vector3[] path = new Vector3[2];
+    //    //    path[0] = startPos;
+    //    //    path[1] = targetPos;
+    //    //    return path;
+    //    //}
+
+    //    openSet.Add(startNode);
+    //    //For showing path counting 
+    //    if (Grid.instance.showGrid) {
+    //        Grid.openList.Add(startNode);
+    //    }
+
+    //    Grid.instance.GetNeighbours(startNode);
+
+    //    while (openSet.Count > 0)
+    //    {
+    //        Node node = openSet.RemoveFirst();
+    //        closedSet.Add(node);
+
+    //        //For showing path counting 
+    //        if (Grid.instance.showGrid)
+    //        {
+    //            Grid.closedList.Add(node);
+    //        }
+
+
+    //        if (node == targetNode)
+    //        {
+    //            sw.Stop();
+    //            UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count);
+    //            Grid.pathFound = true;
+    //            pathSuccess = true;
+    //            break;
+    //        }
+    //        Node[] neighbours = Grid.instance.GetNeighbours(node);
+    //        Node neighbour;
+    //        //foreach (Node neighbour in Grid.instance.GetNeighbours(node))
+    //        for (int i = 0; i < neighbours.Length; i++)
+    //        {
+    //            neighbour = neighbours[i];
+    //            if (neighbour == null) {
+    //                continue;
+    //            }
+    //            //Calculate obstacles while creating path
+    //            //CheckIfNodeIsObstacle(neighbour);
+
+    //            if (!neighbour.walkable || closedSet.Contains(neighbour))
+    //            {
+    //                continue;
+    //            }
+    //            //if (node.parent == neighbour) {
+    //            //    continue;
+    //            //}
+    //            int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
+    //            if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+    //            {
+    //                neighbour.gCost = newCostToNeighbour;
+    //                //Heurastics have high value so algoritmin works bit more like Greedy best first
+    //                neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode)*heurasticMultiplier);
+    //                neighbour.parent = node;
+
+    //                if (!openSet.Contains(neighbour))
+    //                {
+    //                    openSet.Add(neighbour);
+    //                    //For showing path counting 
+    //                    if (Grid.instance.showGrid)
+    //                    {
+    //                        Grid.openList.Add(neighbour);
+    //                    }
+    //                }
+    //                else {
+    //                    openSet.UpdateItem(neighbour);
+    //                }
+
+
+    //            }
+    //        }
+    //    }
+    //    yield return null;
+
+    //    if (pathSuccess)
+    //    {
+    //        waypoints = RetracePath(startNode, targetNode);
+    //    }
+    //    PathRequestManager.instance.FinishedProcessingPath(waypoints, pathSuccess);
+    //}
+
+    public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -26,14 +138,14 @@ public static class AStar
         Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
-        bool pathSuccess = false;
         Vector3[] waypoints = new Vector3[0];
+
         //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
         if (/*colliders.Length > 0 || */targetNode.walkable == false)
         {
             UnityEngine.Debug.Log("Goal inside collider");
-            yield return null;
+            return null;
         }
 
         ////Check if can see target and is there need to calculate path
@@ -49,7 +161,8 @@ public static class AStar
 
         openSet.Add(startNode);
         //For showing path counting 
-        if (Grid.instance.showGrid) {
+        if (Grid.instance.showGrid)
+        {
             Grid.openList.Add(startNode);
         }
 
@@ -70,10 +183,9 @@ public static class AStar
             if (node == targetNode)
             {
                 sw.Stop();
-                UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count);
+                //UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count);
                 Grid.pathFound = true;
-                pathSuccess = true;
-                break;
+                return RetracePath(startNode, targetNode);
             }
             Node[] neighbours = Grid.instance.GetNeighbours(node);
             Node neighbour;
@@ -81,7 +193,8 @@ public static class AStar
             for (int i = 0; i < neighbours.Length; i++)
             {
                 neighbour = neighbours[i];
-                if (neighbour == null) {
+                if (neighbour == null)
+                {
                     continue;
                 }
                 //Calculate obstacles while creating path
@@ -91,15 +204,13 @@ public static class AStar
                 {
                     continue;
                 }
-                //if (node.parent == neighbour) {
-                //    continue;
-                //}
+
                 int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
                 if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                 {
                     neighbour.gCost = newCostToNeighbour;
                     //Heurastics have high value so algoritmin works bit more like Greedy best first
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode)*heurasticMultiplier);
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * heurasticMultiplier);
                     neighbour.parent = node;
 
                     if (!openSet.Contains(neighbour))
@@ -119,13 +230,7 @@ public static class AStar
                 }
             }
         }
-        yield return null;
-
-        if (pathSuccess)
-        {
-            waypoints = RetracePath(startNode, targetNode);
-        }
-        PathRequestManager.instance.FinishedProcessingPath(waypoints, pathSuccess);
+        return null;
     }
 
     public static Vector3[] RetracePath(Node startNode, Node endNode)
@@ -190,5 +295,8 @@ public static class AStar
             return value;
         return -value;
     }
+
+
+
 
 }
