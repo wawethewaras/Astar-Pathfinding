@@ -138,7 +138,6 @@ public static class AStar
         Node targetNode = Grid.instance.PlayerNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
-        Vector3[] waypoints = new Vector3[0];
 
         //Check if goal is inside collider
         //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
@@ -161,8 +160,7 @@ public static class AStar
 
         openSet.Add(startNode);
         //For showing path counting 
-        if (Grid.instance.showGrid)
-        {
+        if (Grid.instance.showGrid) {
             Grid.openList.Add(startNode);
         }
 
@@ -174,77 +172,72 @@ public static class AStar
             closedSet.Add(node);
 
             //For showing path counting 
-            if (Grid.instance.showGrid)
-            {
+            if (Grid.instance.showGrid) {
                 Grid.closedList.Add(node);
             }
 
 
-            if (node == targetNode)
-            {
+            if (node == targetNode) {
+                //For testing path calculation. Can be removed from final version.
                 sw.Stop();
-                //UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count);
+                Vector3[] path = RetracePath(startNode, targetNode);
+                int pathLenght = 0;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
+                }
+                UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
                 Grid.pathFound = true;
+
                 return RetracePath(startNode, targetNode);
             }
+
             Node[] neighbours = Grid.instance.GetNeighbours(node);
             Node neighbour;
             //foreach (Node neighbour in Grid.instance.GetNeighbours(node))
             for (int i = 0; i < neighbours.Length; i++)
             {
                 neighbour = neighbours[i];
-                if (neighbour == null)
-                {
-                    continue;
-                }
+
                 //Calculate obstacles while creating path
                 //CheckIfNodeIsObstacle(neighbour);
 
-                if (!neighbour.walkable || closedSet.Contains(neighbour))
-                {
+                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour)) {
                     continue;
                 }
 
                 int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
-                if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
-                {
+                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false) {
                     neighbour.gCost = newCostToNeighbour;
-                    //Heurastics have high value so algoritmin works bit more like Greedy best first
                     neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * heurasticMultiplier);
                     neighbour.parent = node;
 
-                    if (!openSet.Contains(neighbour))
-                    {
+                    if (!openSet.Contains(neighbour)) {
                         openSet.Add(neighbour);
                         //For showing path counting 
-                        if (Grid.instance.showGrid)
-                        {
+                        if (Grid.instance.showGrid) {
                             Grid.openList.Add(neighbour);
                         }
                     }
                     else {
                         openSet.UpdateItem(neighbour);
                     }
-
-
                 }
             }
         }
         return null;
     }
 
-    public static Vector3[] RetracePath(Node startNode, Node endNode)
+    public static Vector3[] RetracePath(Node startNode, Node targetNode)
     {
         List<Node> path = new List<Node>();
-        Node currentNode = endNode;
+        Node currentNode = targetNode;
         while (currentNode != startNode)
         {
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        path.Reverse();
-        //Grid.instance.path = path;
-        
+        path.Reverse();       
         return  SimplifyPath(path);
 
 
@@ -255,11 +248,9 @@ public static class AStar
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
 
-        for (int i = 1; i < path.Count; i++)
-        {
+        for (int i = 1; i < path.Count; i++) {
             Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if (directionNew != directionOld || i+1 == path.Count)
-            {
+            if (directionNew != directionOld || i+1 == path.Count) {
                 waypoints.Add(path[i].worldPosition);
             }
             directionOld = directionNew;
@@ -267,20 +258,7 @@ public static class AStar
         return waypoints.ToArray();
     }
 
-    public static void CheckIfNodeIsObstacle(Node node) {
-        ////Calculate obstacles while creating path
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(node.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        if (colliders.Length > 0)
-        {
-            node.walkable = false;
-        }
-        else {
-            node.walkable = true;
-        }
-    }
-
-    static int GetDistance(Node nodeA, Node nodeB)
-    {
+    static int GetDistance(Node nodeA, Node nodeB) {
         int dstX = Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Abs(nodeA.gridY - nodeB.gridY);
 
