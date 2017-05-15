@@ -121,21 +121,54 @@ public class CountPath : MonoBehaviour
             while (startPos.transform.position != pathArray[i])
             {
                 //while ((startPos.transform.position - pathArray[i]).sqrMagnitude > nextWaypointDistance && startPos.transform.position != pathArray[pathArray.Length - 1]) {
-                startPos.transform.position =  Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime* movespeed);
 
-                //If end node reached let's just move torward target position
-                if (startPos.transform.position == pathArray[pathArray.Length-1]) {
-                    pathArray[pathArray.Length - 1] = endPosition;
+                //if (Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask) == false)
+                //{
+                //    UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+                //    break;
 
-                    //This is to prevent overload. Might not be nessesary
-                    if (endPosition != endPos.position) {
-                        break;
+
+                //}
+
+                if (i < pathArray.Length - 2)
+                {
+                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
+                    if (cantSeeTarget == false)
+                    {
+                        UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                        i++;
+
+
                     }
                 }
+                else {
+                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask);
+                    if (cantSeeTarget == false)
+                    {
+                        UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+                        break;
+                    }
+                    
+                }
+                startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime * movespeed);
+                
+
+                ////If end node reached let's just move torward target position
+                //if (startPos.transform.position == pathArray[pathArray.Length-1]) {
+                //    pathArray[pathArray.Length - 1] = endPosition;
+
+                //    //This is to prevent overload. Might not be nessesary
+                //    if (endPosition != endPos.position) {
+                //        break;
+                //    }
+                //}
                 yield return null;
             }
         }
-
+        while (true) {
+            startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, endPosition, Time.deltaTime * movespeed);
+            yield return null;
+        }
         yield return null;
     }
 
@@ -148,18 +181,18 @@ public class CountPath : MonoBehaviour
 
     }
 
-    public void OnDrawGizmos()
-    {
-        if (pathArray != null)
-        {
-            for (int i = 0; i < pathArray.Length-1; i++)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(pathArray[i], Vector3.one);
-                Gizmos.DrawLine(pathArray[i], pathArray[i+1]);
-            }
-        }
-    }
+    //public void OnDrawGizmos()
+    //{
+    //    if (pathArray != null)
+    //    {
+    //        for (int i = 0; i < pathArray.Length-1; i++)
+    //        {
+    //            Gizmos.color = Color.black;
+    //            Gizmos.DrawCube(pathArray[i], Vector3.one);
+    //            Gizmos.DrawLine(pathArray[i], pathArray[i+1]);
+    //        }
+    //    }
+    //}
 
 
 

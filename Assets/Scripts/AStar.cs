@@ -235,36 +235,51 @@ public static class AStar
             shortPath[0] = targetNode.worldPosition;
             return shortPath;
         }
-        List<Node> path = new List<Node>();
+        List<Vector3> path = new List<Vector3>();
         Node currentNode = targetNode;
         while (currentNode != startNode)
         {
-            path.Add(currentNode);
+            path.Add(currentNode.worldPosition);
             currentNode = currentNode.parent;
         }
         //path.Reverse();
-        Vector3[] waypoints = SimplifyPath(path);
+        Vector3[] waypoints = path.ToArray();
         Array.Reverse(waypoints);
-        return pathSmooter(waypoints);
+        return waypoints;
 
 
     }
-
     public static Vector3[] SimplifyPath(List<Node> path)
     {
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
 
-        for (int i = 1; i < path.Count; i++) {
-            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if (directionNew != directionOld) {
+        for (int i = 1; i < path.Count; i++)
+        {
                 waypoints.Add(path[i].worldPosition);
-            }
-            directionOld = directionNew;
+
         }
         waypoints.Add(path[path.Count - 1].worldPosition);
         return waypoints.ToArray();
     }
+
+    //public static Vector3[] SimplifyPath(List<Node> path)
+    //{
+    //    List<Vector3> waypoints = new List<Vector3>();
+    //    Vector2 directionOld = Vector2.zero;
+
+    //    for (int i = 1; i < path.Count; i++)
+    //    {
+    //        Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+    //        if (directionNew != directionOld)
+    //        {
+    //            waypoints.Add(path[i].worldPosition);
+    //        }
+    //        directionOld = directionNew;
+    //    }
+    //    waypoints.Add(path[path.Count - 1].worldPosition);
+    //    return pathSmooter(waypoints.ToArray());
+    //}
 
     public static Vector3[] pathSmooter(Vector3[] path) {
         List<Vector3> waypoints = new List<Vector3>();

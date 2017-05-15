@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Threading;
+
 
 public class PathRequestManager : MonoBehaviour {
 
@@ -31,6 +33,18 @@ public class PathRequestManager : MonoBehaviour {
 
     bool isProcessingPath;
 
+
+
+    public static void myThreadCount(CountPath finder)
+    {
+        Thread myThread = new Thread(finder.FindPath);
+        //ThreadStart myThread = delegate
+        //{
+        //    finder.FindPath();
+
+        //};
+        myThread.Start();
+    }
 
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
     {
