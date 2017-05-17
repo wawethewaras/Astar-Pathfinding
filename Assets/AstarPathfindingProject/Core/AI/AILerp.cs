@@ -230,7 +230,7 @@ public class AILerp : VersionedMonoBehaviour {
 
         seeker.StartPath(currentPosition, targetPosition);
         sw.Stop();
-        print("Time it took to calculate path: " + sw.ElapsedMilliseconds + "ms");
+        //print("Time it took to calculate path: " + sw.ElapsedMilliseconds + "ms");
     }
 
 	/** The end of the path has been reached.

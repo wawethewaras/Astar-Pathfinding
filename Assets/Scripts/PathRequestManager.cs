@@ -35,16 +35,16 @@ public class PathRequestManager : MonoBehaviour {
 
 
 
-    public static void myThreadCount(CountPath finder)
-    {
-        Thread myThread = new Thread(finder.FindPath);
-        //ThreadStart myThread = delegate
-        //{
-        //    finder.FindPath();
+    //public static void myThreadCount(CountPath finder)
+    //{
+    //    Thread myThread = new Thread(finder.FindPath);
+    //    //ThreadStart myThread = delegate
+    //    //{
+    //    //    finder.FindPath();
 
-        //};
-        myThread.Start();
-    }
+    //    //};
+    //    myThread.Start();
+    //}
 
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
     {

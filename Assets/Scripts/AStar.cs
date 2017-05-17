@@ -181,11 +181,11 @@ public static class AStar
                 //For testing path calculation. Can be removed from final version.
                 sw.Stop();
                 Vector3[] path = RetracePath(startNode, targetNode);
-                //int pathLenght = 0;
-                //for (int i = 0; i < path.Length - 1; i++)
-                //{
-                //    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
-                //}
+                int pathLenght = 0;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
+                }
                 //UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
                 Grid.pathFound = true;
 

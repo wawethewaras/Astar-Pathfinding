@@ -182,6 +182,7 @@ public class Grid : MonoBehaviour
 
     Node FindWalkableInRadius(int centreX, int centreY, int radius)
     {
+        
         for (int i = -radius; i <= radius; i++) {
             int verticalSearchX = i + centreX;
             int horizontalSearchY = i + centreY;
@@ -222,8 +223,9 @@ public class Grid : MonoBehaviour
             }
 
         }
-
-        return null;
+        radius++;
+        if (radius > 10) { return null; }
+        return FindWalkableInRadius(centreX, centreY, radius);
 
     }
     bool InBounds(int x, int y)

@@ -27,7 +27,7 @@ public class CountPath : MonoBehaviour
     {
         readyToCountPath = true;
         startPos = transform;
-        FindPath();
+        FindPath(startPos.position, endPos.position);
     }
     void Update()
     {
@@ -42,18 +42,18 @@ public class CountPath : MonoBehaviour
         //Count path more often if target is near
         if (autoCountPath)
         {
-            FindPath();
+            FindPath(startPos.position, endPos.position);
         }
         else {
             if (Input.GetButtonDown("Jump"))
             {
-                FindPath();
+                FindPath(startPos.position, endPos.position);
             }
         }
 
     }
 
-    public void FindPath()
+    public void FindPath(Vector3 start, Vector3 goal)
     {
         if (readyToCountPath == false) {
             return;
@@ -72,7 +72,7 @@ public class CountPath : MonoBehaviour
             endPosition = endPos.position;
 
             //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
-            pathArray = AStar.FindPath(startPos.position, endPos.position);
+            pathArray = AStar.FindPath(start, goal);
             //Check if path found
             if (pathArray == null) {
                 print("Path not Found");
@@ -150,8 +150,16 @@ public class CountPath : MonoBehaviour
                     }
                     
                 }
+                Vector2 mouse_pos = pathArray[i];
+                Vector2 object_pos =  transform.position;
+                mouse_pos.x = mouse_pos.x - object_pos.x;
+                mouse_pos.y = mouse_pos.y - object_pos.y;
+                float angle = Mathf.Atan2(mouse_pos.y, mouse_pos.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime * movespeed);
-                
+                //Vector3 direction = (pathArray[i] - startPos.transform.position).normalized * 100;
+                //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
+
 
                 ////If end node reached let's just move torward target position
                 //if (startPos.transform.position == pathArray[pathArray.Length-1]) {
@@ -166,7 +174,15 @@ public class CountPath : MonoBehaviour
             }
         }
         while (true) {
+            Vector2 mouse_pos = endPosition;
+            Vector2 object_pos = transform.position;
+            mouse_pos.x = mouse_pos.x - object_pos.x;
+            mouse_pos.y = mouse_pos.y - object_pos.y;
+            float angle = Mathf.Atan2(mouse_pos.y, mouse_pos.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
             startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, endPosition, Time.deltaTime * movespeed);
+            //Vector3 direction = (endPosition - startPos.transform.position).normalized * 100; ;
+            //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
             yield return null;
         }
         yield return null;

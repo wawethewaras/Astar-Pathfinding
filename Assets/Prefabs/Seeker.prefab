@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 114115421161080078}
   - component: {fileID: 50578471789034196}
   - component: {fileID: 212026538347354236}
-  - component: {fileID: 95343796241195248}
   - component: {fileID: 58200205588977298}
   m_Layer: 11
   m_Name: Seeker
@@ -37,9 +36,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1168495134495414}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 82.7, y: -45.4, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -40.6, y: 88.1, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -70,32 +69,15 @@ CircleCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1168495134495414}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.7652235}
+  m_Offset: {x: 0, y: -0.07595825}
   serializedVersion: 2
-  m_Radius: 0.98426914
---- !u!95 &95343796241195248
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1168495134495414}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c6b136be1d5e9b44f860e0f065d8e327, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
+  m_Radius: 0.50624084
 --- !u!114 &114115421161080078
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -110,9 +92,9 @@ MonoBehaviour:
   startPos: {fileID: 4074041793286640}
   endPos: {fileID: 0}
   intervalTime: 0.05
-  movespeed: 30
+  movespeed: 20
   autoCountPath: 1
-  showCalculatedObstacles: 1
+  nextWaypointDistance: 1
 --- !u!212 &212026538347354236
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -142,10 +124,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 083ca2fe27bb2f64eb6ff08c6bb44ebe, type: 3}
+  m_SortingLayerID: 1146696219
+  m_SortingLayer: 1
+  m_SortingOrder: 5
+  m_Sprite: {fileID: 21300000, guid: 9afa743b2abac9f4790033131314c9f1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
