@@ -25,20 +25,23 @@ public class Grid : MonoBehaviour
             return s_Instance;
         }
     }
+
     [Header("GRID")]
     public Vector2 gridWorldSize;
     public float nodeRadius;
-    private Node[,] grid;
-
     public float nodeDiameter { get { return nodeRadius * 2; } }
+    private Node[,] grid;    
     private int gridSizeX, gridSizeY;
 
+    [Space(10)]
     [Header("LAYERS")]
     public LayerMask unwalkableMask;
     public TerrainType[] walkableRegions;
     LayerMask walkableMask;
     Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
 
+
+    [Space(10)]
     [Header("Advanced")]
     public bool showGrid;
     public bool cutCorners;
@@ -61,16 +64,30 @@ public class Grid : MonoBehaviour
     void Awake()
     {
         //Adding walkable regions to dictonary
-        foreach (TerrainType region in walkableRegions)
-        {
-            walkableMask.value |= region.terrainMask.value;
-            walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
-
-        }
+        AddWalkableRegionsToDictonary();
 
         CreateGrid();
 
+
     }
+
+    public void AddWalkableRegionsToDictonary() {
+
+        foreach (TerrainType region in walkableRegions) {
+            walkableMask.value |= region.terrainMask.value;
+            int terrainMask = (int)Mathf.Log(region.terrainMask.value, 2);
+            if (walkableRegionsDictionary.ContainsKey(terrainMask))
+            {
+                walkableRegionsDictionary[terrainMask] = region.terrainPenalty;
+            }
+            else {
+                walkableRegionsDictionary.Add(terrainMask, region.terrainPenalty);
+            }
+
+        }
+
+    }
+
 
     public void CreateGrid() {
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
@@ -104,6 +121,7 @@ public class Grid : MonoBehaviour
             }
         }
     }
+
 
     public Node[] GetNeighbours(Node node) {
         Node[] neighbours = new Node[8];
@@ -156,7 +174,7 @@ public class Grid : MonoBehaviour
 
 
 
-    public Node PlayerNodeFromWorldPoint(Vector3 worldPosition)
+    public Node ClosestNodeFromWorldPoint(Vector3 worldPosition)
     {
         float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
         float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
@@ -302,18 +320,19 @@ public class Grid : MonoBehaviour
 
 }
 
-[CustomEditor(typeof(Grid))]
-public class ObjectBuilderEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
+//[CustomEditor(typeof(Grid))]
+//public class ObjectBuilderEditor : Editor
+//{
 
-        Grid myScript = (Grid)target;
-        if (GUILayout.Button("Create grid"))
-        {
-            myScript.CreateGrid();
-        }
-    }
-}
+//    public override void OnInspectorGUI()
+//    {
+//        DrawDefaultInspector();
+//        Grid myScript = (Grid)target;
+//        if (GUILayout.Button("Create grid"))
+//        {
+//            myScript.CreateGrid();
+//            EditorUtility.SetDirty(myScript);
+//        }
+//    }
+//}
 
