@@ -23,6 +23,8 @@ public class CountPath : MonoBehaviour
 
     public float nextWaypointDistance;
 
+    public bool showPathSmoothing;
+
     void Start()
     {
         readyToCountPath = true;
@@ -135,7 +137,10 @@ public class CountPath : MonoBehaviour
                     bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
                     if (cantSeeTarget == false)
                     {
-                        UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                        if (showPathSmoothing)
+                        {
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                        }
                         i++;
 
 
@@ -145,7 +150,11 @@ public class CountPath : MonoBehaviour
                     bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask);
                     if (cantSeeTarget == false)
                     {
-                        UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+                        if (showPathSmoothing)
+                        {
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+
+                        }
                         break;
                     }
                     

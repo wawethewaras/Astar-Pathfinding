@@ -47,7 +47,7 @@ public class Grid : MonoBehaviour
     public bool cutCorners;
 
 
-    //This is for showing calculated path. Can be removed from final version
+    //This is for showing calculated path. This can be used to debug paths.
     public Transform player;
     //For showing calculated path. Should be removed from final version.
     public static List<Node> openList = new List<Node>();
@@ -63,11 +63,9 @@ public class Grid : MonoBehaviour
 
     void Awake()
     {
-        //Adding walkable regions to dictonary
         AddWalkableRegionsToDictonary();
 
         CreateGrid();
-
 
     }
 

@@ -1703,22 +1703,6 @@ Prefab:
       propertyPath: m_Name
       value: A*
       objectReference: {fileID: 0}
-    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
-        type: 2}
-      propertyPath: walkableRegions.Array.data[1].terrainPenalty
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
-        type: 2}
-      propertyPath: walkableRegions.Array.data[0].terrainPenalty
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
-        type: 2}
-      propertyPath: gridValues
-      value: 
-      objectReference: {fileID: 11400000, guid: 9ab14dcf1e28cb647aed5fecccdd98ff,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 42225a9e7edc275499b477dc41166eb4, type: 2}
   m_IsPrefabParent: 0
