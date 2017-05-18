@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 61670419916075922}
   - component: {fileID: 212804451073202728}
   m_Layer: 13
-  m_Name: Road
+  m_Name: SlowGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -41,7 +41,6 @@ public class CountPath : MonoBehaviour
             UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
         }
 
-        //Count path more often if target is near
         if (autoCountPath)
         {
             FindPath(startPos.position, endPos.position);
@@ -169,16 +168,6 @@ public class CountPath : MonoBehaviour
                 //Vector3 direction = (pathArray[i] - startPos.transform.position).normalized * 100;
                 //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
 
-
-                ////If end node reached let's just move torward target position
-                //if (startPos.transform.position == pathArray[pathArray.Length-1]) {
-                //    pathArray[pathArray.Length - 1] = endPosition;
-
-                //    //This is to prevent overload. Might not be nessesary
-                //    if (endPosition != endPos.position) {
-                //        break;
-                //    }
-                //}
                 yield return null;
             }
         }
@@ -194,7 +183,6 @@ public class CountPath : MonoBehaviour
             //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
             yield return null;
         }
-        yield return null;
     }
 
     public IEnumerator PathCountDelay()
@@ -206,6 +194,7 @@ public class CountPath : MonoBehaviour
 
     }
 
+    //Draw path to gizmoz
     //public void OnDrawGizmos()
     //{
     //    if (pathArray != null)
