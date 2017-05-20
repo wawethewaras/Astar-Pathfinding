@@ -32,6 +32,9 @@ public class ThreadController : MonoBehaviour {
     Thread mainThread;
     public Transform startPos, endPos;
 
+    Thread currentThread;
+    public Vector3[] paths;
+
     void Start() {
         mainThread = System.Threading.Thread.CurrentThread;
 
@@ -39,7 +42,7 @@ public class ThreadController : MonoBehaviour {
         int rand = UnityEngine.Random.Range(0, 10);
         Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.transform.position);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.transform.position);
-        StartThreadedFunction(() => { slow(start, end); });
+        //StartThreadedFunction(() => { slow(start, end); });
     }
 
     void Update()
@@ -48,13 +51,32 @@ public class ThreadController : MonoBehaviour {
             Action someFunc = functionsToRunInMainThread[0];
             functionsToRunInMainThread.RemoveAt(0);
             someFunc();
-            UnityEngine.Debug.Log("Current thread is main: " + mainThread.Equals(System.Threading.Thread.CurrentThread));
         }
     }
 
+
+
+    public void search(CountPath counter) {
+        counter.endPosition = counter.endPos.position; 
+        Node start = Grid.instance.ClosestNodeFromWorldPoint(counter.startPos.position);
+        Node end = Grid.instance.ClosestNodeFromWorldPoint(counter.endPos.position);
+        StartThreadedFunction(() => { slow(start, end); });
+        StartCoroutine(counting(counter));
+
+        
+    }
+
+    public IEnumerator counting(CountPath counter) {
+        while (currentThread.IsAlive)
+        {
+            yield return null;
+        }
+        counter.OnPathFound(paths);
+    }
+
     public void StartThreadedFunction(Action function) {
-        Thread t = new Thread(new ThreadStart( function));
-        t.Start();
+        currentThread = new Thread(new ThreadStart( function));
+        currentThread.Start();
     }
 
     public void QuesMainThread(Action function) {
@@ -62,7 +84,6 @@ public class ThreadController : MonoBehaviour {
     }
 
     void slow(Node startPos, Node targetPos) {
-        UnityEngine.Debug.Log("Current thread is main: " + mainThread.Equals(System.Threading.Thread.CurrentThread));
         Vector3[] path = FindPath(startPos, targetPos);
         Action aFunction = () =>
         {
@@ -71,7 +92,7 @@ public class ThreadController : MonoBehaviour {
         QuesMainThread(aFunction);
     }
 
-    public Vector3[] paths;
+
 
     public static Vector3[] FindPath(Node startNode, Node targetNode)
     {
@@ -210,5 +231,19 @@ public class ThreadController : MonoBehaviour {
         if (value >= 0)
             return value;
         return -value;
+    }
+
+    //Draw path to gizmoz
+    public void OnDrawGizmos()
+    {
+        if (paths != null)
+        {
+            for (int i = 0; i < paths.Length - 1; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(paths[i], Vector3.one);
+                Gizmos.DrawLine(paths[i], paths[i + 1]);
+            }
+        }
     }
 }

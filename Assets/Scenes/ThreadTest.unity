@@ -587,7 +587,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 100
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -610,7 +610,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1389313469}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 27.9, y: 14.9, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -837,7 +837,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4074041793286640, guid: ce4d0b01d39e94e45a4941487916474d, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 100.5
+      value: 89.8
       objectReference: {fileID: 0}
     - target: {fileID: 4074041793286640, guid: ce4d0b01d39e94e45a4941487916474d, type: 2}
       propertyPath: m_LocalPosition.y
@@ -874,7 +874,12 @@ Prefab:
       objectReference: {fileID: 87168459}
     - target: {fileID: 1168495134495414, guid: ce4d0b01d39e94e45a4941487916474d, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114115421161080078, guid: ce4d0b01d39e94e45a4941487916474d,
+        type: 2}
+      propertyPath: showPathSmoothing
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce4d0b01d39e94e45a4941487916474d, type: 2}
@@ -938,7 +943,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4796905228164072, guid: 42225a9e7edc275499b477dc41166eb4, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 24.4
+      value: 31.8
       objectReference: {fileID: 0}
     - target: {fileID: 4796905228164072, guid: 42225a9e7edc275499b477dc41166eb4, type: 2}
       propertyPath: m_LocalPosition.y
@@ -976,12 +981,17 @@ Prefab:
     - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
         type: 2}
       propertyPath: gridWorldSize.x
-      value: 200
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
         type: 2}
       propertyPath: gridWorldSize.y
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
+        type: 2}
+      propertyPath: showGrid
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 42225a9e7edc275499b477dc41166eb4, type: 2}

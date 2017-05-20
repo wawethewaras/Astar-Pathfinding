@@ -13,7 +13,7 @@ public class CountPath : MonoBehaviour
 
     IEnumerator currentPath;
 
-    private Vector3 endPosition;
+    public Vector3 endPosition;
 
     public float movespeed;
 
@@ -29,27 +29,36 @@ public class CountPath : MonoBehaviour
     {
         readyToCountPath = true;
         startPos = transform;
-        FindPath(startPos.position, endPos.position);
+        ThreadController.instance.search(this);
     }
     void Update()
     {
-        if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
-        {
-            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
-        }
-        else {
-            UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
-        }
+        //if (Physics2D.Linecast(startPos.position, endPos.position, Grid.instance.unwalkableMask))
+        //{
+        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.red);
+        //}
+        //else {
+        //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
+        //}
 
-        if (autoCountPath)
+        //if (autoCountPath)
+        //{
+        //    //FindPath(startPos.position, endPos.position);
+        //    ThreadController.instance.search(this);
+        //}
+        //else {
+        //    if (Input.GetButtonDown("Jump"))
+        //    {
+        //        ThreadController.instance.search(this);
+        //    }
+        //}
+
+        if (Input.GetButtonDown("Jump"))
         {
-            FindPath(startPos.position, endPos.position);
-        }
-        else {
-            if (Input.GetButtonDown("Jump"))
-            {
-                FindPath(startPos.position, endPos.position);
-            }
+            Grid.openList.Clear();
+            Grid.closedList.Clear();
+            Grid.pathFound = false;
+            ThreadController.instance.search(this);
         }
 
     }
@@ -79,40 +88,21 @@ public class CountPath : MonoBehaviour
                 print("Path not Found");
                 return;
             }
-            OnPathFound();
+            //OnPathFound();
         }
 
     }
 
-    public void OnPathFound() {
+    public void OnPathFound(Vector3[] newPath) {
         if (currentPath != null)
         {
             StopCoroutine(currentPath);
 
         }
-        currentPath = movepath(pathArray);
+        currentPath = movepath(newPath);
         StartCoroutine(currentPath);
         StartCoroutine(PathCountDelay());
     }
-
-    //Working on a path requester
-    //public void OnPathFoundRequester(Vector3[] newPath, bool pathSuccessful)
-    //{
-    //    if (pathSuccessful) {
-    //        pathArray = newPath;
-
-    //        if (currentPath != null)
-    //        {
-    //            StopCoroutine(currentPath);
-    //        }
-    //        currentPath = movepath(pathArray);
-    //        StartCoroutine(currentPath);
-    //          StartCoroutine(PathCountDelay());
-    //    }
-
-
-    //}
-
 
     public IEnumerator movepath(Vector3[] pathArray) {
         if (pathArray == null) {
@@ -121,15 +111,15 @@ public class CountPath : MonoBehaviour
         for (int i = 0; i < pathArray.Length; i++) {
             while (startPos.transform.position != pathArray[i])
             {
-                //while ((startPos.transform.position - pathArray[i]).sqrMagnitude > nextWaypointDistance && startPos.transform.position != pathArray[pathArray.Length - 1]) {
+                ////while ((startPos.transform.position - pathArray[i]).sqrMagnitude > nextWaypointDistance && startPos.transform.position != pathArray[pathArray.Length - 1]) {
 
-                //if (Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask) == false)
-                //{
-                //    UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
-                //    break;
+                ////if (Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask) == false)
+                ////{
+                ////    UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+                ////    break;
 
 
-                //}
+                ////}
 
                 if (i < pathArray.Length - 2)
                 {
@@ -195,18 +185,18 @@ public class CountPath : MonoBehaviour
     }
 
     //Draw path to gizmoz
-    //public void OnDrawGizmos()
-    //{
-    //    if (pathArray != null)
-    //    {
-    //        for (int i = 0; i < pathArray.Length-1; i++)
-    //        {
-    //            Gizmos.color = Color.black;
-    //            Gizmos.DrawCube(pathArray[i], Vector3.one);
-    //            Gizmos.DrawLine(pathArray[i], pathArray[i+1]);
-    //        }
-    //    }
-    //}
+    public void OnDrawGizmos()
+    {
+        if (pathArray != null)
+        {
+            for (int i = 0; i < pathArray.Length - 1; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(pathArray[i], Vector3.one);
+                Gizmos.DrawLine(pathArray[i], pathArray[i + 1]);
+            }
+        }
+    }
 
 
 
