@@ -1,31 +1,83 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using UnityEngine;
+using System.Threading;
 using System;
+using System.Diagnostics;
 
-public static class AStar
-{
+public class ThreadController : MonoBehaviour {
 
+    private static ThreadController s_Instance = null;
+    public static ThreadController instance
+    {
+        get
+        {
+            if (s_Instance == null)
+            {
+                s_Instance = FindObjectOfType(typeof(ThreadController))
+                as ThreadController;
+                if (s_Instance == null)
+                {
+                    UnityEngine.Debug.Log("Could not locate a PathRequestManager object. \n You have to have exactly one PathRequestManager in the scene.");
+                    UnityEngine.Debug.Break();
+                }
 
+            }
+            return s_Instance;
+        }
+    }
 
-    //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-    private const float heurasticMultiplier = 2f;
+    List<Action> functionsToRunInMainThread;
 
+    Thread mainThread;
+    public Transform startPos, endPos;
 
-    /// <summary>
-    /// Creates path from startPos to targetPos using A*.
-    /// </summary>
-    /// <param name="startPos"></param>
-    /// <param name="targetPos"></param>
-    /// <returns></returns>
-    public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
+    void Start() {
+        mainThread = System.Threading.Thread.CurrentThread;
+
+        functionsToRunInMainThread = new List<Action>();
+        int rand = UnityEngine.Random.Range(0, 10);
+        Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.transform.position);
+        Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.transform.position);
+        StartThreadedFunction(() => { slow(start, end); });
+    }
+
+    void Update()
+    {
+        while (functionsToRunInMainThread.Count > 0) {
+            Action someFunc = functionsToRunInMainThread[0];
+            functionsToRunInMainThread.RemoveAt(0);
+            someFunc();
+            UnityEngine.Debug.Log("Current thread is main: " + mainThread.Equals(System.Threading.Thread.CurrentThread));
+        }
+    }
+
+    public void StartThreadedFunction(Action function) {
+        Thread t = new Thread(new ThreadStart( function));
+        t.Start();
+    }
+
+    public void QuesMainThread(Action function) {
+        functionsToRunInMainThread.Add(function);
+    }
+
+    void slow(Node startPos, Node targetPos) {
+        UnityEngine.Debug.Log("Current thread is main: " + mainThread.Equals(System.Threading.Thread.CurrentThread));
+        Vector3[] path = FindPath(startPos, targetPos);
+        Action aFunction = () =>
+        {
+            paths = path;
+        };
+        QuesMainThread(aFunction);
+    }
+
+    public Vector3[] paths;
+
+    public static Vector3[] FindPath(Node startNode, Node targetNode)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
-        Node startNode = Grid.instance.ClosestNodeFromWorldPoint(startPos);
-        Node targetNode = Grid.instance.ClosestNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
@@ -39,7 +91,8 @@ public static class AStar
 
         openSet.Add(startNode);
         //For showing path counting 
-        if (Grid.instance.showGrid) {
+        if (Grid.instance.showGrid)
+        {
             Grid.openList.Add(startNode);
         }
 
@@ -51,12 +104,14 @@ public static class AStar
             closedSet.Add(node);
 
             //For showing path counting 
-            if (Grid.instance.showGrid) {
+            if (Grid.instance.showGrid)
+            {
                 Grid.closedList.Add(node);
             }
 
 
-            if (node == targetNode) {
+            if (node == targetNode)
+            {
                 //For testing path calculation. Can be removed from final version.
                 sw.Stop();
                 Vector3[] path = RetracePath(startNode, targetNode);
@@ -81,20 +136,24 @@ public static class AStar
                 //Calculate obstacles while creating path
                 //CheckIfNodeIsObstacle(neighbour);
 
-                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour)) {
+                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour))
+                {
                     continue;
                 }
 
                 int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
-                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false) {
+                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
+                {
                     neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * heurasticMultiplier);
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * 2f);
                     neighbour.parent = node;
 
-                    if (!openSet.Contains(neighbour)) {
+                    if (!openSet.Contains(neighbour))
+                    {
                         openSet.Add(neighbour);
                         //For showing path counting 
-                        if (Grid.instance.showGrid) {
+                        if (Grid.instance.showGrid)
+                        {
                             Grid.openList.Add(neighbour);
                         }
                     }
@@ -115,7 +174,8 @@ public static class AStar
     /// <returns></returns>
     public static Vector3[] RetracePath(Node startNode, Node targetNode)
     {
-        if (startNode == targetNode) {
+        if (startNode == targetNode)
+        {
             Vector3[] shortPath = new Vector3[1];
             shortPath[0] = targetNode.worldPosition;
             return shortPath;
@@ -135,68 +195,8 @@ public static class AStar
 
     }
 
-    /// <summary>
-    ///Way to reduce number of nodes from path.Only adds nodes that have new direction.This is useful if you have grid based game, but more nodes is better for non grid based game so path looks smooter.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    /// 
-    public static Vector3[] SimplifyPath(List<Node> path)
+    static int GetDistance(Node nodeA, Node nodeB)
     {
-        List<Vector3> waypoints = new List<Vector3>();
-        Vector2 directionOld = Vector2.zero;
-
-        for (int i = 1; i < path.Count; i++)
-        {
-            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if (directionNew != directionOld)
-            {
-                waypoints.Add(path[i].worldPosition);
-            }
-            directionOld = directionNew;
-        }
-        waypoints.Add(path[path.Count - 1].worldPosition);
-        return waypoints.ToArray();
-    }
-
-    /// <summary>
-    /// Reduces number of nodes from path. Only adds nodes that are blocked by obstacle. This is useful if you want to have short path, but you can create smoother looking path using dynamic collider check.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static Vector3[] pathSmooter(Vector3[] path) {
-        List<Vector3> waypoints = new List<Vector3>();
-        int currentNode = 0;
-        waypoints.Add(path[0]);
-
-        int security = 0;
-        for (int i = 1; i < path.Length; i++)
-        {
-            security++;
-            if (security >= 100) {
-                UnityEngine.Debug.LogError("Crash");
-                break;
-            }
-            bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], Grid.instance.unwalkableMask);
-            if (cantSeeTarget)
-            {
-                waypoints.Add(path[i - 1]);
-                currentNode = i - 1;
-
-            }
-
-        }
-        waypoints.Add(path[path.Length-1]);
-        return waypoints.ToArray();
-
-    }
-    /// <summary>
-    /// Gets heuristic distance from nodeA to nodeB using Manhattan distance
-    /// </summary>
-    /// <param name="nodeA"></param>
-    /// <param name="nodeB"></param>
-    /// <returns></returns>
-    static int GetDistance(Node nodeA, Node nodeB) {
         int dstX = Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Abs(nodeA.gridY - nodeB.gridY);
 
@@ -211,8 +211,4 @@ public static class AStar
             return value;
         return -value;
     }
-
-
-
-
 }
