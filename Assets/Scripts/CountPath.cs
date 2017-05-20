@@ -18,8 +18,8 @@ public class CountPath : MonoBehaviour
     public float movespeed;
 
     public bool autoCountPath;
-
-    private bool readyToCountPath;
+    [HideInInspector]
+    public bool readyToCountPath;
 
     public float nextWaypointDistance;
 
@@ -29,7 +29,8 @@ public class CountPath : MonoBehaviour
     {
         readyToCountPath = true;
         startPos = transform;
-        ThreadController.instance.search(this);
+        //readyToCountPath = false;
+        //ThreadController.instance.search(this);
     }
     void Update()
     {
@@ -41,11 +42,16 @@ public class CountPath : MonoBehaviour
         //    UnityEngine.Debug.DrawLine(startPos.position, endPos.position, Color.blue);
         //}
 
-        //if (autoCountPath)
-        //{
-        //    //FindPath(startPos.position, endPos.position);
-        //    ThreadController.instance.search(this);
-        //}
+        if (autoCountPath && readyToCountPath)
+        {
+            //FindPath(startPos.position, endPos.position);
+            //print("Starting count");
+            readyToCountPath = false;
+            Grid.openList.Clear();
+            Grid.closedList.Clear();
+            Grid.pathFound = false;
+            ThreadController.instance.SearchPathRequest(this);
+        }
         //else {
         //    if (Input.GetButtonDown("Jump"))
         //    {
@@ -53,45 +59,47 @@ public class CountPath : MonoBehaviour
         //    }
         //}
 
-        if (Input.GetButtonDown("Jump"))
-        {
-            Grid.openList.Clear();
-            Grid.closedList.Clear();
-            Grid.pathFound = false;
-            ThreadController.instance.search(this);
-        }
+        //if (Input.GetButtonDown("Jump"))
+        //{
+        //    Grid.openList.Clear();
+        //    Grid.closedList.Clear();
+        //    Grid.pathFound = false;
+        //    ThreadController.instance.search(this);
+        //}
 
     }
 
-    public void FindPath(Vector3 start, Vector3 goal)
-    {
-        if (readyToCountPath == false) {
-            return;
-        }
+    
+    
+    //public void FindPath(Vector3 start, Vector3 goal)
+    //{
+    //    if (readyToCountPath == false) {
+    //        return;
+    //    }
 
-        if (startPos == null || endPos == null) {
-            print("Missing start position or endposition");
-            return;
-        }
+    //    if (startPos == null || endPos == null) {
+    //        print("Missing start position or endposition");
+    //        return;
+    //    }
 
 
-        if (endPos.position != endPosition) {
-            Grid.openList.Clear();
-            Grid.closedList.Clear();
-            Grid.pathFound = false;
-            endPosition = endPos.position;
+    //    if (endPos.position != endPosition) {
+    //        Grid.openList.Clear();
+    //        Grid.closedList.Clear();
+    //        Grid.pathFound = false;
+    //        endPosition = endPos.position;
 
-            //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
-            pathArray = AStar.FindPath(start, goal);
-            //Check if path found
-            if (pathArray == null) {
-                print("Path not Found");
-                return;
-            }
-            //OnPathFound();
-        }
+    //        //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
+    //        pathArray = AStar.FindPath(start, goal);
+    //        //Check if path found
+    //        if (pathArray == null) {
+    //            print("Path not Found");
+    //            return;
+    //        }
+    //        //OnPathFound();
+    //    }
 
-    }
+    //}
 
     public void OnPathFound(Vector3[] newPath) {
         if (currentPath != null)
@@ -100,8 +108,9 @@ public class CountPath : MonoBehaviour
 
         }
         currentPath = movepath(newPath);
+        pathArray = newPath;
         StartCoroutine(currentPath);
-        StartCoroutine(PathCountDelay());
+
     }
 
     public IEnumerator movepath(Vector3[] pathArray) {

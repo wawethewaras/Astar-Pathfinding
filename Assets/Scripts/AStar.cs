@@ -12,20 +12,17 @@ public static class AStar
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
     private const float heurasticMultiplier = 2f;
 
-
     /// <summary>
     /// Creates path from startPos to targetPos using A*.
     /// </summary>
     /// <param name="startPos"></param>
     /// <param name="targetPos"></param>
     /// <returns></returns>
-    public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
+    public static Vector3[] FindPath(Node startNode, Node targetNode)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
-        Node startNode = Grid.instance.ClosestNodeFromWorldPoint(startPos);
-        Node targetNode = Grid.instance.ClosestNodeFromWorldPoint(targetPos);
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
@@ -39,7 +36,8 @@ public static class AStar
 
         openSet.Add(startNode);
         //For showing path counting 
-        if (Grid.instance.showGrid) {
+        if (Grid.instance.showGrid)
+        {
             Grid.openList.Add(startNode);
         }
 
@@ -51,12 +49,14 @@ public static class AStar
             closedSet.Add(node);
 
             //For showing path counting 
-            if (Grid.instance.showGrid) {
+            if (Grid.instance.showGrid)
+            {
                 Grid.closedList.Add(node);
             }
 
 
-            if (node == targetNode) {
+            if (node == targetNode)
+            {
                 //For testing path calculation. Can be removed from final version.
                 sw.Stop();
                 Vector3[] path = RetracePath(startNode, targetNode);
@@ -81,20 +81,24 @@ public static class AStar
                 //Calculate obstacles while creating path
                 //CheckIfNodeIsObstacle(neighbour);
 
-                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour)) {
+                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour))
+                {
                     continue;
                 }
 
                 int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
-                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false) {
+                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
+                {
                     neighbour.gCost = newCostToNeighbour;
                     neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * heurasticMultiplier);
                     neighbour.parent = node;
 
-                    if (!openSet.Contains(neighbour)) {
+                    if (!openSet.Contains(neighbour))
+                    {
                         openSet.Add(neighbour);
                         //For showing path counting 
-                        if (Grid.instance.showGrid) {
+                        if (Grid.instance.showGrid)
+                        {
                             Grid.openList.Add(neighbour);
                         }
                     }
@@ -106,6 +110,100 @@ public static class AStar
         }
         return null;
     }
+
+    ///// <summary>
+    ///// Creates path from startPos to targetPos using A*.
+    ///// </summary>
+    ///// <param name="startPos"></param>
+    ///// <param name="targetPos"></param>
+    ///// <returns></returns>
+    //public static Vector3[] FindPath(Vector3 startPos, Vector3 targetPos)
+    //{
+    //    Stopwatch sw = new Stopwatch();
+    //    sw.Start();
+
+    //    Node startNode = Grid.instance.ClosestNodeFromWorldPoint(startPos);
+    //    Node targetNode = Grid.instance.ClosestNodeFromWorldPoint(targetPos);
+    //    Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
+    //    Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
+
+    //    //Check if goal is inside collider
+    //    //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
+    //    if (/*colliders.Length > 0 || */targetNode.walkable == false || startNode.walkable == false)
+    //    {
+    //        UnityEngine.Debug.Log("Start or goal inside collider");
+    //        return null;
+    //    }
+
+    //    openSet.Add(startNode);
+    //    //For showing path counting 
+    //    if (Grid.instance.showGrid) {
+    //        Grid.openList.Add(startNode);
+    //    }
+
+    //    Grid.instance.GetNeighbours(startNode);
+
+    //    while (openSet.Count > 0)
+    //    {
+    //        Node node = openSet.RemoveFirst();
+    //        closedSet.Add(node);
+
+    //        //For showing path counting 
+    //        if (Grid.instance.showGrid) {
+    //            Grid.closedList.Add(node);
+    //        }
+
+
+    //        if (node == targetNode) {
+    //            //For testing path calculation. Can be removed from final version.
+    //            sw.Stop();
+    //            Vector3[] path = RetracePath(startNode, targetNode);
+    //            int pathLenght = 0;
+    //            for (int i = 0; i < path.Length - 1; i++)
+    //            {
+    //                pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
+    //            }
+    //            UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
+    //            Grid.pathFound = true;
+
+    //            return RetracePath(startNode, targetNode);
+    //        }
+
+    //        Node[] neighbours = Grid.instance.GetNeighbours(node);
+    //        Node neighbour;
+
+    //        for (int i = 0; i < neighbours.Length; i++)
+    //        {
+    //            neighbour = neighbours[i];
+
+    //            //Calculate obstacles while creating path
+    //            //CheckIfNodeIsObstacle(neighbour);
+
+    //            if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour)) {
+    //                continue;
+    //            }
+
+    //            int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
+    //            if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false) {
+    //                neighbour.gCost = newCostToNeighbour;
+    //                neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * heurasticMultiplier);
+    //                neighbour.parent = node;
+
+    //                if (!openSet.Contains(neighbour)) {
+    //                    openSet.Add(neighbour);
+    //                    //For showing path counting 
+    //                    if (Grid.instance.showGrid) {
+    //                        Grid.openList.Add(neighbour);
+    //                    }
+    //                }
+    //                else {
+    //                    openSet.UpdateItem(neighbour);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return null;
+    //}
 
     /// <summary>
     /// Creates path from startNode to targetNode
@@ -173,7 +271,7 @@ public static class AStar
         for (int i = 1; i < path.Length; i++)
         {
             security++;
-            if (security >= 100) {
+            if (security >= 1000) {
                 UnityEngine.Debug.LogError("Crash");
                 break;
             }

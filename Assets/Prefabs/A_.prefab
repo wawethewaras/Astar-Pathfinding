@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4796905228164072}
   - component: {fileID: 114090094100398366}
-  - component: {fileID: 114043003078739500}
   m_Layer: 0
   m_Name: A_
   m_TagString: Untagged
@@ -35,23 +34,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1231204983510750}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.4, y: 16.8, z: 0}
+  m_LocalPosition: {x: 22, y: 16.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114043003078739500
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1231204983510750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99a214ef21b0b8742a363c3569169036, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114090094100398366
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -63,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741754dc2e04e0049bb9c2642a461938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWorldSize: {x: 150, y: 150}
+  gridWorldSize: {x: 200, y: 200}
   nodeRadius: 1
   unwalkableMask:
     serializedVersion: 2

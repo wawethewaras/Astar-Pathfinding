@@ -18,7 +18,7 @@ public class ThreadController : MonoBehaviour {
                 as ThreadController;
                 if (s_Instance == null)
                 {
-                    UnityEngine.Debug.Log("Could not locate a PathRequestManager object. \n You have to have exactly one PathRequestManager in the scene.");
+                    UnityEngine.Debug.Log("Could not locate a ThreadController object. \n You have to have exactly one ThreadController in the scene.");
                     UnityEngine.Debug.Break();
                 }
 
@@ -27,51 +27,68 @@ public class ThreadController : MonoBehaviour {
         }
     }
 
-    List<Action> functionsToRunInMainThread;
+    private List<Action> functionsToRunInMainThread = new List<Action>();
+    private List<CountPath> pathRequests = new List<CountPath>();
 
-    Thread mainThread;
-    public Transform startPos, endPos;
+    private Thread currentThread;
+    private Vector3[] currentPath;
 
-    Thread currentThread;
-    public Vector3[] paths;
+    private bool readyToTakeNewPath = true;
 
-    void Start() {
-        mainThread = System.Threading.Thread.CurrentThread;
-
-        functionsToRunInMainThread = new List<Action>();
-        int rand = UnityEngine.Random.Range(0, 10);
-        Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.transform.position);
-        Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.transform.position);
-        //StartThreadedFunction(() => { slow(start, end); });
-    }
+    //void Awake() {
+    //    //readyToTakePath = true;
+    //    //functionsToRunInMainThread = new List<Action>();
+    //    //pathRequests = new List<CountPath>();
+    //    //Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.transform.position);
+    //    //Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.transform.position);
+    //    //StartThreadedFunction(() => { slow(start, end); });
+    //}
 
     void Update()
     {
+
         while (functionsToRunInMainThread.Count > 0) {
-            Action someFunc = functionsToRunInMainThread[0];
+            Action function = functionsToRunInMainThread[0];
             functionsToRunInMainThread.RemoveAt(0);
-            someFunc();
+            function();
+
+        }
+
+        while (pathRequests.Count > 0 && readyToTakeNewPath)
+        {
+            readyToTakeNewPath = false;
+            CountPath requester = pathRequests[0];
+            pathRequests.RemoveAt(0);
+            IEnumerator pathCount = CountPath(requester);
+            StartCoroutine(pathCount);
         }
     }
 
 
 
-    public void search(CountPath counter) {
-        counter.endPosition = counter.endPos.position; 
-        Node start = Grid.instance.ClosestNodeFromWorldPoint(counter.startPos.position);
-        Node end = Grid.instance.ClosestNodeFromWorldPoint(counter.endPos.position);
-        StartThreadedFunction(() => { slow(start, end); });
-        StartCoroutine(counting(counter));
+    public void SearchPathRequest(CountPath counter) {
+        pathRequests.Add(counter);
 
-        
+        //StartCoroutine(counting(counter));
+
+
     }
 
-    public IEnumerator counting(CountPath counter) {
+
+    public IEnumerator CountPath(CountPath requester) {
+        requester.endPosition = requester.endPos.position;
+        Node start = Grid.instance.ClosestNodeFromWorldPoint(requester.startPos.position);
+        Node end = Grid.instance.ClosestNodeFromWorldPoint(requester.endPos.position);
+        StartThreadedFunction(() => { FindPath(start, end); });
+        requester.readyToCountPath = false;
         while (currentThread.IsAlive)
         {
             yield return null;
         }
-        counter.OnPathFound(paths);
+
+        StartCoroutine(requester.PathCountDelay());
+        readyToTakeNewPath = true;
+        requester.OnPathFound(currentPath);
     }
 
     public void StartThreadedFunction(Action function) {
@@ -79,171 +96,19 @@ public class ThreadController : MonoBehaviour {
         currentThread.Start();
     }
 
-    public void QuesMainThread(Action function) {
+    public void QueFunctionToMainThread(Action function) {
         functionsToRunInMainThread.Add(function);
     }
 
-    void slow(Node startPos, Node targetPos) {
-        Vector3[] path = FindPath(startPos, targetPos);
+    void FindPath(Node startPos, Node targetPos) {
+        Vector3[] path = AStar.FindPath(startPos, targetPos);
         Action aFunction = () =>
         {
-            paths = path;
+            currentPath = path;
         };
-        QuesMainThread(aFunction);
+        QueFunctionToMainThread(aFunction);
     }
 
 
 
-    public static Vector3[] FindPath(Node startNode, Node targetNode)
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-
-        Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
-        Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
-
-        //Check if goal is inside collider
-        //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        if (/*colliders.Length > 0 || */targetNode.walkable == false || startNode.walkable == false)
-        {
-            UnityEngine.Debug.Log("Start or goal inside collider");
-            return null;
-        }
-
-        openSet.Add(startNode);
-        //For showing path counting 
-        if (Grid.instance.showGrid)
-        {
-            Grid.openList.Add(startNode);
-        }
-
-        Grid.instance.GetNeighbours(startNode);
-
-        while (openSet.Count > 0)
-        {
-            Node node = openSet.RemoveFirst();
-            closedSet.Add(node);
-
-            //For showing path counting 
-            if (Grid.instance.showGrid)
-            {
-                Grid.closedList.Add(node);
-            }
-
-
-            if (node == targetNode)
-            {
-                //For testing path calculation. Can be removed from final version.
-                sw.Stop();
-                Vector3[] path = RetracePath(startNode, targetNode);
-                int pathLenght = 0;
-                for (int i = 0; i < path.Length - 1; i++)
-                {
-                    pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
-                }
-                UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
-                Grid.pathFound = true;
-
-                return RetracePath(startNode, targetNode);
-            }
-
-            Node[] neighbours = Grid.instance.GetNeighbours(node);
-            Node neighbour;
-
-            for (int i = 0; i < neighbours.Length; i++)
-            {
-                neighbour = neighbours[i];
-
-                //Calculate obstacles while creating path
-                //CheckIfNodeIsObstacle(neighbour);
-
-                if (neighbour == null || !neighbour.walkable || closedSet.Contains(neighbour))
-                {
-                    continue;
-                }
-
-                int newCostToNeighbour = node.gCost + GetDistance(node, neighbour) + neighbour.movementPenalty;
-                if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
-                {
-                    neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, targetNode) * 2f);
-                    neighbour.parent = node;
-
-                    if (!openSet.Contains(neighbour))
-                    {
-                        openSet.Add(neighbour);
-                        //For showing path counting 
-                        if (Grid.instance.showGrid)
-                        {
-                            Grid.openList.Add(neighbour);
-                        }
-                    }
-                    else {
-                        openSet.UpdateItem(neighbour);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /// <summary>
-    /// Creates path from startNode to targetNode
-    /// </summary>
-    /// <param name="startNode"></param>
-    /// <param name="targetNode"></param>
-    /// <returns></returns>
-    public static Vector3[] RetracePath(Node startNode, Node targetNode)
-    {
-        if (startNode == targetNode)
-        {
-            Vector3[] shortPath = new Vector3[1];
-            shortPath[0] = targetNode.worldPosition;
-            return shortPath;
-        }
-        List<Vector3> path = new List<Vector3>();
-        Node currentNode = targetNode;
-        while (currentNode != startNode)
-        {
-            path.Add(currentNode.worldPosition);
-            currentNode = currentNode.parent;
-        }
-        //path.Reverse();
-        Vector3[] waypoints = path.ToArray();
-        Array.Reverse(waypoints);
-        return waypoints;
-
-
-    }
-
-    static int GetDistance(Node nodeA, Node nodeB)
-    {
-        int dstX = Abs(nodeA.gridX - nodeB.gridX);
-        int dstY = Abs(nodeA.gridY - nodeB.gridY);
-
-        if (dstX > dstY)
-            return 14 * dstY + 10 * (dstX - dstY);
-        return 14 * dstX + 10 * (dstY - dstX);
-    }
-
-    public static int Abs(int value)
-    {
-        if (value >= 0)
-            return value;
-        return -value;
-    }
-
-    //Draw path to gizmoz
-    public void OnDrawGizmos()
-    {
-        if (paths != null)
-        {
-            for (int i = 0; i < paths.Length - 1; i++)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(paths[i], Vector3.one);
-                Gizmos.DrawLine(paths[i], paths[i + 1]);
-            }
-        }
-    }
 }
