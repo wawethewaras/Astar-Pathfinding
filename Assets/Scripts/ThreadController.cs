@@ -27,22 +27,14 @@ public class ThreadController : MonoBehaviour {
         }
     }
 
-    private List<Action> functionsToRunInMainThread = new List<Action>();
-    private List<CountPath> pathRequests = new List<CountPath>();
+    private static List<Action> functionsToRunInMainThread = new List<Action>();
+    private static List<CountPath> pathRequests = new List<CountPath>();
 
-    private Thread currentThread;
-    private Vector3[] currentPath;
+    private static Thread currentThread;
+    private static Vector3[] currentPath;
 
-    private bool readyToTakeNewPath = true;
+    private static bool readyToTakeNewPath = true;
 
-    //void Awake() {
-    //    //readyToTakePath = true;
-    //    //functionsToRunInMainThread = new List<Action>();
-    //    //pathRequests = new List<CountPath>();
-    //    //Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.transform.position);
-    //    //Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.transform.position);
-    //    //StartThreadedFunction(() => { slow(start, end); });
-    //}
 
     void Update()
     {
@@ -64,18 +56,34 @@ public class ThreadController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Run function on other thread.
+    /// </summary>
+    /// <param name="function"></param>
+    public static void StartThreadedFunction(Action function)
+    {
+        currentThread = new Thread(new ThreadStart(function));
+        currentThread.Start();
+    }
 
+    /// <summary>
+    /// Que function to run it on main thread.
+    /// </summary>
+    /// <param name="function"></param>
+    public static void QueFunctionToMainThread(Action function)
+    {
+        functionsToRunInMainThread.Add(function);
+    }
 
-    public void SearchPathRequest(CountPath counter) {
-        pathRequests.Add(counter);
+    public static void SearchPathRequest(CountPath requester) {
+        pathRequests.Add(requester);
 
         //StartCoroutine(counting(counter));
 
 
     }
 
-
-    public IEnumerator CountPath(CountPath requester) {
+    public static IEnumerator CountPath(CountPath requester) {
         requester.endPosition = requester.endPos.position;
         Node start = Grid.instance.ClosestNodeFromWorldPoint(requester.startPos.position);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(requester.endPos.position);
@@ -86,27 +94,20 @@ public class ThreadController : MonoBehaviour {
             yield return null;
         }
 
-        StartCoroutine(requester.PathCountDelay());
+        requester.StartCoroutine(requester.PathCountDelay());
         readyToTakeNewPath = true;
         requester.OnPathFound(currentPath);
     }
 
-    public void StartThreadedFunction(Action function) {
-        currentThread = new Thread(new ThreadStart( function));
-        currentThread.Start();
-    }
 
-    public void QueFunctionToMainThread(Action function) {
-        functionsToRunInMainThread.Add(function);
-    }
 
-    void FindPath(Node startPos, Node targetPos) {
+    static void FindPath(Node startPos, Node targetPos) {
         Vector3[] path = AStar.FindPath(startPos, targetPos);
-        Action aFunction = () =>
+        Action calculationFinished = () =>
         {
             currentPath = path;
         };
-        QueFunctionToMainThread(aFunction);
+        QueFunctionToMainThread(calculationFinished);
     }
 
 

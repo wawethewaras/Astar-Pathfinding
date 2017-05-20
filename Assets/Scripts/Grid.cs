@@ -45,7 +45,7 @@ public class Grid : MonoBehaviour
     [Header("Advanced")]
     public bool showGrid;
     public bool cutCorners;
-
+    public bool useThreading;
 
     //This is for showing calculated path. This can be used to debug paths.
     public Transform player;

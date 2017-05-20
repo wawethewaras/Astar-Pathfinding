@@ -45,12 +45,7 @@ public class CountPath : MonoBehaviour
         if (autoCountPath && readyToCountPath)
         {
             //FindPath(startPos.position, endPos.position);
-            //print("Starting count");
-            readyToCountPath = false;
-            Grid.openList.Clear();
-            Grid.closedList.Clear();
-            Grid.pathFound = false;
-            ThreadController.instance.SearchPathRequest(this);
+            FindPath();
         }
         //else {
         //    if (Input.GetButtonDown("Jump"))
@@ -70,36 +65,32 @@ public class CountPath : MonoBehaviour
     }
 
     
-    
-    //public void FindPath(Vector3 start, Vector3 goal)
-    //{
-    //    if (readyToCountPath == false) {
-    //        return;
-    //    }
 
-    //    if (startPos == null || endPos == null) {
-    //        print("Missing start position or endposition");
-    //        return;
-    //    }
+    public void FindPath() {
+        if (startPos == null || endPos == null) {
+            print("Missing start position or endposition");
+            return;
+        }
+        if (endPos.position != endPosition) {
+            readyToCountPath = false;
+            Grid.openList.Clear();
+            Grid.closedList.Clear();
+            Grid.pathFound = false;
+            if (Grid.instance.useThreading)
+            {
+                ThreadController.SearchPathRequest(this);
 
-
-    //    if (endPos.position != endPosition) {
-    //        Grid.openList.Clear();
-    //        Grid.closedList.Clear();
-    //        Grid.pathFound = false;
-    //        endPosition = endPos.position;
-
-    //        //PathRequestManager.RequestPath(startPos.position, endPos.position, OnPathFound);
-    //        pathArray = AStar.FindPath(start, goal);
-    //        //Check if path found
-    //        if (pathArray == null) {
-    //            print("Path not Found");
-    //            return;
-    //        }
-    //        //OnPathFound();
-    //    }
-
-    //}
+            }
+            else {
+                endPosition = endPos.position;
+                Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.position);
+                Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.position);
+                Vector3[] newPath = AStar.FindPath(start, end);
+                OnPathFound(newPath);
+                StartCoroutine(PathCountDelay());
+            }
+        }
+    }
 
     public void OnPathFound(Vector3[] newPath) {
         if (currentPath != null)
