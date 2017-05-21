@@ -14,7 +14,7 @@
 * Updating nodes to check if they are walkable (Useful grids that are changing, but this is really expensive)
 * Option to change heuristics (Can change algorithm work like standard A*, Dijkstra's or greedy best first)
 * Use a Binary Heap to maintain your open list.
-
+* Option to run pathfinding on other thread
 
 ### Bugs
 
@@ -26,16 +26,14 @@
 ### ToDo
 
 * Improved inspector
-* Option to run pathfinding on other thread
-* React to other units (ex. Avoids other units moving in path=
+* React to other units (ex. Avoids other units moving in path)
 * Recalculate path if colliders around unit are changing
-
+* Precalculate grid
 
 
 ## Authors
 
-* **Mika Savolainen** - [@WaweTheWaras](https://twitter.com/WaweTheWaras)
-
+* **Mika Savolainen** - [@WaweTheWaras](https://twitter.com/WaweTheWaras) Feel free to ask any questions!
 
 
 ## License
