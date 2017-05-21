@@ -36,8 +36,7 @@ public class ThreadController : MonoBehaviour {
     private static bool readyToTakeNewPath = true;
 
 
-    void Update()
-    {
+    void Update() {
 
         while (functionsToRunInMainThread.Count > 0) {
             Action function = functionsToRunInMainThread[0];
@@ -78,24 +77,21 @@ public class ThreadController : MonoBehaviour {
     public static void SearchPathRequest(CountPath requester) {
         pathRequests.Add(requester);
 
-        //StartCoroutine(counting(counter));
-
-
     }
 
     public static IEnumerator CountPath(CountPath requester) {
-        requester.endPosition = requester.endPos.position;
         Node start = Grid.instance.ClosestNodeFromWorldPoint(requester.startPos.position);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(requester.endPos.position);
+
         StartThreadedFunction(() => { FindPath(start, end); });
-        requester.readyToCountPath = false;
+
         while (currentThread.IsAlive)
         {
             yield return null;
         }
+        readyToTakeNewPath = true;
 
         requester.StartCoroutine(requester.PathCountDelay());
-        readyToTakeNewPath = true;
         requester.OnPathFound(currentPath);
     }
 
