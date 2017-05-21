@@ -66,7 +66,7 @@ public static class AStar {
                     {
                         pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
                     }
-                    UnityEngine.Debug.Log("Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
+                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
                     Grid.pathFound = true;
                 }
 
@@ -109,6 +109,11 @@ public static class AStar {
                     }
                 }
             }
+        }
+        sw.Stop();
+        if (Grid.instance.showPathSearchDebug)
+        {
+            UnityEngine.Debug.Log("<color=red>Path not found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms.");
         }
         return null;
     }

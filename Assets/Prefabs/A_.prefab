@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4796905228164072}
   - component: {fileID: 114090094100398366}
+  - component: {fileID: 114434780598139926}
   m_Layer: 0
   m_Name: A_
   m_TagString: Untagged
@@ -65,6 +66,19 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 8192
     terrainPenalty: 30
-  showGrid: 1
+  showGrid: 0
   cutCorners: 0
+  useThreading: 1
+  showPathSearchDebug: 0
   player: {fileID: 0}
+--- !u!114 &114434780598139926
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1231204983510750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c53d84c0e1d7374ab67a4749b4424bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

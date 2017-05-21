@@ -99,7 +99,7 @@ public class CountPath : MonoBehaviour
 
     public IEnumerator movepath(Vector3[] pathArray) {
         if (pathArray == null) {
-            yield return null;
+            yield break;
         }
         for (int i = 0; i < pathArray.Length; i++) {
             while (startPos.transform.position != pathArray[i]) {
