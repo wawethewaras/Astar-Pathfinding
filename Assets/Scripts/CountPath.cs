@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-public class CountPath : MonoBehaviour
+public class CountPath : MonoBehaviour, Pathfinding
 {
     public Transform startPos, endPos;
     private Vector3[] pathArray;
@@ -53,8 +53,6 @@ public class CountPath : MonoBehaviour
 
     }
 
-    
-
     public void FindPath(Transform startPos, Transform endPos) {
         if (startPos == null || endPos == null) {
             print("Missing start position or endposition");
@@ -64,20 +62,15 @@ public class CountPath : MonoBehaviour
             endPosition = endPos.position;
             readyToCountPath = false;
 
-            //For showing path counting process. Resets grid.
-            Grid.openList.Clear();
-            Grid.closedList.Clear();
-            Grid.pathFound = false;
-
             if (Grid.instance.useThreading)
             {
-                ThreadController.SearchPathRequest(this);
+                ThreadController.SearchPathRequest(this, startPos.position, endPosition);
 
             }
             else {
 
                 Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos.position);
-                Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos.position);
+                Node end = Grid.instance.ClosestNodeFromWorldPoint(endPosition);
                 Vector3[] newPath = AStar.FindPath(start, end);
                 OnPathFound(newPath);
                 StartCoroutine(PathCountDelay());

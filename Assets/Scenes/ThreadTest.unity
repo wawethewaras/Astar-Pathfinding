@@ -1173,6 +1173,26 @@ Prefab:
       propertyPath: player
       value: 
       objectReference: {fileID: 87168459}
+    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
+        type: 2}
+      propertyPath: showGrid
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
+        type: 2}
+      propertyPath: cutCorners
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
+        type: 2}
+      propertyPath: nodeRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114090094100398366, guid: 42225a9e7edc275499b477dc41166eb4,
+        type: 2}
+      propertyPath: options
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 42225a9e7edc275499b477dc41166eb4, type: 2}
   m_IsPrefabParent: 0

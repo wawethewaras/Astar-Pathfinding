@@ -28,7 +28,7 @@ public class ThreadController : MonoBehaviour {
     }
 
     private static List<Action> functionsToRunInMainThread = new List<Action>();
-    private static List<CountPath> pathRequests = new List<CountPath>();
+    private static List<PathRequest> pathRequests = new List<PathRequest>();
 
     private static Thread currentThread;
     private static Vector3[] currentPath;
@@ -48,9 +48,9 @@ public class ThreadController : MonoBehaviour {
         while (pathRequests.Count > 0 && readyToTakeNewPath)
         {
             readyToTakeNewPath = false;
-            CountPath requester = pathRequests[0];
+            PathRequest requester = pathRequests[0];
             pathRequests.RemoveAt(0);
-            IEnumerator pathCount = CountPath(requester);
+            IEnumerator pathCount = CountPath(requester.requester, requester.startPosition, requester.endPosition);
             StartCoroutine(pathCount);
         }
     }
@@ -74,14 +74,20 @@ public class ThreadController : MonoBehaviour {
         functionsToRunInMainThread.Add(function);
     }
 
-    public static void SearchPathRequest(CountPath requester) {
-        pathRequests.Add(requester);
+    public static void SearchPathRequest(Pathfinding requester, Vector3 startPos, Vector3 endPos) {
+        //For showing path counting process. Resets grid.
+        Grid.openList.Clear();
+        Grid.closedList.Clear();
+        Grid.pathFound = false;
+
+        PathRequest request = new PathRequest(requester, startPos, endPos);
+        pathRequests.Add(request);
 
     }
 
-    public static IEnumerator CountPath(CountPath requester) {
-        Node start = Grid.instance.ClosestNodeFromWorldPoint(requester.startPos.position);
-        Node end = Grid.instance.ClosestNodeFromWorldPoint(requester.endPos.position);
+    public static IEnumerator CountPath(Pathfinding requester, Vector3 startPos, Vector3 endPos) {
+        Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
+        Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
 
         StartThreadedFunction(() => { FindPath(start, end); });
 
@@ -91,7 +97,7 @@ public class ThreadController : MonoBehaviour {
         }
         readyToTakeNewPath = true;
 
-        requester.StartCoroutine(requester.PathCountDelay());
+        instance.StartCoroutine(requester.PathCountDelay());
         requester.OnPathFound(currentPath);
     }
 
@@ -108,4 +114,16 @@ public class ThreadController : MonoBehaviour {
 
 
 
+}
+
+struct PathRequest{
+    public Vector3 startPosition;
+    public Vector3 endPosition;
+    public Pathfinding requester;
+
+    public PathRequest(Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition) {
+        startPosition = _startPosition;
+        endPosition = _endPosition;
+        requester = _requester;
+    }
 }

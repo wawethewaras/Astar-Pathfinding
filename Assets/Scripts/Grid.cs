@@ -42,11 +42,16 @@ public class Grid : MonoBehaviour {
 
     [Space(10)]
     [Header("Advanced")]
+    public pathting options;
     public bool showGrid;
-    public bool cutCorners;
     public bool useThreading;
     public bool showPathSearchDebug;
 
+    public enum pathting {
+        directional4,
+        directional8,
+        directional8CutCorners
+    }
 
     //This is for showing calculated path. This can be used to debug paths. Can be removed.
     public Transform player;
@@ -127,6 +132,9 @@ public class Grid : MonoBehaviour {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
 
+                if (options.Equals(pathting.directional4) && (Mathf.Abs(x) + Mathf.Abs(y) == 2)) {
+                    continue;
+                }
                 //Skip center node, because it is current node
                 if (x == 0 && y == 0)
                     continue;
@@ -144,7 +152,7 @@ public class Grid : MonoBehaviour {
                     //AStar.CheckIfNodeIsObstacle(newNode);
 
                     //Prevent corner cutting
-                    if (cutCorners == false && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
+                    if (options.Equals(pathting.directional8CutCorners) && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
                         continue;
                     }
                     else {
