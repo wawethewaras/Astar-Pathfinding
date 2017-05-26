@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 
 [System.Serializable]
 public class TerrainType {
@@ -332,20 +330,3 @@ public class Grid : MonoBehaviour {
 
 
 }
-
-//[CustomEditor(typeof(Grid))]
-//public class ObjectBuilderEditor : Editor
-//{
-
-//    public override void OnInspectorGUI()
-//    {
-//        DrawDefaultInspector();
-//        Grid myScript = (Grid)target;
-//        if (GUILayout.Button("Create grid"))
-//        {
-//            myScript.CreateGrid();
-//            EditorUtility.SetDirty(myScript);
-//        }
-//    }
-//}
-

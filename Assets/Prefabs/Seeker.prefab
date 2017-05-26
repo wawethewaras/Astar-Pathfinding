@@ -19,10 +19,11 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4074041793286640}
-  - component: {fileID: 114115421161080078}
   - component: {fileID: 50578471789034196}
   - component: {fileID: 212026538347354236}
   - component: {fileID: 58200205588977298}
+  - component: {fileID: 114115421161080078}
+  - component: {fileID: 114846821695562398}
   m_Layer: 11
   m_Name: Seeker
   m_TagString: Start
@@ -37,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1168495134495414}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -40.6, y: 88.1, z: 0}
+  m_LocalPosition: {x: -25.2, y: -70.1, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,12 +90,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3519c3e75c5ab8c40b319cac26f800bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPos: {fileID: 4074041793286640}
-  endPos: {fileID: 0}
-  intervalTime: 0.05
-  movespeed: 20
+  intervalTime: 0.1
+  endPosition: {x: 0, y: 0, z: 0}
+  movespeed: 50
+  readyToCountPath: 1
+  showPathSmoothing: 0
+--- !u!114 &114846821695562398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1168495134495414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2275519bed6a0341acb8d561f7ea99c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  readyToCountPath: 1
   autoCountPath: 1
-  nextWaypointDistance: 1
 --- !u!212 &212026538347354236
 SpriteRenderer:
   m_ObjectHideFlags: 1

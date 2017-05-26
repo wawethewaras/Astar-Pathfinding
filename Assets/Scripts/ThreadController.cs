@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System;
-using System.Diagnostics;
 
 public class ThreadController : MonoBehaviour {
 

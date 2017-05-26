@@ -16,9 +16,8 @@ public class SeekerController : MonoBehaviour {
         readyToCountPath = true;
     }
 
-    // Update is called once per frame
     void Update () {
-        if (autoCountPath && readyToCountPath)
+        if (autoCountPath)
         {
             counter.FindPath(transform, target);
         }

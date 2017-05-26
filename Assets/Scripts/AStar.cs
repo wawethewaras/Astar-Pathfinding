@@ -25,11 +25,9 @@ public static class AStar {
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
 
-        //Check if goal is inside collider
-        //Collider2D[] colliders = Physics2D.OverlapCircleAll(targetNode.worldPosition, Grid.instance.nodeRadius, Grid.instance.unwalkableMask);
-        if (/*colliders.Length > 0 || */goalNode.walkable == false || startNode.walkable == false)
+        if (goalNode.walkable == false || startNode.walkable == false)
         {
-            UnityEngine.Debug.Log("Start or goal inside collider");
+            UnityEngine.Debug.Log("Start or goal inside collider.");
             return null;
         }
 
