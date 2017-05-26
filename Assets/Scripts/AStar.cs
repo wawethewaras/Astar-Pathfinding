@@ -66,7 +66,7 @@ public static class AStar {
                     {
                         pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
                     }
-                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght);
+                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght + ". Heurastics: " + Grid.instance.heurasticMethod);
                     Grid.pathFound = true;
                 }
 
@@ -194,13 +194,29 @@ public static class AStar {
         return waypoints.ToArray();
 
     }
+
+    static int GetDistance(Node nodeA, Node nodeB)
+    {
+        if (Grid.instance.heurasticMethod == Grid.Heurastics.VectorMagnitude)
+        {
+            return GetDistance2(nodeA, nodeB);
+        }
+        else if (Grid.instance.heurasticMethod == Grid.Heurastics.Euclidean)
+        {
+            return GetDistance3(nodeA, nodeB);
+        }
+        else {
+            return GetDistance1(nodeA, nodeB);
+        }
+    }
+
     /// <summary>
     /// Gets heuristic distance from nodeA to nodeB using Manhattan distance
     /// </summary>
     /// <param name="nodeA"></param>
     /// <param name="nodeB"></param>
     /// <returns></returns>
-    static int GetDistance(Node nodeA, Node nodeB) {
+    static int GetDistance1(Node nodeA, Node nodeB) {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
@@ -209,5 +225,28 @@ public static class AStar {
         return 14 * dstX + 10 * (dstY - dstX);
     }
 
+    /// <summary>
+    /// Gets heuristic distance from nodeA to nodeB using basic distance
+    /// </summary>
+    /// <param name="nodeA"></param>
+    /// <param name="nodeB"></param>
+    /// <returns></returns>
+    static int GetDistance2(Node nodeA, Node nodeB) {
+        int distance = (int)((nodeA.worldPosition - nodeB.worldPosition).magnitude);
+        return distance;
+    }
 
+    /// <summary>
+    /// Gets heuristic distance from nodeA to nodeB using Euclidean distance
+    /// </summary>
+    /// <param name="nodeA"></param>
+    /// <param name="nodeB"></param>
+    /// <returns></returns>
+    static int GetDistance3(Node nodeA, Node nodeB)
+    {
+        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+
+        return 10 * (int)Mathf.Sqrt(dstX*dstX + dstY * dstY);
+    }
 }

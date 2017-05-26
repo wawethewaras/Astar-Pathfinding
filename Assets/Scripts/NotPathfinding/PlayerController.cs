@@ -2,7 +2,7 @@
 
 public class PlayerController : MonoBehaviour {
 
-    private Rigidbody2D rigidbody;
+    private new Rigidbody2D rigidbody;
     public float moveSpeed;
 
 

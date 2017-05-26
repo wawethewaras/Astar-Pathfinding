@@ -66,10 +66,11 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 8192
     terrainPenalty: 30
-  showGrid: 0
-  cutCorners: 0
+  options: 2
+  heurasticMethod: 1
+  showGrid: 1
   useThreading: 1
-  showPathSearchDebug: 0
+  showPathSearchDebug: 1
   player: {fileID: 0}
 --- !u!114 &114434780598139926
 MonoBehaviour:

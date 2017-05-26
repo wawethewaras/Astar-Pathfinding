@@ -43,6 +43,7 @@ public class Grid : MonoBehaviour {
     [Space(10)]
     [Header("Advanced")]
     public pathting options;
+    public Heurastics heurasticMethod;
     public bool showGrid;
     public bool useThreading;
     public bool showPathSearchDebug;
@@ -51,6 +52,12 @@ public class Grid : MonoBehaviour {
         directional4,
         directional8,
         directional8CutCorners
+    }
+    public enum Heurastics
+    {
+        VectorMagnitude,
+        Manhattan,
+        Euclidean
     }
 
     //This is for showing calculated path. This can be used to debug paths. Can be removed.
