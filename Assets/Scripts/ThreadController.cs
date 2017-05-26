@@ -112,7 +112,13 @@ public class ThreadController : MonoBehaviour {
         QueFunctionToMainThread(calculationFinished);
     }
 
+    void OnDisable()
+    {
+        if (currentThread != null) {
+            currentThread.Abort();
+        }
 
+    }
 
 }
 

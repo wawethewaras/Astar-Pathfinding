@@ -42,13 +42,13 @@ public class Grid : MonoBehaviour {
 
     [Space(10)]
     [Header("Advanced")]
-    public pathting options;
+    public Connections options;
     public Heurastics heurasticMethod;
     public bool showGrid;
     public bool useThreading;
     public bool showPathSearchDebug;
 
-    public enum pathting {
+    public enum Connections {
         directional4,
         directional8,
         directional8CutCorners
@@ -139,7 +139,7 @@ public class Grid : MonoBehaviour {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
 
-                if (options.Equals(pathting.directional4) && (Mathf.Abs(x) + Mathf.Abs(y) == 2)) {
+                if (options.Equals(Connections.directional4) && (Mathf.Abs(x) + Mathf.Abs(y) == 2)) {
                     continue;
                 }
                 //Skip center node, because it is current node
@@ -159,7 +159,7 @@ public class Grid : MonoBehaviour {
                     //AStar.CheckIfNodeIsObstacle(newNode);
 
                     //Prevent corner cutting
-                    if (options.Equals(pathting.directional8CutCorners) && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
+                    if (options.Equals(Connections.directional8CutCorners) && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
                         continue;
                     }
                     else {
