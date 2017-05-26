@@ -78,17 +78,17 @@ public class CountPath : MonoBehaviour, Pathfinding
 
                 if (i < pathArray.Length - 1)
                 {
-                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
-                    if (cantSeeTarget == false)
-                    {
-                        if (showPathSmoothing)
-                        {
-                            UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
-                        }
-                        i++;
+                    //bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
+                    //if (cantSeeTarget == false)
+                    //{
+                    //    if (showPathSmoothing)
+                    //    {
+                    //        UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                    //    }
+                    //    i++;
 
 
-                    }
+                    //}
                 }
                 else {
                     bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask);
