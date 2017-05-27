@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using pathfinding;
 
-
-public class CountPath : MonoBehaviour, Pathfinding
+public class CountPath : MonoBehaviour, pathfinding.Pathfinding
 {
     private Transform startPos, endPos;
     private Vector3[] pathArray;

@@ -26,6 +26,8 @@ public class ThreadController : MonoBehaviour {
         }
     }
 
+
+
     private static List<Action> functionsToRunInMainThread = new List<Action>();
     private static List<PathRequest> pathRequests = new List<PathRequest>();
 
@@ -73,7 +75,7 @@ public class ThreadController : MonoBehaviour {
         functionsToRunInMainThread.Add(function);
     }
 
-    public static void SearchPathRequest(Pathfinding requester, Vector3 startPos, Vector3 endPos) {
+    public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos) {
         //For showing path counting process. Resets grid.
         Grid.openList.Clear();
         Grid.closedList.Clear();
@@ -84,7 +86,7 @@ public class ThreadController : MonoBehaviour {
 
     }
 
-    public static IEnumerator CountPath(Pathfinding requester, Vector3 startPos, Vector3 endPos) {
+    public static IEnumerator CountPath(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos) {
         Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
 
@@ -124,9 +126,9 @@ public class ThreadController : MonoBehaviour {
 struct PathRequest{
     public Vector3 startPosition;
     public Vector3 endPosition;
-    public Pathfinding requester;
+    public pathfinding.Pathfinding requester;
 
-    public PathRequest(Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition) {
+    public PathRequest(pathfinding.Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition) {
         startPosition = _startPosition;
         endPosition = _endPosition;
         requester = _requester;

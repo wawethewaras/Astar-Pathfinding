@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace pathfinding { 
+    public interface Pathfinding
+    {
 
-public interface Pathfinding
-{
+        //void FindPathTest(Transform startPos, Transform endPos);
 
-    //void FindPathTest(Transform startPos, Transform endPos);
+        void OnPathFound(Vector3[] newPath);
 
-    void OnPathFound(Vector3[] newPath);
-
-    IEnumerator PathCountDelay();
+        IEnumerator PathCountDelay();
     
 
+    }
 }
 

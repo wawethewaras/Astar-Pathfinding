@@ -27,6 +27,9 @@ public class Grid : MonoBehaviour {
     public Vector2 gridWorldSize;
     public float nodeRadius;
     public float nodeDiameter { get { return nodeRadius * 2; } }
+    public float nearestNodeDistance;
+    public float collisionRadius;
+
     private Node[,] grid;    
     private int gridSizeX, gridSizeY;
 
@@ -38,13 +41,13 @@ public class Grid : MonoBehaviour {
     Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
 
 
-    [Space(10)]
-    [Header("Advanced")]
-    public Connections options;
-    public Heurastics heurasticMethod;
-    public bool showGrid;
-    public bool useThreading;
-    public bool showPathSearchDebug;
+    //[Space(10)]
+    //[Header("Advanced")]
+    [HideInInspector] public Connections options;
+    [HideInInspector] public Heurastics heurasticMethod;
+    [HideInInspector] public bool showGrid;
+    [HideInInspector] public bool useThreading;
+    [HideInInspector] public bool showPathSearchDebug;
 
     public enum Connections {
         directional4,
@@ -59,7 +62,7 @@ public class Grid : MonoBehaviour {
     }
 
     //This is for showing calculated path. This can be used to debug paths. Can be removed.
-    public Transform player;
+    private Transform player;
     public static List<Node> openList = new List<Node>();
     public static List<Node> closedList = new List<Node>();
     public static bool pathFound;
@@ -73,10 +76,12 @@ public class Grid : MonoBehaviour {
 
     void Awake()
     {
+        player = FindObjectOfType<PlayerController>().transform;
+
+
         AddWalkableRegionsToDictonary();
 
         CreateGrid();
-
     }
 
     public void AddWalkableRegionsToDictonary() {
@@ -107,7 +112,7 @@ public class Grid : MonoBehaviour {
             for (int y = 0; y < gridSizeY; y++) {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
 
-                bool walkable = (Physics2D.OverlapCircle(worldPoint, nodeRadius, unwalkableMask) == null);
+                bool walkable = (Physics2D.OverlapCircle(worldPoint, nodeRadius * collisionRadius, unwalkableMask) == null);
                 int movementPenalty = 0;
 
                 Collider2D[] hit = Physics2D.OverlapCircleAll(worldPoint,nodeRadius, walkableMask);
@@ -212,7 +217,7 @@ public class Grid : MonoBehaviour {
 
     Node FindWalkableInRadius(int centreX, int centreY, int radius)
     {
-        
+        if (radius > nearestNodeDistance) { return null; }
         for (int i = -radius; i <= radius; i++) {
             int verticalSearchX = i + centreX;
             int horizontalSearchY = i + centreY;
@@ -254,7 +259,6 @@ public class Grid : MonoBehaviour {
 
         }
         radius++;
-        if (radius > 10) { return null; }
         return FindWalkableInRadius(centreX, centreY, radius);
 
     }
@@ -265,7 +269,7 @@ public class Grid : MonoBehaviour {
 
     public static void CheckIfNodeIsObstacle(Node node) {
         ////Calculate obstacles while creating path
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(node.worldPosition, instance.nodeRadius, instance.unwalkableMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(node.worldPosition, instance.nodeRadius * instance.collisionRadius, instance.unwalkableMask);
         if (colliders.Length > 0)
         {
             node.walkable = false;
@@ -291,9 +295,11 @@ public class Grid : MonoBehaviour {
                     //        Gizmos.color = Color.black;
                     Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
+                if (player != null) {
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawCube(NodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
+                }
 
-                Gizmos.color = Color.blue;
-                Gizmos.DrawCube(NodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
             if (pathFound) {
                 //Shows nodes added to open list

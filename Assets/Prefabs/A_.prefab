@@ -35,7 +35,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1231204983510750}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22, y: 16.8, z: 0}
+  m_LocalPosition: {x: 18.4, y: 10.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -54,6 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridWorldSize: {x: 200, y: 200}
   nodeRadius: 1
+  nearestNodeDistance: 10
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 256
@@ -66,12 +67,11 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 8192
     terrainPenalty: 30
-  options: 2
-  heurasticMethod: 1
-  showGrid: 1
+  options: 0
+  heurasticMethod: 0
+  showGrid: 0
   useThreading: 1
-  showPathSearchDebug: 1
-  player: {fileID: 0}
+  showPathSearchDebug: 0
 --- !u!114 &114434780598139926
 MonoBehaviour:
   m_ObjectHideFlags: 1
