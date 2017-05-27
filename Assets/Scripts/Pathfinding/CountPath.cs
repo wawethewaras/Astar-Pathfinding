@@ -19,7 +19,7 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
     //Interval time between pathfinding
     public float intervalTime = 1.0f;
     public bool showPathSmoothing;
-
+    public bool usePathSmooting;
 
     public void FindPath(Transform _startPos, Transform _endPos) {
         if (!readyToCountPath) {
@@ -31,6 +31,18 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
             print("Missing start position or endposition");
             return;
         }
+
+        //Basic raycast if can move directly to end target
+        bool cantSeeTarget = Physics2D.Linecast(_startPos.transform.position, _endPos.position, Grid.instance.unwalkableMask);
+        if (cantSeeTarget == false)
+        {
+            Vector3[] newPath = new Vector3[1];
+            newPath[0] = _endPos.position;
+            OnPathFound(newPath);
+            StartCoroutine(PathCountDelay());
+            return;
+        }
+
         if (_endPos.position != endPosition) {
             endPosition = _endPos.position;
             readyToCountPath = false;
@@ -76,19 +88,19 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
                 ////    break;
                 ////}
 
-                if (i < pathArray.Length - 1)
+                if (usePathSmooting && i < pathArray.Length - 1)
                 {
-                    //bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
-                    //if (cantSeeTarget == false)
-                    //{
-                    //    if (showPathSmoothing)
-                    //    {
-                    //        UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
-                    //    }
-                    //    i++;
+                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, pathArray[i + 1], Grid.instance.unwalkableMask);
+                    if (cantSeeTarget == false)
+                    {
+                        if (showPathSmoothing)
+                        {
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                        }
+                        i++;
 
 
-                    //}
+                    }
                 }
                 else {
                     bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask);

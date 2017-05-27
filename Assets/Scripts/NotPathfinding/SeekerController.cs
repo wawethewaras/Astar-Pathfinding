@@ -7,13 +7,11 @@ public class SeekerController : MonoBehaviour {
 
     CountPath counter;
     public Transform target;
-    public bool readyToCountPath;
 
     public bool autoCountPath;
 
     void Start () {
         counter = GetComponent<CountPath>();
-        readyToCountPath = true;
     }
 
     void Update () {

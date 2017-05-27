@@ -81,7 +81,6 @@ public class Grid : MonoBehaviour {
 
     void Awake()
     {
-        player = FindObjectOfType<PlayerController>().transform;
 
 
         AddWalkableRegionsToDictonary();
@@ -108,6 +107,9 @@ public class Grid : MonoBehaviour {
 
 
     public void CreateGrid() {
+        player = FindObjectOfType<PlayerController>().transform;
+
+
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
@@ -294,7 +296,7 @@ public class Grid : MonoBehaviour {
             {
                 foreach (Node n in grid)
                 {
-                    Gizmos.color = (n.walkable) ? Color.white : Color.red;
+                    Gizmos.color = (n.walkable) ? new Color(255, 255, 255, 0.4f) : new Color(255, 0, 0, 0.4f);
                     //if (path != null)
                     //    if (path.Contains(n))
                     //        Gizmos.color = Color.black;
@@ -302,7 +304,7 @@ public class Grid : MonoBehaviour {
                 }
                 if (player != null) {
                     Gizmos.color = Color.blue;
-                    Gizmos.DrawCube(NodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
+                    Gizmos.DrawCube(ClosestNodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
 
             }

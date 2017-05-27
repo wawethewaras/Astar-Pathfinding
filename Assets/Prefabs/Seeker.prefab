@@ -90,11 +90,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3519c3e75c5ab8c40b319cac26f800bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intervalTime: 0.1
-  endPosition: {x: 0, y: 0, z: 0}
   movespeed: 50
-  readyToCountPath: 1
+  intervalTime: 0.1
   showPathSmoothing: 0
+  usePathSmooting: 1
 --- !u!114 &114846821695562398
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,7 +106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  readyToCountPath: 1
   autoCountPath: 1
 --- !u!212 &212026538347354236
 SpriteRenderer:

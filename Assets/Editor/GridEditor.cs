@@ -5,9 +5,7 @@ using UnityEditorInternal;
 using UnityEngine;
 
 [CustomEditor(typeof(Grid))]
-public class ObjectBuilderEditor : Editor
-{
-    bool grid = true;
+public class ObjectBuilderEditor : Editor {
     bool layers = true;
     bool advanced = true;
 
@@ -38,7 +36,7 @@ public class ObjectBuilderEditor : Editor
         myScript.gridWorldSize = EditorGUILayout.Vector2Field("Grid size: ",myScript.gridWorldSize);
         myScript.nodeRadius = EditorGUILayout.FloatField("Node radius: ", myScript.nodeRadius);
         myScript.nearestNodeDistance = EditorGUILayout.FloatField("Nearest node distance: ", myScript.nearestNodeDistance);
-        myScript.collisionRadius = EditorGUILayout.FloatField("Collision radius: ", myScript.collisionRadius);
+        myScript.collisionRadius = EditorGUILayout.Slider("Collision radius: ", myScript.collisionRadius, 0, 3);
         EditorGUILayout.Space();
         GUIStyle style = EditorStyles.foldout;
         FontStyle previousStyle = style.fontStyle;
