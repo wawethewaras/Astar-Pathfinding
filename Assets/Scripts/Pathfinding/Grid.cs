@@ -7,6 +7,7 @@ public class TerrainType {
     public int terrainPenalty;
 }
 
+[RequireComponent(typeof(ThreadController))]
 public class Grid : MonoBehaviour {
 
     private static Grid s_Instance = null;
@@ -33,8 +34,8 @@ public class Grid : MonoBehaviour {
     private Node[,] grid;    
     private int gridSizeX, gridSizeY;
 
-    [Space(10)]
-    [Header("LAYERS")]
+    //[Space(10)]
+    //[Header("LAYERS")]
     public LayerMask unwalkableMask;
     public TerrainType[] walkableRegions;
     private LayerMask walkableMask;
@@ -43,11 +44,15 @@ public class Grid : MonoBehaviour {
 
     //[Space(10)]
     //[Header("Advanced")]
-    [HideInInspector] public Connections options;
-    [HideInInspector] public Heurastics heurasticMethod;
-    [HideInInspector] public bool showGrid;
-    [HideInInspector] public bool useThreading;
-    [HideInInspector] public bool showPathSearchDebug;
+    public Connections options;
+    public Heurastics heurasticMethod;
+    public bool showGrid;
+    public bool useThreading;
+    public bool showPathSearchDebug;
+
+    //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
+    public float heurasticMultiplier = 1;
+
 
     public enum Connections {
         directional4,

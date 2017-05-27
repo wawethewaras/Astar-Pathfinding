@@ -5,8 +5,8 @@ using System;
 
 public static class AStar {
 
-    //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-    private const float heurasticMultiplier = 2f;
+    ////Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
+    //private const float heurasticMultiplier = 2f;
 
 
     /// <summary>
@@ -89,7 +89,7 @@ public static class AStar {
                 if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
                 {
                     neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode) * heurasticMultiplier);
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode) * Grid.instance.heurasticMultiplier);
                     neighbour.parent = currentNode;
 
                     if (openSet.Contains(neighbour) == false)

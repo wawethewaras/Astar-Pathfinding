@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Threading;
 using System;
 
+[RequireComponent(typeof(Grid))]
 public class ThreadController : MonoBehaviour {
 
     private static ThreadController s_Instance = null;
@@ -25,8 +26,6 @@ public class ThreadController : MonoBehaviour {
             return s_Instance;
         }
     }
-
-
 
     private static List<Action> functionsToRunInMainThread = new List<Action>();
     private static List<PathRequest> pathRequests = new List<PathRequest>();
