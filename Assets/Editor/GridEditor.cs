@@ -79,12 +79,28 @@ public class ObjectBuilderEditor : Editor {
         }
 
 
-        EditorUtility.SetDirty(myScript);
 
-        if (GUILayout.Button("Test grid"))
+        EditorGUILayout.Space();
+        EditorGUILayout.Space();
+        EditorGUILayout.Space();
+
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("Test grid", GUILayout.Width(300), GUILayout.Height(30)))
         {
             myScript.CreateGrid();
         }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+
+        EditorUtility.SetDirty(myScript);
     }
 
 

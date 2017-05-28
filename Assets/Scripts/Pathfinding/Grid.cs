@@ -26,10 +26,10 @@ public class Grid : MonoBehaviour {
 
     [Header("GRID")]
     public Vector2 gridWorldSize;
-    public float nodeRadius;
+    public float nodeRadius = 1;
     public float nodeDiameter { get { return nodeRadius * 2; } }
-    public float nearestNodeDistance;
-    public float collisionRadius;
+    public float nearestNodeDistance = 10;
+    public float collisionRadius = 1;
 
     private Node[,] grid;    
     private int gridSizeX, gridSizeY;
@@ -44,14 +44,13 @@ public class Grid : MonoBehaviour {
 
     //[Space(10)]
     //[Header("Advanced")]
-    public Connections options;
-    public Heurastics heurasticMethod;
-    public bool showGrid;
-    public bool useThreading;
-    public bool showPathSearchDebug;
-
+    public Connections options = Connections.directional8CutCorners;
+    public Heurastics heurasticMethod = Heurastics.Manhattan;
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-    public float heurasticMultiplier = 1;
+    public float heurasticMultiplier = 2;
+    public bool showGrid;
+    public bool showPathSearchDebug;
+    public bool useThreading = true;
 
 
     public enum Connections {

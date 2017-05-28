@@ -52,8 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741754dc2e04e0049bb9c2642a461938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWorldSize: {x: 300, y: 300}
-  nodeRadius: 1
+  gridWorldSize: {x: 400, y: 400}
+  nodeRadius: 3
   nearestNodeDistance: 10
   collisionRadius: 1
   unwalkableMask:
@@ -70,10 +70,10 @@ MonoBehaviour:
     terrainPenalty: 30
   options: 2
   heurasticMethod: 1
+  heurasticMultiplier: 1.5
   showGrid: 1
-  useThreading: 0
   showPathSearchDebug: 0
-  heurasticMultiplier: 0
+  useThreading: 1
 --- !u!114 &114434780598139926
 MonoBehaviour:
   m_ObjectHideFlags: 1

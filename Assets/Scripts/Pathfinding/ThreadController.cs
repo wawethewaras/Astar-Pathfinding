@@ -75,11 +75,6 @@ public class ThreadController : MonoBehaviour {
     }
 
     public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos) {
-        //For showing path counting process. Resets grid.
-        Grid.openList.Clear();
-        Grid.closedList.Clear();
-        Grid.pathFound = false;
-
         PathRequest request = new PathRequest(requester, startPos, endPos);
         pathRequests.Add(request);
 

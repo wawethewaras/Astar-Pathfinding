@@ -8,6 +8,8 @@ public static class AStar {
     ////Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
     //private const float heurasticMultiplier = 2f;
 
+    //Max nodes to count. This will prevent counting the whole grid if target is unreachable.
+    private const int closedListMaxCount =  2000;
 
     /// <summary>
     /// Creates path from startPos to targetPos using A*.
@@ -20,6 +22,11 @@ public static class AStar {
         //How long will path founding take
         Stopwatch sw = new Stopwatch();
         sw.Start();
+        //For showing path counting process. Resets grid.
+        Grid.openList.Clear();
+        Grid.closedList.Clear();
+        Grid.pathFound = false;
+
 
 
         Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
@@ -69,6 +76,10 @@ public static class AStar {
                 }
 
                 return RetracePath(startNode, goalNode);
+            }
+
+            if (closedSet.Count > closedListMaxCount) {
+                return null;
             }
 
             Node[] neighbours = Grid.instance.GetNeighbours(currentNode);
