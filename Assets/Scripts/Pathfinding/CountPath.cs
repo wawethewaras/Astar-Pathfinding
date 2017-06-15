@@ -4,7 +4,8 @@ using pathfinding;
 
 public class CountPath : MonoBehaviour, pathfinding.Pathfinding
 {
-    private Transform startPos, endPos;
+    private Transform startPos;
+    private Vector3 endPos;
     private Vector3[] pathArray;
 
 
@@ -21,45 +22,36 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
     public bool showPathSmoothing;
     public bool usePathSmooting;
 
-    public void FindPath(Transform _startPos, Transform _endPos) {
+    public void FindPath(Transform _seeker, Vector3 _endPos) {
         if (!readyToCountPath) {
             return;
         }
-        startPos = _startPos;
-        endPos = _endPos;
-        if (_startPos == null || _endPos == null) {
-            print("Missing start position or endposition");
+
+        else if (_seeker == null) {
+            Debug.LogError("Missing seeker!",this);
             return;
         }
 
+        startPos = _seeker;
+        endPos = _endPos;
+        Grid grid = Grid.instance;
+
         //Basic raycast if can move directly to end target
-        bool cantSeeTarget = Physics2D.Linecast(_startPos.transform.position, _endPos.position, Grid.instance.unwalkableMask);
+        bool cantSeeTarget = Physics2D.Linecast(_seeker.transform.position, _endPos, grid.unwalkableMask);
         if (cantSeeTarget == false)
         {
             Vector3[] newPath = new Vector3[1];
-            newPath[0] = _endPos.position;
+            newPath[0] = _endPos;
             OnPathFound(newPath);
             StartCoroutine(PathCountDelay());
             return;
         }
 
-        if (_endPos.position != endPosition) {
-            endPosition = _endPos.position;
+        if (_endPos != endPosition) {
+            endPosition = _endPos;
             readyToCountPath = false;
 
-            if (Grid.instance.useThreading)
-            {
-                ThreadController.SearchPathRequest(this, _startPos.position, endPosition);
-
-            }
-            else {
-
-                Node start = Grid.instance.ClosestNodeFromWorldPoint(_startPos.position);
-                Node end = Grid.instance.ClosestNodeFromWorldPoint(endPosition);
-                Vector3[] newPath = AStar.FindPath(start, end);
-                OnPathFound(newPath);
-                StartCoroutine(PathCountDelay());
-            }
+            ThreadController.SearchPathRequest(this, _seeker.position, endPosition, grid);
         }
     }
 
@@ -103,12 +95,12 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
                     }
                 }
                 else {
-                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos.position, Grid.instance.unwalkableMask);
+                    bool cantSeeTarget = Physics2D.Linecast(startPos.transform.position, endPos, Grid.instance.unwalkableMask);
                     if (cantSeeTarget == false)
                     {
                         if (showPathSmoothing)
                         {
-                            UnityEngine.Debug.DrawLine(startPos.transform.position, endPos.position, Color.black, 10);
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, endPos, Color.black, 10);
 
                         }
                         break;
@@ -130,14 +122,14 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
             }
         }
         while (true) {
-            Vector2 target_pos = endPos.position;
+            Vector2 target_pos = endPos;
             Vector2 my_pos = transform.position;
             target_pos.x = target_pos.x - my_pos.x;
             target_pos.y = target_pos.y - my_pos.y;
             float angle = Mathf.Atan2(target_pos.y, target_pos.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
-            startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, endPos.position, Time.deltaTime * movespeed);
+            startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, endPos, Time.deltaTime * movespeed);
             //Vector3 direction = (endPosition - startPos.transform.position).normalized * 100; ;
             //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
             yield return null;

@@ -15,14 +15,13 @@ public class SeekerController : MonoBehaviour {
     }
 
     void Update () {
-        if (autoCountPath)
+        if (autoCountPath && target != null)
         {
-            counter.FindPath(transform, target);
+            counter.FindPath(transform, target.position);
         }
         else {
-            if (Input.GetButtonDown("Jump"))
-            {
-                counter.FindPath(transform, target);
+            if (Input.GetMouseButtonDown(0)) {
+                counter.FindPath(transform, Camera.main.ScreenToWorldPoint(Input.mousePosition));
             }
         }
     }

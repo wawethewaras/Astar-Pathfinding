@@ -9,7 +9,7 @@ public static class AStar {
     //private const float heurasticMultiplier = 2f;
 
     //Max nodes to count. This will prevent counting the whole grid if target is unreachable.
-    private const int closedListMaxCount =  2000;
+    private const int closedListMaxCount =  10000;
 
     /// <summary>
     /// Creates path from startPos to targetPos using A*.
@@ -17,7 +17,7 @@ public static class AStar {
     /// <param name="startPos"></param>
     /// <param name="targetPos"></param>
     /// <returns></returns>
-    public static Vector3[] FindPath(Node startNode, Node goalNode)
+    public static Vector3[] FindPath(Node startNode, Node goalNode, Grid grid)
     {
         //How long will path founding take
         Stopwatch sw = new Stopwatch();
@@ -29,8 +29,8 @@ public static class AStar {
 
 
 
-        Heap<Node> openSet = new Heap<Node>(Grid.instance.Maxsize);
-        Heap<Node> closedSet = new Heap<Node>(Grid.instance.Maxsize);
+        Heap<Node> openSet = new Heap<Node>(grid.Maxsize);
+        Heap<Node> closedSet = new Heap<Node>(grid.Maxsize);
 
         if (goalNode.walkable == false || startNode.walkable == false)
         {
@@ -41,7 +41,7 @@ public static class AStar {
 
         openSet.Add(startNode);
         //For showing path counting 
-        if (Grid.instance.showGrid)
+        if (grid.showGrid)
         {
             Grid.openList.Add(startNode);
         }
@@ -53,7 +53,7 @@ public static class AStar {
             closedSet.Add(currentNode);
 
             //For showing path counting 
-            if (Grid.instance.showGrid)
+            if (grid.showGrid)
             {
                 Grid.closedList.Add(currentNode);
             }
@@ -63,7 +63,7 @@ public static class AStar {
             {
                 //For testing path calculation. Can be removed from final version.
                 sw.Stop();
-                if (Grid.instance.showPathSearchDebug)
+                if (grid.showPathSearchDebug)
                 {
                     Vector3[] path = RetracePath(startNode, goalNode);
                     int pathLenght = 0;
@@ -71,7 +71,7 @@ public static class AStar {
                     {
                         pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
                     }
-                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght + ". Heurastics: " + Grid.instance.heurasticMethod);
+                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght + ". Heurastics: " + grid.heurasticMethod);
                     Grid.pathFound = true;
                 }
 
@@ -82,7 +82,7 @@ public static class AStar {
                 return null;
             }
 
-            Node[] neighbours = Grid.instance.GetNeighbours(currentNode);
+            Node[] neighbours = grid.GetNeighbours(currentNode);
 
             for (int i = 0; i < neighbours.Length; i++)
             {
@@ -96,11 +96,11 @@ public static class AStar {
                     continue;
                 }
 
-                int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty;
+                int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour, grid) + neighbour.movementPenalty;
                 if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
                 {
                     neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode) * Grid.instance.heurasticMultiplier);
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode, grid) * grid.heurasticMultiplier);
                     neighbour.parent = currentNode;
 
                     if (openSet.Contains(neighbour) == false)
@@ -108,7 +108,7 @@ public static class AStar {
                         openSet.Add(neighbour);
 
                         //For showing path counting 
-                        if (Grid.instance.showGrid)
+                        if (grid.showGrid)
                         {
                             Grid.openList.Add(neighbour);
                         }
@@ -120,7 +120,7 @@ public static class AStar {
             }
         }
         sw.Stop();
-        if (Grid.instance.showPathSearchDebug)
+        if (grid.showPathSearchDebug)
         {
             UnityEngine.Debug.Log("<color=red>Path not found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms.");
         }
@@ -177,7 +177,7 @@ public static class AStar {
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static Vector3[] pathSmooter(Vector3[] path) {
+    public static Vector3[] pathSmooter(Vector3[] path, Grid grid) {
         List<Vector3> waypoints = new List<Vector3>();
         int currentNode = 0;
         waypoints.Add(path[0]);
@@ -190,7 +190,7 @@ public static class AStar {
                 UnityEngine.Debug.LogError("Crash");
                 break;
             }
-            bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], Grid.instance.unwalkableMask);
+            bool cantSeeTarget = Physics2D.Linecast(path[currentNode], path[i], grid.unwalkableMask);
             if (cantSeeTarget)
             {
                 waypoints.Add(path[i - 1]);
@@ -204,13 +204,13 @@ public static class AStar {
 
     }
 
-    static int GetDistance(Node nodeA, Node nodeB)
+    static int GetDistance(Node nodeA, Node nodeB, Grid grid)
     {
-        if (Grid.instance.heurasticMethod == Grid.Heurastics.VectorMagnitude)
+        if (grid.heurasticMethod == Grid.Heurastics.VectorMagnitude)
         {
             return GetDistance2(nodeA, nodeB);
         }
-        else if (Grid.instance.heurasticMethod == Grid.Heurastics.Euclidean)
+        else if (grid.heurasticMethod == Grid.Heurastics.Euclidean)
         {
             return GetDistance3(nodeA, nodeB);
         }

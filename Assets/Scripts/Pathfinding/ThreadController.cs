@@ -50,7 +50,7 @@ public class ThreadController : MonoBehaviour {
             readyToTakeNewPath = false;
             PathRequest requester = pathRequests[0];
             pathRequests.RemoveAt(0);
-            IEnumerator pathCount = CountPath(requester.requester, requester.startPosition, requester.endPosition);
+            IEnumerator pathCount = CountPath(requester.requester, requester.startPosition, requester.endPosition, requester.grid);
             StartCoroutine(pathCount);
         }
     }
@@ -74,17 +74,27 @@ public class ThreadController : MonoBehaviour {
         functionsToRunInMainThread.Add(function);
     }
 
-    public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos) {
-        PathRequest request = new PathRequest(requester, startPos, endPos);
-        pathRequests.Add(request);
+    public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos, Grid grid) {
+        if (grid.useThreading)
+        {
+            PathRequest request = new PathRequest(requester, startPos, endPos, grid);
+            pathRequests.Add(request);
+        }
+        else {
+            Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
+            Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
+            Vector3[] newPath = AStar.FindPath(start, end, Grid.instance);
+            requester.OnPathFound(newPath);
+            instance.StartCoroutine(requester.PathCountDelay());
+        }
 
     }
 
-    public static IEnumerator CountPath(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos) {
+    public static IEnumerator CountPath(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos, Grid grid) {
         Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
 
-        StartThreadedFunction(() => { FindPath(start, end); });
+        StartThreadedFunction(() => { FindPath(start, end, grid); });
 
         while (currentThread.IsAlive)
         {
@@ -98,8 +108,8 @@ public class ThreadController : MonoBehaviour {
 
 
 
-    static void FindPath(Node startPos, Node targetPos) {
-        Vector3[] path = AStar.FindPath(startPos, targetPos);
+    static void FindPath(Node startPos, Node targetPos, Grid grid) {
+        Vector3[] path = AStar.FindPath(startPos, targetPos, grid);
         Action calculationFinished = () =>
         {
             currentPath = path;
@@ -121,10 +131,12 @@ struct PathRequest{
     public Vector3 startPosition;
     public Vector3 endPosition;
     public pathfinding.Pathfinding requester;
+    public Grid grid;
 
-    public PathRequest(pathfinding.Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition) {
+    public PathRequest(pathfinding.Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition, Grid _grid) {
         startPosition = _startPosition;
         endPosition = _endPosition;
         requester = _requester;
+        grid = _grid;
     }
 }

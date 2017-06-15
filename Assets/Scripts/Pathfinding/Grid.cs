@@ -31,7 +31,7 @@ public class Grid : MonoBehaviour {
     public float nearestNodeDistance = 10;
     public float collisionRadius = 1;
 
-    private Node[,] grid;    
+    public Node[,] grid;    
     private int gridSizeX, gridSizeY;
 
     //[Space(10)]
@@ -44,7 +44,7 @@ public class Grid : MonoBehaviour {
 
     //[Space(10)]
     //[Header("Advanced")]
-    public Connections options = Connections.directional8CutCorners;
+    public Connections options = Connections.directional8DontCutCorners;
     public Heurastics heurasticMethod = Heurastics.Manhattan;
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
     public float heurasticMultiplier = 2;
@@ -56,7 +56,7 @@ public class Grid : MonoBehaviour {
     public enum Connections {
         directional4,
         directional8,
-        directional8CutCorners
+        directional8DontCutCorners
     }
     public enum Heurastics
     {
@@ -114,11 +114,14 @@ public class Grid : MonoBehaviour {
 
         grid = new Node[gridSizeX, gridSizeY];
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
+        int walk = 0;
+        int obs = 0;
         for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
 
                 bool walkable = (Physics2D.OverlapCircle(worldPoint, nodeRadius * collisionRadius, unwalkableMask) == null);
+                if (walkable) { walk++; } else { obs++; }
                 int movementPenalty = 0;
 
                 Collider2D[] hit = Physics2D.OverlapCircleAll(worldPoint,nodeRadius, walkableMask);
@@ -138,6 +141,7 @@ public class Grid : MonoBehaviour {
 
             }
         }
+        print("Walk: " + walk + " Obs: " + obs);
     }
 
 
@@ -168,7 +172,7 @@ public class Grid : MonoBehaviour {
                     //AStar.CheckIfNodeIsObstacle(newNode);
 
                     //Prevent corner cutting
-                    if (options.Equals(Connections.directional8CutCorners) && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
+                    if (options.Equals(Connections.directional8DontCutCorners) && (grid[checkX, checkY].walkable == false || grid[checkX, node.gridY].walkable == false || grid[node.gridX, checkY].walkable == false)) {
                         continue;
                     }
                     else {

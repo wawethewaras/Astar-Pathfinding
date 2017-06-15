@@ -20,6 +20,10 @@ public class ObjectBuilderEditor : Editor {
     {
         //DrawDefaultInspector();
         Grid myScript = (Grid)target;
+        if (myScript.grid != null)
+        {
+            string tempsad = myScript.grid.Length.ToString();
+        }
 
         //grid = EditorGUILayout.Foldout(grid, "Grid");
         EditorGUILayout.Space();
