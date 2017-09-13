@@ -1,34 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
 using pathfinding;
+using System.Diagnostics;
 
 public class CountPath : MonoBehaviour, pathfinding.Pathfinding
 {
     private Transform startPos;
-    private Vector3 endPos;
-    private Vector3[] pathArray;
-
+    private Vector2 endPos;
+    private Vector2[] pathArray;
 
 
     private IEnumerator currentPath;
-    private Vector3 endPosition;
+    private Vector2 endPosition;
     private bool readyToCountPath = true;
 
 
     public float movespeed;
 
     //Interval time between pathfinding
-    public float intervalTime = 1.0f;
-    public bool showPathSmoothing;
-    public bool usePathSmooting;
+    [SerializeField]
+    private float intervalTime = 1.0f;
+    [SerializeField]
+    private bool usePathSmooting;
+    [SerializeField]
+    private bool showPathSmoothing;
 
-    public void FindPath(Transform _seeker, Vector3 _endPos) {
+    public void FindPath(Transform _seeker, Vector2 _endPos) {
         if (!readyToCountPath) {
             return;
         }
 
         else if (_seeker == null) {
-            Debug.LogError("Missing seeker!",this);
+            UnityEngine.Debug.LogError("Missing seeker!",this);
             return;
         }
 
@@ -37,25 +40,34 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
         Grid grid = Grid.instance;
 
         //Basic raycast if can move directly to end target
-        bool cantSeeTarget = Physics2D.Linecast(_seeker.transform.position, _endPos, grid.unwalkableMask);
-        if (cantSeeTarget == false)
-        {
-            Vector3[] newPath = new Vector3[1];
-            newPath[0] = _endPos;
-            OnPathFound(newPath);
-            StartCoroutine(PathCountDelay());
-            return;
-        }
+
+        //bool cantSeeTarget = Physics2D.Linecast(_seeker.transform.position, _endPos, grid.unwalkableMask);
+        //if (cantSeeTarget == false)
+        //{
+        //    Vector2[] newPath = new Vector2[1];
+        //    newPath[0] = _endPos;
+        //    OnPathFound(newPath);
+        //    sw.Stop();
+        //    print("Time took to find path: " + sw.ElapsedMilliseconds);
+        //    StartCoroutine(PathCountDelay());
+        //    return;
+        //}
 
         if (_endPos != endPosition) {
             endPosition = _endPos;
-            readyToCountPath = false;
-
             ThreadController.SearchPathRequest(this, _seeker.position, endPosition, grid);
+
         }
     }
+    //This has not been tested
+    public void StopMovement() {
+        if (currentPath != null) {
+            StopCoroutine(currentPath);
+        }
 
-    public void OnPathFound(Vector3[] newPath) {
+    }
+
+    public void OnPathFound(Vector2[] newPath) {
         if (currentPath != null)
         {
             StopCoroutine(currentPath);
@@ -67,12 +79,12 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
 
     }
 
-    public IEnumerator movepath(Vector3[] pathArray) {
+    public IEnumerator movepath(Vector2[] pathArray) {
         if (pathArray == null) {
             yield break;
         }
         for (int i = 0; i < pathArray.Length; i++) {
-            while (startPos.transform.position != pathArray[i]) {
+            while ((Vector2)startPos.transform.position != pathArray[i]) {
 
                 ////if (Physics2D.Linecast(startPos.transform.position, endPosition, Grid.instance.unwalkableMask) == false)
                 ////{
@@ -87,7 +99,7 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
                     {
                         if (showPathSmoothing)
                         {
-                            UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.black, 10);
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, pathArray[i + 1], Color.white, 10);
                         }
                         i++;
 
@@ -100,7 +112,7 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
                     {
                         if (showPathSmoothing)
                         {
-                            UnityEngine.Debug.DrawLine(startPos.transform.position, endPos, Color.black, 10);
+                            UnityEngine.Debug.DrawLine(startPos.transform.position, endPos, Color.white, 10);
 
                         }
                         break;
@@ -114,8 +126,8 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
                 float angle = Mathf.Atan2(target_pos.y, target_pos.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
-                startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime * movespeed);
-                //Vector3 direction = (pathArray[i] - startPos.transform.position).normalized * 100;
+                startPos.transform.position = Vector2.MoveTowards(startPos.transform.position, pathArray[i], Time.deltaTime * movespeed);
+                //Vector2 direction = (pathArray[i] - startPos.transform.position).normalized * 100;
                 //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
 
                 yield return null;
@@ -129,8 +141,8 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
             float angle = Mathf.Atan2(target_pos.y, target_pos.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
-            startPos.transform.position = Vector3.MoveTowards(startPos.transform.position, endPos, Time.deltaTime * movespeed);
-            //Vector3 direction = (endPosition - startPos.transform.position).normalized * 100; ;
+            startPos.transform.position = Vector2.MoveTowards(startPos.transform.position, endPos, Time.deltaTime * movespeed);
+            //Vector2 direction = (endPosition - startPos.transform.position).normalized * 100; ;
             //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
             yield return null;
         }
@@ -153,7 +165,7 @@ public class CountPath : MonoBehaviour, pathfinding.Pathfinding
             for (int i = 0; i < pathArray.Length - 1; i++)
             {
                 Gizmos.color = Color.black;
-                Gizmos.DrawCube(pathArray[i], Vector3.one);
+                Gizmos.DrawCube(pathArray[i], Vector2.one);
                 Gizmos.DrawLine(pathArray[i], pathArray[i + 1]);
             }
         }

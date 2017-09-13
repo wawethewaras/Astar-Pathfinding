@@ -8,7 +8,7 @@ namespace pathfinding {
 
         //void FindPathTest(Transform startPos, Transform endPos);
 
-        void OnPathFound(Vector3[] newPath);
+        void OnPathFound(Vector2[] newPath);
 
         IEnumerator PathCountDelay();
     

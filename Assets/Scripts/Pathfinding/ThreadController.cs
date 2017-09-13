@@ -31,7 +31,7 @@ public class ThreadController : MonoBehaviour {
     private static List<PathRequest> pathRequests = new List<PathRequest>();
 
     private static Thread currentThread;
-    private static Vector3[] currentPath;
+    private static Vector2[] currentPath;
 
     private static bool readyToTakeNewPath = true;
 
@@ -74,7 +74,7 @@ public class ThreadController : MonoBehaviour {
         functionsToRunInMainThread.Add(function);
     }
 
-    public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos, Grid grid) {
+    public static void SearchPathRequest(pathfinding.Pathfinding requester, Vector2 startPos, Vector2 endPos, Grid grid) {
         if (grid.useThreading)
         {
             PathRequest request = new PathRequest(requester, startPos, endPos, grid);
@@ -83,14 +83,14 @@ public class ThreadController : MonoBehaviour {
         else {
             Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
             Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
-            Vector3[] newPath = AStar.FindPath(start, end, Grid.instance);
+            Vector2[] newPath = AStar.FindPath(start, end, Grid.instance);
             requester.OnPathFound(newPath);
             instance.StartCoroutine(requester.PathCountDelay());
         }
 
     }
 
-    public static IEnumerator CountPath(pathfinding.Pathfinding requester, Vector3 startPos, Vector3 endPos, Grid grid) {
+    public static IEnumerator CountPath(pathfinding.Pathfinding requester, Vector2 startPos, Vector2 endPos, Grid grid) {
         Node start = Grid.instance.ClosestNodeFromWorldPoint(startPos);
         Node end = Grid.instance.ClosestNodeFromWorldPoint(endPos);
 
@@ -109,7 +109,7 @@ public class ThreadController : MonoBehaviour {
 
 
     static void FindPath(Node startPos, Node targetPos, Grid grid) {
-        Vector3[] path = AStar.FindPath(startPos, targetPos, grid);
+        Vector2[] path = AStar.FindPath(startPos, targetPos, grid);
         Action calculationFinished = () =>
         {
             currentPath = path;
@@ -128,12 +128,12 @@ public class ThreadController : MonoBehaviour {
 }
 
 struct PathRequest{
-    public Vector3 startPosition;
-    public Vector3 endPosition;
+    public Vector2 startPosition;
+    public Vector2 endPosition;
     public pathfinding.Pathfinding requester;
     public Grid grid;
 
-    public PathRequest(pathfinding.Pathfinding _requester, Vector3 _startPosition, Vector3 _endPosition, Grid _grid) {
+    public PathRequest(pathfinding.Pathfinding _requester, Vector2 _startPosition, Vector2 _endPosition, Grid _grid) {
         startPosition = _startPosition;
         endPosition = _endPosition;
         requester = _requester;

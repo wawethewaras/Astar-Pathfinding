@@ -5,11 +5,9 @@ using System;
 
 public static class AStar {
 
-    ////Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-    //private const float heurasticMultiplier = 2f;
 
     //Max nodes to count. This will prevent counting the whole grid if target is unreachable.
-    private const int closedListMaxCount =  10000;
+    private const int closedListMaxCount =  100000;
 
     /// <summary>
     /// Creates path from startPos to targetPos using A*.
@@ -17,7 +15,7 @@ public static class AStar {
     /// <param name="startPos"></param>
     /// <param name="targetPos"></param>
     /// <returns></returns>
-    public static Vector3[] FindPath(Node startNode, Node goalNode, Grid grid)
+    public static Vector2[] FindPath(Node startNode, Node goalNode, Grid grid)
     {
         //How long will path founding take
         Stopwatch sw = new Stopwatch();
@@ -27,7 +25,7 @@ public static class AStar {
         Grid.closedList.Clear();
         Grid.pathFound = false;
 
-
+        int nodeCount = 0;
 
         Heap<Node> openSet = new Heap<Node>(grid.Maxsize);
         Heap<Node> closedSet = new Heap<Node>(grid.Maxsize);
@@ -45,7 +43,7 @@ public static class AStar {
         {
             Grid.openList.Add(startNode);
         }
-
+        nodeCount++;
 
         while (openSet.Count > 0)
         {
@@ -65,13 +63,13 @@ public static class AStar {
                 sw.Stop();
                 if (grid.showPathSearchDebug)
                 {
-                    Vector3[] path = RetracePath(startNode, goalNode);
+                    Vector2[] path = RetracePath(startNode, goalNode);
                     int pathLenght = 0;
-                    for (int i = 0; i < path.Length - 1; i++)
-                    {
-                        pathLenght += Mathf.RoundToInt(Vector3.Distance(path[i], path[i + 1]));
-                    }
-                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms. Number of nodes counted " + Grid.openList.Count + ". Path lenght: " + pathLenght + ". Heurastics: " + grid.heurasticMethod);
+                    //for (int i = 0; i < path.Length - 1; i++)
+                    //{
+                    //    pathLenght += Mathf.RoundToInt(Vector2.Distance(path[i], path[i + 1]));
+                    //}
+                    UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.Elapsed + "ms. Number of nodes counted " + nodeCount + ". Path lenght: " + path.Length + ". Heurastics: " + grid.heuristicMethod);
                     Grid.pathFound = true;
                 }
 
@@ -100,7 +98,7 @@ public static class AStar {
                 if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
                 {
                     neighbour.gCost = newCostToNeighbour;
-                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode, grid) * grid.heurasticMultiplier);
+                    neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode, grid) * grid.heuristicMultiplier);
                     neighbour.parent = currentNode;
 
                     if (openSet.Contains(neighbour) == false)
@@ -112,6 +110,7 @@ public static class AStar {
                         {
                             Grid.openList.Add(neighbour);
                         }
+                        nodeCount++;
                     }
                     else {
                         openSet.UpdateItem(neighbour);
@@ -133,9 +132,9 @@ public static class AStar {
     /// <param name="startNode"></param>
     /// <param name="targetNode"></param>
     /// <returns></returns>
-    public static Vector3[] RetracePath(Node startNode, Node targetNode)
+    public static Vector2[] RetracePath(Node startNode, Node targetNode)
     {
-        List<Vector3> path = new List<Vector3>();
+        List<Vector2> path = new List<Vector2>();
         Node currentNode = targetNode;
 
         while (currentNode != startNode)
@@ -143,7 +142,7 @@ public static class AStar {
             path.Add(currentNode.worldPosition);
             currentNode = currentNode.parent;
         }
-        Vector3[] waypoints = path.ToArray();
+        Vector2[] waypoints = path.ToArray();
         Array.Reverse(waypoints);
         return waypoints;
     }
@@ -154,9 +153,9 @@ public static class AStar {
     /// <param name="path"></param>
     /// <returns></returns>
     /// 
-    public static Vector3[] SimplifyPath(List<Node> path)
+    public static Vector2[] SimplifyPath(List<Node> path)
     {
-        List<Vector3> waypoints = new List<Vector3>();
+        List<Vector2> waypoints = new List<Vector2>();
         Vector2 directionOld = Vector2.zero;
 
         for (int i = 1; i < path.Count; i++)
@@ -177,8 +176,8 @@ public static class AStar {
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static Vector3[] pathSmooter(Vector3[] path, Grid grid) {
-        List<Vector3> waypoints = new List<Vector3>();
+    public static Vector2[] pathSmooter(Vector2[] path, Grid grid) {
+        List<Vector2> waypoints = new List<Vector2>();
         int currentNode = 0;
         waypoints.Add(path[0]);
 
@@ -206,11 +205,11 @@ public static class AStar {
 
     static int GetDistance(Node nodeA, Node nodeB, Grid grid)
     {
-        if (grid.heurasticMethod == Grid.Heurastics.VectorMagnitude)
+        if (grid.heuristicMethod == Grid.Heuristics.VectorMagnitude)
         {
             return GetDistance2(nodeA, nodeB);
         }
-        else if (grid.heurasticMethod == Grid.Heurastics.Euclidean)
+        else if (grid.heuristicMethod == Grid.Heuristics.Euclidean)
         {
             return GetDistance3(nodeA, nodeB);
         }

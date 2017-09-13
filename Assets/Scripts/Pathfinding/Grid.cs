@@ -25,7 +25,7 @@ public class Grid : MonoBehaviour {
     }
 
     [Header("GRID")]
-    public Vector2 gridWorldSize;
+    public Vector2 gridWorldSize = new Vector2(100,100);
     public float nodeRadius = 1;
     public float nodeDiameter { get { return nodeRadius * 2; } }
     public float nearestNodeDistance = 10;
@@ -45,12 +45,13 @@ public class Grid : MonoBehaviour {
     //[Space(10)]
     //[Header("Advanced")]
     public Connections options = Connections.directional8DontCutCorners;
-    public Heurastics heurasticMethod = Heurastics.Manhattan;
+    public Heuristics heuristicMethod = Heuristics.Manhattan;
+    
     //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-    public float heurasticMultiplier = 2;
-    public bool showGrid;
+    public float heuristicMultiplier = 2;
+    public bool showGrid = true;
     public bool showPathSearchDebug;
-    public bool useThreading = true;
+    public bool useThreading;
 
 
     public enum Connections {
@@ -58,7 +59,7 @@ public class Grid : MonoBehaviour {
         directional8,
         directional8DontCutCorners
     }
-    public enum Heurastics
+    public enum Heuristics
     {
         VectorMagnitude,
         Manhattan,
@@ -106,19 +107,17 @@ public class Grid : MonoBehaviour {
 
 
     public void CreateGrid() {
-        player = FindObjectOfType<PlayerController>().transform;
-
 
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
         grid = new Node[gridSizeX, gridSizeY];
-        Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
+        Vector2 worldBottomLeft = (Vector2)transform.position - Vector2.right * gridWorldSize.x / 2 - Vector2.up * gridWorldSize.y / 2;
         int walk = 0;
         int obs = 0;
         for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
-                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
+                Vector2 worldPoint = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
 
                 bool walkable = (Physics2D.OverlapCircle(worldPoint, nodeRadius * collisionRadius, unwalkableMask) == null);
                 if (walkable) { walk++; } else { obs++; }
@@ -186,7 +185,7 @@ public class Grid : MonoBehaviour {
     }
 
 
-    public Node NodeFromWorldPoint(Vector3 worldPosition)
+    public Node NodeFromWorldPoint(Vector2 worldPosition)
     {
         float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
         float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
@@ -201,7 +200,7 @@ public class Grid : MonoBehaviour {
 
 
 
-    public Node ClosestNodeFromWorldPoint(Vector3 worldPosition)
+    public Node ClosestNodeFromWorldPoint(Vector2 worldPosition)
     {
         float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
         float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
@@ -303,11 +302,11 @@ public class Grid : MonoBehaviour {
                     //if (path != null)
                     //    if (path.Contains(n))
                     //        Gizmos.color = Color.black;
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+                    Gizmos.DrawCube(n.worldPosition, Vector2.one * (nodeDiameter - .1f));
                 }
                 if (player != null) {
                     Gizmos.color = Color.blue;
-                    Gizmos.DrawCube(ClosestNodeFromWorldPoint(player.position).worldPosition, Vector3.one * (nodeDiameter - .1f));
+                    Gizmos.DrawCube(ClosestNodeFromWorldPoint(player.position).worldPosition, Vector2.one * (nodeDiameter - .1f));
                 }
 
             }
@@ -323,7 +322,7 @@ public class Grid : MonoBehaviour {
                 Gizmos.color = Color.red;
                 for (int i = 0; i < closedList.Count; i++)
                 {
-                    Gizmos.DrawCube(closedList[i].worldPosition, Vector3.one * (nodeDiameter - .1f) * 0.3f);
+                    Gizmos.DrawCube(closedList[i].worldPosition, Vector2.one * (nodeDiameter - .1f) * 0.3f);
 
                 }
 
