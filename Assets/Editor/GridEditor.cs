@@ -18,18 +18,15 @@ public class ObjectBuilderEditor : Editor {
 
     public override void OnInspectorGUI()
     {
-        //DrawDefaultInspector();
         Grid myScript = (Grid)target;
 
-        //grid = EditorGUILayout.Foldout(grid, "Grid");
         EditorGUILayout.Space();
         GUIStyle labelStyle = EditorStyles.label;
         labelStyle.fontStyle = FontStyle.Bold;
         int temp = labelStyle.fontSize;
         labelStyle.fontSize = 15;
 
-        //EditorGUILayout.LabelField("Grid", labelStyle);
-        //EditorGUILayout.Space();
+
         labelStyle.fontSize = temp;
         labelStyle.fontStyle = FontStyle.Normal;
 

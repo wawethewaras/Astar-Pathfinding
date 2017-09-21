@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(CountPath))]
-public class Seeker2 : MonoBehaviour {
-    private CountPath counter;
+public class SeekerController : MonoBehaviour {
 
-    void Start() {
+    CountPath counter;
+
+    void Start () {
         counter = GetComponent<CountPath>();
     }
 
@@ -13,4 +14,6 @@ public class Seeker2 : MonoBehaviour {
             counter.FindPath(transform, Camera.main.ScreenToWorldPoint(Input.mousePosition));
         }
     }
+
+
 }
