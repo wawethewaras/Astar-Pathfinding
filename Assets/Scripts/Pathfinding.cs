@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace pathfinding { 
+namespace Astar2DPathFinding.Mika { 
     public interface Pathfinding
     {
         void OnPathFound(Vector2[] newPath);
 
-        IEnumerator PathCountDelay();
+        //IEnumerator PathCountDelay();
     
 
     }

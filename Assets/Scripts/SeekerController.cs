@@ -1,19 +1,22 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(CountPath))]
-public class SeekerController : MonoBehaviour {
+namespace Astar2DPathFinding.Mika {
 
-    CountPath counter;
+    [RequireComponent(typeof(CountPath))]
+    public class SeekerController : MonoBehaviour {
 
-    void Start () {
-        counter = GetComponent<CountPath>();
-    }
+        CountPath counter;
 
-    void Update() {
-        if (Input.GetMouseButtonDown(0)) {
-            counter.FindPath(transform, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        void Start() {
+            counter = GetComponent<CountPath>();
         }
+
+        void Update() {
+            if (Input.GetMouseButtonDown(0)) {
+                counter.FindPath(transform, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+        }
+
+
     }
-
-
 }
