@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Astar2DPathFinding.Mika {
 
 
-    public class Singleton<T> : MonoBehaviour where T : Component {
-        private const string dontDestroySCene = "DontDestroy";
+public class Singleton<T> : MonoBehaviour where T : Component {
 
         protected static T instance;
         public static T Instance {
@@ -15,11 +14,8 @@ namespace Astar2DPathFinding.Mika {
 
                     instance = FindObjectOfType<T>();
                     if (instance == null) {
-                        Debug.LogError("Singleton" + instance.GetType() + " missing. Created to prevent error.");
-
-                        GameObject obj = new GameObject();
-                        obj.name = typeof(T).Name;
-                        instance = obj.AddComponent<T>();
+                        Debug.Log("Could not locate a " + instance.GetType() + ". \n You have to have one in the scene.");
+                        Debug.Break();
                     }
 
                 }
@@ -31,7 +27,7 @@ namespace Astar2DPathFinding.Mika {
         public virtual void Awake() {
             if (instance == null) {
                 instance = this as T;
-                DontDestroyOnLoad(this.gameObject);
+                DontDestroyOnLoad(gameObject);
             }
             else {
                 Destroy(gameObject);

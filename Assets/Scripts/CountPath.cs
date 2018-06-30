@@ -36,8 +36,6 @@ namespace Astar2DPathFinding.Mika {
 
             startPos = _seeker;
             endPos = _endPos;
-            PathfindingGrid grid = PathfindingGrid.Instance;
-
             //Basic raycast if can move directly to end target
 
             //bool cantSeeTarget = Physics2D.Linecast(_seeker.transform.position, _endPos, grid.unwalkableMask);
@@ -54,7 +52,7 @@ namespace Astar2DPathFinding.Mika {
 
             if (_endPos != endPosition) {
                 endPosition = _endPos;
-                ThreadController.SearchPathRequest(this, _seeker.position, endPosition, grid);
+                ThreadController.SearchPathRequest(this, _seeker.position, endPosition);
 
             }
         }

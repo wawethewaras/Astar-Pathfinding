@@ -6,7 +6,7 @@ using System;
 
 namespace Astar2DPathFinding.Mika {
 
-    [RequireComponent(typeof(PathfindingGrid))]
+    [RequireComponent(typeof(Grid))]
     public class ThreadController : Singleton<ThreadController> {
 
         private static List<Action> functionsToRunInMainThread = new List<Action>();
@@ -31,7 +31,7 @@ namespace Astar2DPathFinding.Mika {
                 readyToTakeNewPath = false;
                 PathRequest requester = pathRequests[0];
                 pathRequests.RemoveAt(0);
-                IEnumerator pathCount = CountPath(requester.requester, requester.startPosition, requester.endPosition, requester.grid);
+                IEnumerator pathCount = CountPath(requester.requester, requester.startPosition, requester.endPosition);
                 StartCoroutine(pathCount);
             }
         }
@@ -53,9 +53,9 @@ namespace Astar2DPathFinding.Mika {
             functionsToRunInMainThread.Add(function);
         }
 
-        public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos, PathfindingGrid grid) {
-            if (grid.useThreading) {
-                PathRequest request = new PathRequest(requester, startPos, endPos, grid);
+        public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
+            if (PathfindingGrid.Instance.useThreading) {
+                PathRequest request = new PathRequest(requester, startPos, endPos);
                 pathRequests.Add(request);
             }
             else {
@@ -67,11 +67,11 @@ namespace Astar2DPathFinding.Mika {
 
         }
 
-        private static IEnumerator CountPath(Pathfinding requester, Vector2 startPos, Vector2 endPos, PathfindingGrid grid) {
+        private static IEnumerator CountPath(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
             Node start = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(startPos);
             Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos);
 
-            StartThreadedFunction(() => { FindPath(start, end, grid); });
+            StartThreadedFunction(() => { FindPath(start, end); });
 
             while (currentThread.IsAlive) {
                 yield return null;
@@ -83,7 +83,7 @@ namespace Astar2DPathFinding.Mika {
 
 
 
-        private static void FindPath(Node startPos, Node targetPos, PathfindingGrid grid) {
+        private static void FindPath(Node startPos, Node targetPos) {
             Vector2[] path = AStar.FindPath(startPos, targetPos);
             Action calculationFinished = () => {
                 currentPath = path;
@@ -104,13 +104,11 @@ namespace Astar2DPathFinding.Mika {
         public Vector2 startPosition;
         public Vector2 endPosition;
         public Pathfinding requester;
-        public PathfindingGrid grid;
 
-        public PathRequest(Pathfinding _requester, Vector2 _startPosition, Vector2 _endPosition, PathfindingGrid _grid) {
+        public PathRequest(Pathfinding _requester, Vector2 _startPosition, Vector2 _endPosition) {
             startPosition = _startPosition;
             endPosition = _endPosition;
             requester = _requester;
-            grid = _grid;
         }
     }
 }

@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridWorldSize: {x: 200, y: 200}
-  nodeRadius: 1
+  nodeRadius: 0.25
   nearestNodeDistance: 10
   collisionRadius: 1.2
   unwalkableMask:
@@ -751,7 +751,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1885620568}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 45.3, y: -0.9, z: 0}
+  m_LocalPosition: {x: -32.2, y: -83.1, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
