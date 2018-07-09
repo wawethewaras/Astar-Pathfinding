@@ -65,13 +65,13 @@ namespace Astar2DPathFinding.Mika {
         }
 
         public void OnPathFound(Vector2[] newPath) {
-            //if (currentPath != null) {
-            //    StopCoroutine(currentPath);
+            if (currentPath != null) {
+                StopCoroutine(currentPath);
 
-            //}
-            //currentPath = movepath(newPath);
-            //pathArray = newPath;
-            //StartCoroutine(currentPath);
+            }
+            currentPath = movepath(newPath);
+            pathArray = newPath;
+            StartCoroutine(currentPath);
 
         }
 

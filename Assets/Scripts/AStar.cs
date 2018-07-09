@@ -138,8 +138,11 @@ namespace Astar2DPathFinding.Mika {
             }
 
             Vector2[] waypoints = new Vector2[path.Count];
-            for (int i = path.Count -1; i >= 0; i--) {
-                waypoints[i] = path[i];
+
+            int pathLength = 0;
+            for (int i = path.Count - 1; i >= 0; i--) {
+                waypoints[pathLength] = path[i];
+                pathLength++;
             }
 
             //Vector2[] waypoints = path.ToArray();

@@ -54,24 +54,22 @@ namespace Astar2DPathFinding.Mika {
         }
 
         public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
+            Node start = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(startPos);
+            Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos);
             if (PathfindingGrid.Instance.useThreading) {
-                PathRequest request = new PathRequest(requester, startPos, endPos);
+                PathRequest request = new PathRequest(requester, start, end);
                 pathRequests.Add(request);
             }
             else {
-                Node start = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(startPos);
-                Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos);
+
                 Vector2[] newPath = AStar.FindPath(start, end);
                 requester.OnPathFound(newPath);
             }
 
         }
 
-        private static IEnumerator CountPath(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
-            Node start = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(startPos);
-            Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos);
-
-            StartThreadedFunction(() => { FindPath(start, end); });
+        private static IEnumerator CountPath(Pathfinding requester, Node startNode, Node endNode) {
+            StartThreadedFunction(() => { FindPath(startNode, endNode); });
 
             while (currentThread.IsAlive) {
                 yield return null;
@@ -101,11 +99,11 @@ namespace Astar2DPathFinding.Mika {
     }
 
     struct PathRequest {
-        public Vector2 startPosition;
-        public Vector2 endPosition;
+        public Node startPosition;
+        public Node endPosition;
         public Pathfinding requester;
 
-        public PathRequest(Pathfinding _requester, Vector2 _startPosition, Vector2 _endPosition) {
+        public PathRequest(Pathfinding _requester, Node _startPosition, Node _endPosition) {
             startPosition = _startPosition;
             endPosition = _endPosition;
             requester = _requester;
