@@ -22,14 +22,17 @@ namespace Astar2DPathFinding.Mika {
             Stopwatch sw = new Stopwatch();
             sw.Start();
             //For showing path counting process. Resets grid.
-            PathfindingGrid.openList.Clear();
-            PathfindingGrid.closedList.Clear();
-            PathfindingGrid.pathFound = false;
+
+            if (PathfindingGrid.Instance.showPathSearchDebug) {
+                PathfindingGrid.openList.Clear();
+                PathfindingGrid.closedList.Clear();
+                PathfindingGrid.pathFound = false;
+            }
+
 
             int nodeCount = 0;
 
             Heap<Node> openSet = new Heap<Node>(PathfindingGrid.Maxsize);
-            //Heap<Node> closedSet = new Heap<Node>(PathfindingGrid.Maxsize);
 
             if (goalNode.walkable == NodeType.obstacle || startNode.walkable == NodeType.obstacle)
             {
@@ -46,11 +49,13 @@ namespace Astar2DPathFinding.Mika {
             }
             nodeCount++;
 
-            while (openSet.Count > 0)
-            {
-                Node currentNode = openSet.RemoveFirst();
+            Node[] neighbours;
+            Node neighbour;
+            Node currentNode;
+
+            while (openSet.Count > 0) {
+                currentNode = openSet.RemoveFirst();
                 currentNode.inClosedList = true;
-                //closedSet.Add(currentNode);
 
                 //For showing path counting 
                 if (PathfindingGrid.Instance.showGrid)
@@ -77,10 +82,9 @@ namespace Astar2DPathFinding.Mika {
                 //    return null;
                 //}
 
-                Node[] neighbours = PathfindingGrid.Instance.GetNeighbours(currentNode);
-
+                neighbours = PathfindingGrid.Instance.GetNeighbours(currentNode);
                 for (int i = 0; i < neighbours.Length; i++) {
-                    Node neighbour = neighbours[i];
+                    neighbour = neighbours[i];
 
                     //Calculate obstacles while creating path
                     //CheckIfNodeIsObstacle(neighbour);
@@ -90,14 +94,14 @@ namespace Astar2DPathFinding.Mika {
                     }
 
                     int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty;
-                    if (newCostToNeighbour < neighbour.gCost || openSet.Contains(neighbour) == false)
-                    {
+                    if (newCostToNeighbour < neighbour.gCost || neighbour.inOpenSet == false) {
                         neighbour.gCost = newCostToNeighbour;
                         neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode) * PathfindingGrid.Instance.heuristicMultiplier);
                         neighbour.parent = currentNode;
 
-                        if (openSet.Contains(neighbour) == false) {
+                        if (neighbour.inOpenSet == false) {
                             openSet.Add(neighbour);
+                            neighbour.inOpenSet = true;
 
                             //For showing path counting 
                             if (PathfindingGrid.Instance.showGrid) {

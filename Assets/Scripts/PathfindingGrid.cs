@@ -138,6 +138,10 @@ namespace Astar2DPathFinding.Mika {
 
         public Node[] GetNeighbours(Node node) {
             Node[] neighbours = new Node[8];
+            Node newNode;
+
+            int checkX;
+            int checkY;
             int index = 0;
 
             for (int x = -1; x <= 1; x++) {
@@ -150,11 +154,11 @@ namespace Astar2DPathFinding.Mika {
                     if (x == 0 && y == 0)
                         continue;
 
-                    int checkX = node.gridX + x;
-                    int checkY = node.gridY + y;
+                    checkX = node.gridX + x;
+                    checkY = node.gridY + y;
 
                     if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY) {
-                        Node newNode = grid[checkX, checkY];
+                        newNode = grid[checkX, checkY];
 
                         if (node.parent == newNode) {
                             continue;

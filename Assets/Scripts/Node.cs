@@ -11,6 +11,7 @@ namespace Astar2DPathFinding.Mika {
         public int movementPenalty;
 
         public bool inClosedList;
+        public bool inOpenSet;
 
 
         public int gCost;
