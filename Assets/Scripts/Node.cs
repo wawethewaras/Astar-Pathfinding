@@ -32,6 +32,7 @@ namespace Astar2DPathFinding.Mika {
                 heapIndex = value;
             }
         }
+        public Node[] neighbours = new Node[8];
 
         public Node(NodeType _walkable, Vector3 _worldPos, int _gridX, int _gridY, int _penalty) {
             walkable = _walkable;
@@ -40,7 +41,6 @@ namespace Astar2DPathFinding.Mika {
             gridY = _gridY;
             movementPenalty = _penalty;
         }
-
 
         public int CompareTo(Node nodeToCompare) {
             int compare = fCost.CompareTo(nodeToCompare.fCost);

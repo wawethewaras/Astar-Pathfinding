@@ -20,16 +20,17 @@ namespace Astar2DPathFinding.Mika {
         {
             //How long will path founding take
             Stopwatch sw = new Stopwatch();
-            sw.Start();
             //For showing path counting process. Resets grid.
 
             if (PathfindingGrid.Instance.showPathSearchDebug) {
+                            sw.Start();
+
                 PathfindingGrid.openList.Clear();
                 PathfindingGrid.closedList.Clear();
                 PathfindingGrid.pathFound = false;
             }
 
-
+            PathfindingGrid.Instance.ResetNodes();
             int nodeCount = 0;
 
             Heap<Node> openSet = new Heap<Node>(PathfindingGrid.Maxsize);
@@ -49,7 +50,7 @@ namespace Astar2DPathFinding.Mika {
             }
             nodeCount++;
 
-            Node[] neighbours;
+            //Node[] neighbours;
             Node neighbour;
             Node currentNode;
 
@@ -64,12 +65,10 @@ namespace Astar2DPathFinding.Mika {
                 }
 
 
-                if (currentNode == goalNode)
-                {
+                if (currentNode == goalNode) {
                     //For testing path calculation. Can be removed from final version.
                     sw.Stop();
-                    if (PathfindingGrid.Instance.showPathSearchDebug)
-                    {
+                    if (PathfindingGrid.Instance.showPathSearchDebug) {
                         Vector2[] path = RetracePath(startNode, goalNode);
                         UnityEngine.Debug.Log("<color=Blue>Path found! </color> Time took to calculate path: " + sw.Elapsed + "ms. Number of nodes counted " + nodeCount + ". Path lenght: " + path.Length + ". Heurastics: " + PathfindingGrid.Instance.heuristicMethod);
                         PathfindingGrid.pathFound = true;
@@ -81,10 +80,11 @@ namespace Astar2DPathFinding.Mika {
                 //if (openSet.Count > closedListMaxCount) {
                 //    return null;
                 //}
+                //UnityEngine.Debug.Log("Neigg" + currentNode.neighbours[0].gridX);
+                //PathfindingGrid.Instance.GetNeighbours(currentNode);
 
-                neighbours = PathfindingGrid.Instance.GetNeighbours(currentNode);
-                for (int i = 0; i < neighbours.Length; i++) {
-                    neighbour = neighbours[i];
+                for (int i = 0; i < currentNode.neighbours.Length; i++) {
+                    neighbour = currentNode.neighbours[i];
 
                     //Calculate obstacles while creating path
                     //CheckIfNodeIsObstacle(neighbour);
@@ -115,9 +115,8 @@ namespace Astar2DPathFinding.Mika {
                     }
                 }
             }
-            sw.Stop();
-            if (PathfindingGrid.Instance.showPathSearchDebug)
-            {
+            if (PathfindingGrid.Instance.showPathSearchDebug) {
+                sw.Stop();
                 UnityEngine.Debug.Log("<color=red>Path not found! </color> Time took to calculate path: " + sw.ElapsedMilliseconds + "ms.");
             }
             return null;

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 namespace Astar2DPathFinding.Mika {
 
     [System.Serializable]
@@ -132,12 +134,29 @@ namespace Astar2DPathFinding.Mika {
 
                 }
             }
-            print("Walk: " + walk + " Obs: " + obs);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            for (int x = 0; x < gridSizeX; x++) {
+                for (int y = 0; y < gridSizeY; y++) {
+                    GetNeighbours(grid[x, y]);
+                }
+            }
+            sw.Stop();
+            print("Walk: " + walk + " Obs: " + obs + "Time took create the grid" + sw.Elapsed);
         }
 
+        public void ResetNodes() {
+            for (int x = 0; x < gridSizeX; x++) {
+                for (int y = 0; y < gridSizeY; y++) {
+                    grid[x, y].inClosedList = false;
+                    grid[x, y].inOpenSet = false;
 
-        public Node[] GetNeighbours(Node node) {
-            Node[] neighbours = new Node[8];
+                }
+            }
+        }
+        public void GetNeighbours(Node node) {
+            //Node[] neighbours = new Node[8];
+
             Node newNode;
 
             int checkX;
@@ -171,13 +190,13 @@ namespace Astar2DPathFinding.Mika {
                             continue;
                         }
                         else {
-                            neighbours[index] = newNode;
+                            node.neighbours[index] = newNode;
                             index++;
                         }
                     }
                 }
             }
-            return neighbours;
+            //return neighbours;
         }
 
 
