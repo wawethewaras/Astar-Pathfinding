@@ -29,7 +29,7 @@ namespace Astar2DPathFinding.Mika {
             int nodeCount = 0;
 
             Heap<Node> openSet = new Heap<Node>(PathfindingGrid.Maxsize);
-            Heap<Node> closedSet = new Heap<Node>(PathfindingGrid.Maxsize);
+            //Heap<Node> closedSet = new Heap<Node>(PathfindingGrid.Maxsize);
 
             if (goalNode.walkable == NodeType.obstacle || startNode.walkable == NodeType.obstacle)
             {
@@ -49,7 +49,8 @@ namespace Astar2DPathFinding.Mika {
             while (openSet.Count > 0)
             {
                 Node currentNode = openSet.RemoveFirst();
-                closedSet.Add(currentNode);
+                currentNode.inClosedList = true;
+                //closedSet.Add(currentNode);
 
                 //For showing path counting 
                 if (PathfindingGrid.Instance.showGrid)
@@ -72,21 +73,19 @@ namespace Astar2DPathFinding.Mika {
                     return RetracePath(startNode, goalNode);
                 }
 
-                if (closedSet.Count > closedListMaxCount) {
-                    return null;
-                }
+                //if (openSet.Count > closedListMaxCount) {
+                //    return null;
+                //}
 
                 Node[] neighbours = PathfindingGrid.Instance.GetNeighbours(currentNode);
 
-                for (int i = 0; i < neighbours.Length; i++)
-                {
+                for (int i = 0; i < neighbours.Length; i++) {
                     Node neighbour = neighbours[i];
 
                     //Calculate obstacles while creating path
                     //CheckIfNodeIsObstacle(neighbour);
 
-                    if (neighbour == null || neighbour.walkable == NodeType.obstacle || closedSet.Contains(neighbour))
-                    {
+                    if (neighbour == null || neighbour.walkable == NodeType.obstacle || neighbour.inClosedList) {
                         continue;
                     }
 
@@ -97,13 +96,11 @@ namespace Astar2DPathFinding.Mika {
                         neighbour.hCost = Mathf.RoundToInt(GetDistance(neighbour, goalNode) * PathfindingGrid.Instance.heuristicMultiplier);
                         neighbour.parent = currentNode;
 
-                        if (openSet.Contains(neighbour) == false)
-                        {
+                        if (openSet.Contains(neighbour) == false) {
                             openSet.Add(neighbour);
 
                             //For showing path counting 
-                            if (PathfindingGrid.Instance.showGrid)
-                            {
+                            if (PathfindingGrid.Instance.showGrid) {
                                 PathfindingGrid.openList.Add(neighbour);
                             }
                             nodeCount++;
@@ -128,18 +125,22 @@ namespace Astar2DPathFinding.Mika {
         /// <param name="startNode"></param>
         /// <param name="targetNode"></param>
         /// <returns></returns>
-        public static Vector2[] RetracePath(Node startNode, Node targetNode)
-        {
+        public static Vector2[] RetracePath(Node startNode, Node targetNode) {
             List<Vector2> path = new List<Vector2>();
             Node currentNode = targetNode;
 
-            while (currentNode != startNode)
-            {
+            while (currentNode != startNode) {
                 path.Add(currentNode.worldPosition);
                 currentNode = currentNode.parent;
             }
-            Vector2[] waypoints = path.ToArray();
-            Array.Reverse(waypoints);
+
+            Vector2[] waypoints = new Vector2[path.Count];
+            for (int i = path.Count -1; i >= 0; i--) {
+                waypoints[i] = path[i];
+            }
+
+            //Vector2[] waypoints = path.ToArray();
+            //Array.Reverse(waypoints);
             return waypoints;
         }
 

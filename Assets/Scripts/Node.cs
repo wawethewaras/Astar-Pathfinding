@@ -10,6 +10,9 @@ namespace Astar2DPathFinding.Mika {
         public int gridY;
         public int movementPenalty;
 
+        public bool inClosedList;
+
+
         public int gCost;
         public int hCost;
         public int fCost {
@@ -19,7 +22,7 @@ namespace Astar2DPathFinding.Mika {
         }
 
         public Node parent;
-        int heapIndex;
+        private int heapIndex;
         public int HeapIndex {
             get {
                 return heapIndex;

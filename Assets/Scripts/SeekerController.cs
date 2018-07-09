@@ -5,10 +5,11 @@ namespace Astar2DPathFinding.Mika {
     [RequireComponent(typeof(CountPath))]
     public class SeekerController : MonoBehaviour {
 
-        CountPath counter;
+        private CountPath counter;
 
         void Start() {
             counter = GetComponent<CountPath>();
+
         }
 
         void Update() {
