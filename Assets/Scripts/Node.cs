@@ -10,6 +10,9 @@ namespace Astar2DPathFinding.Mika {
         public int gridY;
         public int movementPenalty;
 
+        public int gridAreaID = 0;
+
+
         public bool inClosedList;
         public bool inOpenSet;
 

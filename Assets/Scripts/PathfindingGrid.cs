@@ -143,7 +143,56 @@ namespace Astar2DPathFinding.Mika {
             }
             sw.Stop();
             print("Walk: " + walk + " Obs: " + obs + "Time took create the grid" + sw.Elapsed);
+            SetAreas();
         }
+
+
+        int currentIDThing = 1;
+
+        public void SetAreas() {
+            for (int x = 0; x < gridSizeX; x++) {
+                for (int y = 0; y < gridSizeY; y++) {
+                    if(grid[x, y].walkable != NodeType.obstacle && grid[x, y].gridAreaID == 0) {
+                        SetGridAreas(grid[x, y], currentIDThing);
+                        currentIDThing++;
+                    }
+                }
+            }
+        }
+
+        public void SetGridAreas(Node startNode, int currentAreaID) {
+
+            Heap<Node> openSet = new Heap<Node>(Maxsize);
+            Heap<Node> closedList = new Heap<Node>(Maxsize);
+
+            openSet.Add(startNode);
+
+            Node neighbour;
+            Node currentNode;
+
+            while (openSet.Count > 0) {
+                currentNode = openSet.RemoveFirst();
+                closedList.Add(currentNode);
+
+                for (int i = 0; i < currentNode.neighbours.Length; i++) {
+                    neighbour = currentNode.neighbours[i];
+
+                    if (neighbour == null || neighbour.walkable == NodeType.obstacle || closedList.Contains(neighbour)) {
+                        continue;
+                    }
+                    if (openSet.Contains(neighbour) == false) {
+                        neighbour.gridAreaID = currentAreaID;
+                        openSet.Add(neighbour);
+                    }
+
+                }
+            }
+
+            print("Number of nodes:" + closedList.Count + ". Number of grid nodes:" + Maxsize);
+        }
+
+
+
 
         public void ResetNodes() {
             for (int x = 0; x < gridSizeX; x++) {
@@ -284,6 +333,7 @@ namespace Astar2DPathFinding.Mika {
             return FindWalkableInRadius(centreX, centreY, radius);
 
         }
+
         private bool InBounds(int x, int y) {
             return x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY;
         }

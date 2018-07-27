@@ -23,7 +23,7 @@ namespace Astar2DPathFinding.Mika {
             //For showing path counting process. Resets grid.
 
             if (PathfindingGrid.Instance.showPathSearchDebug) {
-                            sw.Start();
+                sw.Start();
 
                 PathfindingGrid.openList.Clear();
                 PathfindingGrid.closedList.Clear();
@@ -35,6 +35,13 @@ namespace Astar2DPathFinding.Mika {
 
             Heap<Node> openSet = new Heap<Node>(PathfindingGrid.Maxsize);
 
+
+
+            if (goalNode.gridAreaID != startNode.gridAreaID) {
+                UnityEngine.Debug.Log("Node is unreachable!");
+                return null;
+
+            }
             if (goalNode.walkable == NodeType.obstacle || startNode.walkable == NodeType.obstacle)
             {
                 UnityEngine.Debug.Log("Start or goal inside collider.");
