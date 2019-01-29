@@ -548,7 +548,7 @@ PlayerSettings:
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   additionalIl2CppArgs: 
-  scriptingRuntimeVersion: 0
+  scriptingRuntimeVersion: 1
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
@@ -624,7 +624,7 @@ PlayerSettings:
     Hub: 0
     UNet: 0
   facebookSdkVersion: 7.9.1
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 769f7703-bb78-40c9-85f3-ade3f927c664
   projectName: AstarPathfinding (1)
   organizationId: mika-savolaine

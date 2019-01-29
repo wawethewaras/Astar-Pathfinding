@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System;
+using System.Threading.Tasks;
 
 namespace Astar2DPathFinding.Mika {
 
@@ -53,20 +54,32 @@ namespace Astar2DPathFinding.Mika {
             functionsToRunInMainThread.Add(function);
         }
 
-        public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
+
+        public static async void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
             Node start = PathfindingGrid.Instance.NodeFromWorldPoint(startPos);
             Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos, start.gridAreaID);
-            if (PathfindingGrid.Instance.useThreading) {
-                PathRequest request = new PathRequest(requester, start, end);
-                pathRequests.Add(request);
-            }
-            else {
 
-                Vector2[] newPath = AStar.FindPath(start, end);
-                requester.OnPathFound(newPath);
-            }
+            Vector2[] newPath = null;
+
+            await Task.Run(() => (newPath = AStar.FindPath(start, end)));
+            requester.OnPathFound(newPath);
 
         }
+
+        //public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
+        //    Node start = PathfindingGrid.Instance.NodeFromWorldPoint(startPos);
+        //    Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos, start.gridAreaID);
+        //    if (PathfindingGrid.Instance.useThreading) {
+        //        PathRequest request = new PathRequest(requester, start, end);
+        //        pathRequests.Add(request);
+        //    }
+        //    else {
+
+        //        Vector2[] newPath = AStar.FindPath(start, end);
+        //        requester.OnPathFound(newPath);
+        //    }
+
+        //}
 
         private static IEnumerator CountPath(Pathfinding requester, Node startNode, Node endNode) {
             StartThreadedFunction(() => { FindPath(startNode, endNode); });
