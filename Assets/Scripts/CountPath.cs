@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Diagnostics;
+using System.Threading.Tasks;
+
 namespace Astar2DPathFinding.Mika {
 
     public class CountPath : MonoBehaviour, Pathfinding {
@@ -24,7 +26,7 @@ namespace Astar2DPathFinding.Mika {
         [SerializeField]
         private bool showPathSmoothing;
 
-        public void FindPath(Transform _seeker, Vector2 _endPos) {
+        public async void FindPath(Transform _seeker, Vector2 _endPos) {
             if (!readyToCountPath) {
                 return;
             }
@@ -52,7 +54,7 @@ namespace Astar2DPathFinding.Mika {
 
             if (_endPos != endPosition) {
                 endPosition = _endPos;
-                ThreadController.SearchPathRequest(this, _seeker.position, endPosition);
+                await SearchPathRequest(this, _seeker.position, endPosition);
 
             }
         }
@@ -137,6 +139,19 @@ namespace Astar2DPathFinding.Mika {
             //    //startPos.GetComponent<Rigidbody2D>().velocity = direction * Time.deltaTime * movespeed;
             //    yield return null;
             //}
+        }
+
+        private static Task<Vector3[]> SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
+            var taskCompletionSource = new TaskCompletionSource<Vector3[]>();
+
+            Node start = PathfindingGrid.Instance.NodeFromWorldPoint(startPos);
+            Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos, start.gridAreaID);
+            Vector2[] newPath = null;
+            newPath = AStar.FindPath(start, end);
+            requester.OnPathFound(newPath);
+
+            return taskCompletionSource.Task;
+
         }
 
         public IEnumerator PathCountDelay() {

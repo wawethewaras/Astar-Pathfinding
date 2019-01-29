@@ -15,10 +15,25 @@ namespace Astar2DPathFinding.Mika {
         public TerrainType mask;
 
 
+        //SerializedProperty nodeRadiusProp; 
+        //SerializedProperty nearestNodeDistanceProp;
+        //SerializedProperty collisionRadiusProp;
 
+        //void OnEnable() {
+        //    // Setup the SerializedProperties.
+        //    nodeRadiusProp = serializedObject.FindProperty("nodeRadius");
+        //    nearestNodeDistanceProp = serializedObject.FindProperty("nearestNodeDistance");
+        //    collisionRadiusProp = serializedObject.FindProperty("collisionRadius");
+        //}
 
         public override void OnInspectorGUI() {
-            PathfindingGrid myScript = (PathfindingGrid)target;
+            // Update the serializedProperty - always do this in the beginning of OnInspectorGUI.
+            serializedObject.Update();
+
+            //EditorGUILayout..PropertyField(nodeRadiusProp, new GUIContent("Node radius"));
+
+
+            PathfindingGrid pathFindingGrid = (PathfindingGrid)target;
 
             EditorGUILayout.Space();
             GUIStyle labelStyle = EditorStyles.label;
@@ -30,10 +45,10 @@ namespace Astar2DPathFinding.Mika {
             labelStyle.fontSize = temp;
             labelStyle.fontStyle = FontStyle.Normal;
 
-            myScript.gridWorldSize = EditorGUILayout.Vector2Field("Grid size: ", myScript.gridWorldSize);
-            myScript.nodeRadius = EditorGUILayout.FloatField("Node radius: ", myScript.nodeRadius);
-            myScript.nearestNodeDistance = EditorGUILayout.FloatField("Nearest node distance: ", myScript.nearestNodeDistance);
-            myScript.collisionRadius = EditorGUILayout.Slider("Collision radius: ", myScript.collisionRadius, 0, 3);
+            pathFindingGrid.gridWorldSize = EditorGUILayout.Vector2Field("Grid size: ", pathFindingGrid.gridWorldSize);
+            pathFindingGrid.nodeRadius = EditorGUILayout.FloatField("Node radius: ", pathFindingGrid.nodeRadius);
+            pathFindingGrid.nearestNodeDistance = EditorGUILayout.FloatField("Nearest node distance: ", pathFindingGrid.nearestNodeDistance);
+            pathFindingGrid.collisionRadius = EditorGUILayout.Slider("Collision radius: ", pathFindingGrid.collisionRadius, 0, 3);
             EditorGUILayout.Space();
             GUIStyle style = EditorStyles.foldout;
             FontStyle previousStyle = style.fontStyle;
@@ -65,12 +80,11 @@ namespace Astar2DPathFinding.Mika {
             if (advanced) {
                 //EditorGUILayout.LabelField("Inspector", EditorStyles.boldLabel);
 
-                myScript.options = (PathfindingGrid.Connections)EditorGUILayout.EnumPopup("Connections", myScript.options);
-                myScript.heuristicMultiplier = EditorGUILayout.Slider("Heuristic estimation: ", myScript.heuristicMultiplier, 0, 3);
+                pathFindingGrid.options = (PathfindingGrid.Connections)EditorGUILayout.EnumPopup("Connections", pathFindingGrid.options);
+                pathFindingGrid.heuristicMultiplier = EditorGUILayout.Slider("Heuristic estimation: ", pathFindingGrid.heuristicMultiplier, 0, 3);
                 //myScript.heuristicMethod = (Grid.Heuristics)EditorGUILayout.EnumPopup("Heuristics", myScript.heuristicMethod);
-                myScript.showGrid = EditorGUILayout.Toggle("Show Grid", myScript.showGrid);
-                myScript.showPathSearchDebug = EditorGUILayout.Toggle("Show search debug", myScript.showPathSearchDebug);
-                myScript.useThreading = EditorGUILayout.Toggle("Use threading", myScript.useThreading);
+                pathFindingGrid.showGrid = EditorGUILayout.Toggle("Show Grid", pathFindingGrid.showGrid);
+                pathFindingGrid.showPathSearchDebug = EditorGUILayout.Toggle("Show search debug", pathFindingGrid.showPathSearchDebug);
             }
 
 
@@ -86,7 +100,7 @@ namespace Astar2DPathFinding.Mika {
             GUILayout.FlexibleSpace();
 
             if (GUILayout.Button("Test grid", GUILayout.Width(300), GUILayout.Height(30))) {
-                myScript.CreateGrid();
+                pathFindingGrid.CreateGrid();
 
             }
             GUILayout.FlexibleSpace();
@@ -95,7 +109,7 @@ namespace Astar2DPathFinding.Mika {
             GUILayout.EndHorizontal();
 
 
-            EditorUtility.SetDirty(myScript);
+            EditorUtility.SetDirty(pathFindingGrid);
         }
 
 

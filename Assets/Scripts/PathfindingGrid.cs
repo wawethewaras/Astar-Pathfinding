@@ -10,13 +10,13 @@ namespace Astar2DPathFinding.Mika {
         public int terrainPenalty;
     }
 
-    [RequireComponent(typeof(ThreadController))]
     public class PathfindingGrid : Singleton<PathfindingGrid> {
 
-        [Header("GRID")]
         public Vector2 gridWorldSize = new Vector2(100, 100);
         public float nodeRadius = 1;
         public float nodeDiameter { get { return nodeRadius * 2; } }
+
+
         public float nearestNodeDistance = 10;
         public float collisionRadius = 1;
 
@@ -40,8 +40,6 @@ namespace Astar2DPathFinding.Mika {
         public float heuristicMultiplier = 2;
         public bool showGrid = true;
         public bool showPathSearchDebug;
-        public bool useThreading;
-
 
         public enum Connections {
             directional4,
