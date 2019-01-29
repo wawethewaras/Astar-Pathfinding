@@ -10,45 +10,43 @@ namespace Astar2DPathFinding.Mika {
         bool layers = true;
         bool advanced = true;
 
-        public PathfindingGrid.Connections connections;
-        public PathfindingGrid.Heuristics heurastic;
-        public TerrainType mask;
+        //public PathfindingGrid.Connections connections;
+        //public PathfindingGrid.Heuristics heurastic;
+        //public TerrainType mask;
+
+        SerializedProperty gridWorldSizeProp;
+        SerializedProperty nodeRadiusProp; 
+        SerializedProperty nearestNodeDistanceProp;
+        SerializedProperty collisionRadiusProp;
+
+        //SerializedProperty heuristicMultiplierProp;
+        //SerializedProperty connectionsOptionsProp;
+        //SerializedProperty showGridProp;
+        //SerializedProperty showPathSearchDebugProp;
 
 
-        //SerializedProperty nodeRadiusProp; 
-        //SerializedProperty nearestNodeDistanceProp;
-        //SerializedProperty collisionRadiusProp;
+        void OnEnable() {
+            // Setup the SerializedProperties.
+            gridWorldSizeProp = serializedObject.FindProperty("gridWorldSize");
+            nodeRadiusProp = serializedObject.FindProperty("nodeRadius");
+            nearestNodeDistanceProp = serializedObject.FindProperty("nearestNodeDistance");
+            collisionRadiusProp = serializedObject.FindProperty("collisionRadius");
 
-        //void OnEnable() {
-        //    // Setup the SerializedProperties.
-        //    nodeRadiusProp = serializedObject.FindProperty("nodeRadius");
-        //    nearestNodeDistanceProp = serializedObject.FindProperty("nearestNodeDistance");
-        //    collisionRadiusProp = serializedObject.FindProperty("collisionRadius");
-        //}
+            //heuristicMultiplierProp = serializedObject.FindProperty("heuristicMultiplier");
+            //connectionsOptionsProp = serializedObject.FindProperty("connectionsOptions");
+            //showGridProp = serializedObject.FindProperty("showGrid");
+            //showPathSearchDebugProp = serializedObject.FindProperty("showPathSearchDebug");
+        }
 
         public override void OnInspectorGUI() {
-            // Update the serializedProperty - always do this in the beginning of OnInspectorGUI.
             serializedObject.Update();
 
-            //EditorGUILayout..PropertyField(nodeRadiusProp, new GUIContent("Node radius"));
 
+            EditorGUILayout.PropertyField(gridWorldSizeProp, new GUIContent("Grid size: "));
+            EditorGUILayout.PropertyField(nodeRadiusProp, new GUIContent("Node radius: "));
+            EditorGUILayout.PropertyField(nearestNodeDistanceProp, new GUIContent("Nearest Node Distance: "));
+            EditorGUILayout.Slider(collisionRadiusProp, 0, 3, new GUIContent("Collision Radius: "));
 
-            PathfindingGrid pathFindingGrid = (PathfindingGrid)target;
-
-            EditorGUILayout.Space();
-            GUIStyle labelStyle = EditorStyles.label;
-            labelStyle.fontStyle = FontStyle.Bold;
-            int temp = labelStyle.fontSize;
-            labelStyle.fontSize = 15;
-
-
-            labelStyle.fontSize = temp;
-            labelStyle.fontStyle = FontStyle.Normal;
-
-            pathFindingGrid.gridWorldSize = EditorGUILayout.Vector2Field("Grid size: ", pathFindingGrid.gridWorldSize);
-            pathFindingGrid.nodeRadius = EditorGUILayout.FloatField("Node radius: ", pathFindingGrid.nodeRadius);
-            pathFindingGrid.nearestNodeDistance = EditorGUILayout.FloatField("Nearest node distance: ", pathFindingGrid.nearestNodeDistance);
-            pathFindingGrid.collisionRadius = EditorGUILayout.Slider("Collision radius: ", pathFindingGrid.collisionRadius, 0, 3);
             EditorGUILayout.Space();
             GUIStyle style = EditorStyles.foldout;
             FontStyle previousStyle = style.fontStyle;
@@ -76,40 +74,22 @@ namespace Astar2DPathFinding.Mika {
             EditorGUILayout.Space();
 
             advanced = EditorGUILayout.Foldout(advanced, "Advanced", style);
-            //style.fontStyle = previousStyle;
+
+
             if (advanced) {
                 //EditorGUILayout.LabelField("Inspector", EditorStyles.boldLabel);
 
-                pathFindingGrid.options = (PathfindingGrid.Connections)EditorGUILayout.EnumPopup("Connections", pathFindingGrid.options);
-                pathFindingGrid.heuristicMultiplier = EditorGUILayout.Slider("Heuristic estimation: ", pathFindingGrid.heuristicMultiplier, 0, 3);
-                //myScript.heuristicMethod = (Grid.Heuristics)EditorGUILayout.EnumPopup("Heuristics", myScript.heuristicMethod);
-                pathFindingGrid.showGrid = EditorGUILayout.Toggle("Show Grid", pathFindingGrid.showGrid);
-                pathFindingGrid.showPathSearchDebug = EditorGUILayout.Toggle("Show search debug", pathFindingGrid.showPathSearchDebug);
-            }
-
-
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Test grid", GUILayout.Width(300), GUILayout.Height(30))) {
-                pathFindingGrid.CreateGrid();
+                PathfindingGrid myScript = (PathfindingGrid)target;
+                myScript.connectionsOptions = (PathfindingGrid.Connections)EditorGUILayout.EnumPopup("Connections", myScript.connectionsOptions);
+                myScript.heuristicMultiplier = EditorGUILayout.Slider("Heuristic estimation: ", myScript.heuristicMultiplier, 0, 3);
+                myScript.heuristicMethod = (PathfindingGrid.Heuristics)EditorGUILayout.EnumPopup("Heuristics", myScript.heuristicMethod);
+                myScript.showGrid = EditorGUILayout.Toggle("Show Grid", myScript.showGrid);
+                myScript.showPathSearchDebug = EditorGUILayout.Toggle("Show search debug", myScript.showPathSearchDebug);
 
             }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
 
+            serializedObject.ApplyModifiedProperties();
 
-            EditorUtility.SetDirty(pathFindingGrid);
         }
 
 

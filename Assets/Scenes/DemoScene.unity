@@ -226,7 +226,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 702139568}
-  - component: {fileID: 702139567}
   - component: {fileID: 702139566}
   m_Layer: 0
   m_Name: Grid
@@ -248,29 +247,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridWorldSize: {x: 200, y: 200}
   nodeRadius: 1
-  nearestNodeDistance: 50
-  collisionRadius: 1.2
+  nearestNodeDistance: 10
+  collisionRadius: 0
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 256
   walkableRegions: []
-  options: 2
-  heuristicMethod: 1
-  heuristicMultiplier: 1
-  showGrid: 1
+  connectionsOptions: 0
+  heuristicMethod: 0
+  heuristicMultiplier: 0
+  showGrid: 0
   showPathSearchDebug: 1
-  useThreading: 0
---- !u!114 &702139567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 702139565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c53d84c0e1d7374ab67a4749b4424bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &702139568
 Transform:
   m_ObjectHideFlags: 0

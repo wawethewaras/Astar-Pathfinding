@@ -12,33 +12,34 @@ namespace Astar2DPathFinding.Mika {
 
     public class PathfindingGrid : Singleton<PathfindingGrid> {
 
-        public Vector2 gridWorldSize = new Vector2(100, 100);
-        public float nodeRadius = 1;
-        public float nodeDiameter { get { return nodeRadius * 2; } }
+        [SerializeField]
+        private Vector2 gridWorldSize = new Vector2(100, 100);
+        [SerializeField]
+        private float nodeRadius = 1;
+        private float nodeDiameter { get { return nodeRadius * 2; } }
 
-
-        public float nearestNodeDistance = 10;
-        public float collisionRadius = 1;
+        [SerializeField]
+        private float nearestNodeDistance = 10;
+        [SerializeField]
+        private float collisionRadius = 1;
 
         public Node[,] grid;
         private int gridSizeX, gridSizeY;
 
-        //[Space(10)]
-        //[Header("LAYERS")]
+
         public LayerMask unwalkableMask;
         public TerrainType[] walkableRegions;
         private LayerMask walkableMask;
         Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
 
 
-        //[Space(10)]
-        //[Header("Advanced")]
-        public Connections options = Connections.directional8DontCutCorners;
-        public Heuristics heuristicMethod = Heuristics.Manhattan;
+
+        public Connections connectionsOptions;
+        public Heuristics heuristicMethod;
 
         //Using this value can decide whether algoritmin should work more like dijkstra or greedy best first. If value is 1 this works like traditional A*.
-        public float heuristicMultiplier = 2;
-        public bool showGrid = true;
+        public float heuristicMultiplier;
+        public bool showGrid;
         public bool showPathSearchDebug;
 
         public enum Connections {
@@ -213,7 +214,7 @@ namespace Astar2DPathFinding.Mika {
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
 
-                    if (options.Equals(Connections.directional4) && (Mathf.Abs(x) + Mathf.Abs(y) == 2)) {
+                    if (connectionsOptions.Equals(Connections.directional4) && (Mathf.Abs(x) + Mathf.Abs(y) == 2)) {
                         continue;
                     }
                     //Skip center node, because it is current node
@@ -233,7 +234,7 @@ namespace Astar2DPathFinding.Mika {
                         //AStar.CheckIfNodeIsObstacle(newNode);
 
                         //Prevent corner cutting
-                        if (options.Equals(Connections.directional8DontCutCorners) && (grid[checkX, checkY].walkable == NodeType.obstacle || grid[checkX, node.gridY].walkable == NodeType.obstacle || grid[node.gridX, checkY].walkable == NodeType.obstacle)) {
+                        if (connectionsOptions.Equals(Connections.directional8DontCutCorners) && (grid[checkX, checkY].walkable == NodeType.obstacle || grid[checkX, node.gridY].walkable == NodeType.obstacle || grid[node.gridX, checkY].walkable == NodeType.obstacle)) {
                             continue;
                         }
                         else {
