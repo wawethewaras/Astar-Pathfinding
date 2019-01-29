@@ -248,7 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridWorldSize: {x: 200, y: 200}
   nodeRadius: 1
-  nearestNodeDistance: 10
+  nearestNodeDistance: 50
   collisionRadius: 1.2
   unwalkableMask:
     serializedVersion: 2
@@ -257,8 +257,8 @@ MonoBehaviour:
   options: 2
   heuristicMethod: 1
   heuristicMultiplier: 1
-  showGrid: 0
-  showPathSearchDebug: 0
+  showGrid: 1
+  showPathSearchDebug: 1
   useThreading: 0
 --- !u!114 &702139567
 MonoBehaviour:
@@ -953,8 +953,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movespeed: 50
   intervalTime: 0.1
-  usePathSmooting: 0
-  showPathSmoothing: 0
+  usePathSmooting: 1
+  showPathSmoothing: 1
 --- !u!58 &1885620571
 CircleCollider2D:
   m_ObjectHideFlags: 0

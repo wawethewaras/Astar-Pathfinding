@@ -54,8 +54,8 @@ namespace Astar2DPathFinding.Mika {
         }
 
         public static void SearchPathRequest(Pathfinding requester, Vector2 startPos, Vector2 endPos) {
-            Node start = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(startPos);
-            Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos);
+            Node start = PathfindingGrid.Instance.NodeFromWorldPoint(startPos);
+            Node end = PathfindingGrid.Instance.ClosestNodeFromWorldPoint(endPos, start.gridAreaID);
             if (PathfindingGrid.Instance.useThreading) {
                 PathRequest request = new PathRequest(requester, start, end);
                 pathRequests.Add(request);

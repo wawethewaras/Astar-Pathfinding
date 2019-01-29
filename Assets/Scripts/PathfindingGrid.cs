@@ -263,7 +263,7 @@ namespace Astar2DPathFinding.Mika {
 
 
 
-        public Node ClosestNodeFromWorldPoint(Vector2 worldPosition) {
+        public Node ClosestNodeFromWorldPoint(Vector2 worldPosition, int nodeArea) {
             float positionOfNodeInGridX = (worldPosition.x - transform.position.x);
             float positionOfNodeInGridY = (worldPosition.y - transform.position.y);
             float percentX = (positionOfNodeInGridX + gridWorldSize.x / 2) / gridWorldSize.x;
@@ -273,9 +273,9 @@ namespace Astar2DPathFinding.Mika {
             int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
             int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
             //If target node is inside collider return nearby node
-            if (grid[x, y].walkable == NodeType.obstacle) {
+            if (grid[x, y].walkable == NodeType.obstacle || grid[x, y].gridAreaID != nodeArea) {
                 //Node[] neighbours 
-                Node neighbour = FindWalkableInRadius(x, y, 1);
+                Node neighbour = FindWalkableInRadius(x, y, 1, nodeArea);
                 if (neighbour != null) {
                     return neighbour;
                 }
@@ -295,42 +295,45 @@ namespace Astar2DPathFinding.Mika {
             }
         }
 
-        private Node FindWalkableInRadius(int centreX, int centreY, int radius) {
-            if (radius > nearestNodeDistance) { return null; }
+        private Node FindWalkableInRadius(int centreX, int centreY, int radius, int nodeArea) {
+            if (radius > nearestNodeDistance) {
+                UnityEngine.Debug.LogWarning("Target area is not in nearestNodeDistance!");
+                return null;
+            }
             for (int i = -radius; i <= radius; i++) {
                 int verticalSearchX = i + centreX;
                 int horizontalSearchY = i + centreY;
 
                 // top
                 if (InBounds(verticalSearchX, centreY + radius)) {
-                    if (grid[verticalSearchX, centreY + radius].walkable == NodeType.walkable) {
+                    if (grid[verticalSearchX, centreY + radius].walkable == NodeType.walkable && grid[verticalSearchX, centreY + radius].gridAreaID == nodeArea) {
                         return grid[verticalSearchX, centreY + radius];
                     }
                 }
 
                 // bottom
                 if (InBounds(verticalSearchX, centreY - radius)) {
-                    if (grid[verticalSearchX, centreY - radius].walkable == NodeType.walkable) {
+                    if (grid[verticalSearchX, centreY - radius].walkable == NodeType.walkable && grid[verticalSearchX, centreY - radius].gridAreaID == nodeArea) {
                         return grid[verticalSearchX, centreY - radius];
                     }
                 }
                 // right
                 if (InBounds(centreY + radius, horizontalSearchY)) {
-                    if (grid[centreX + radius, horizontalSearchY].walkable == NodeType.walkable) {
+                    if (grid[centreX + radius, horizontalSearchY].walkable == NodeType.walkable && grid[centreX + radius, horizontalSearchY].gridAreaID == nodeArea) {
                         return grid[centreX + radius, horizontalSearchY];
                     }
                 }
 
                 // left
                 if (InBounds(centreY - radius, horizontalSearchY)) {
-                    if (grid[centreX - radius, horizontalSearchY].walkable == NodeType.walkable) {
+                    if (grid[centreX - radius, horizontalSearchY].walkable == NodeType.walkable && grid[centreX - radius, horizontalSearchY].gridAreaID == nodeArea) {
                         return grid[centreX - radius, horizontalSearchY];
                     }
                 }
 
             }
             radius++;
-            return FindWalkableInRadius(centreX, centreY, radius);
+            return FindWalkableInRadius(centreX, centreY, radius, nodeArea);
 
         }
 

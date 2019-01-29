@@ -37,11 +37,11 @@ namespace Astar2DPathFinding.Mika {
 
 
 
-            if (goalNode.gridAreaID != startNode.gridAreaID) {
-                UnityEngine.Debug.Log("Node is unreachable!");
-                return null;
+            //if (goalNode.gridAreaID != startNode.gridAreaID) {
+            //    UnityEngine.Debug.Log("Node is unreachable!");
+            //    return null;
 
-            }
+            //}
             if (goalNode.walkable == NodeType.obstacle || startNode.walkable == NodeType.obstacle)
             {
                 UnityEngine.Debug.Log("Start or goal inside collider.");
